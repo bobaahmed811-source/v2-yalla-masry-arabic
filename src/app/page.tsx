@@ -4,12 +4,15 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 export default function RoyalDashboard() {
   const { user } = useUser();
   const firestore = useFirestore();
   const [pharaonicAlias, setPharaonicAlias] = useState("تحتمس القوي");
   const [aliasInput, setAliasInput] = useState("تحتمس القوي");
+  const [isLoadingAlias, setIsLoadingAlias] = useState(true);
+
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -19,15 +22,25 @@ export default function RoyalDashboard() {
   useEffect(() => {
     async function fetchUserAlias() {
       if (userDocRef) {
-        const docSnap = await getDoc(userDocRef);
-        if (docSnap.exists() && docSnap.data().alias) {
-          const userData = docSnap.data();
-          setPharaonicAlias(userData.alias);
-          setAliasInput(userData.alias);
-        } else {
-          // If no alias, set initial one in db
-          await setDoc(userDocRef, { alias: pharaonicAlias, id: user!.uid, email: user!.email }, { merge: true });
+        setIsLoadingAlias(true);
+        try {
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists() && docSnap.data().alias) {
+              const userData = docSnap.data();
+              setPharaonicAlias(userData.alias);
+              setAliasInput(userData.alias);
+            } else if (user) {
+              // If no alias, set initial one in db non-blockingly
+              const initialData = { alias: pharaonicAlias, id: user.uid, email: user.email };
+              setDocumentNonBlocking(userDocRef, initialData, { merge: true });
+            }
+        } catch (error) {
+            console.error("Error fetching user alias:", error);
+        } finally {
+            setIsLoadingAlias(false);
         }
+      } else {
+        setIsLoadingAlias(false);
       }
     }
     fetchUserAlias();
@@ -129,14 +142,14 @@ export default function RoyalDashboard() {
 
   }, [pharaonicAlias, user]);
 
-  const updateAliasInFirestore = async () => {
+  const updateAliasInFirestore = () => {
     if (!userDocRef) {
       alert("مستخدم غير معروف، يرجى تسجيل الدخول.");
       return;
     }
     const newAlias = aliasInput.trim();
     if (newAlias) {
-      await setDoc(userDocRef, { alias: newAlias }, { merge: true });
+      setDocumentNonBlocking(userDocRef, { alias: newAlias }, { merge: true });
       setPharaonicAlias(newAlias);
       alert(`تم تحديث الاسم بنجاح إلى: ${newAlias}`);
     } else {
@@ -178,13 +191,13 @@ export default function RoyalDashboard() {
                   placeholder="اكتب اسمك الفرعوني هنا..." 
                   value={aliasInput}
                   onChange={(e) => setAliasInput(e.target.value)}
-                  disabled={!user}
+                  disabled={!user || isLoadingAlias}
                 />
                 <button 
                   id="update-alias-button" 
                   className="cta-button px-6 py-2 rounded-full w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={updateAliasInFirestore}
-                  disabled={!user}
+                  disabled={!user || isLoadingAlias}
                 >
                     تحديث الاسم
                 </button>
@@ -219,17 +232,17 @@ export default function RoyalDashboard() {
                     <div className="stat-card p-4 rounded-lg text-center">
                         <i className="fas fa-gem text-2xl icon-symbol mb-2"></i>
                         <p className="text-3xl font-bold text-white">1200</p>
-                        <p id="nile-points-label" className="text-sm text-gray-400">نقاط النيل</p>
+                        <p id="nile_points_label" className="text-sm text-gray-400">نقاط النيل</p>
                     </div>
                     <div className="stat-card p-4 rounded-lg text-center">
                         <i className="fas fa-calendar-alt text-2xl icon-symbol mb-2"></i>
                         <p className="text-3xl font-bold text-white">7</p>
-                        <p id="streak-days-label" className="text-sm text-gray-400">أيام متواصلة</p>
+                        <p id="streak_days_label" className="text-sm text-gray-400">أيام متواصلة</p>
                     </div>
                     <div className="stat-card p-4 rounded-lg text-center">
                         <i className="fas fa-clock text-2xl icon-symbol mb-2"></i>
                         <p className="text-3xl font-bold text-white">3.5</p>
-                        <p id="total-time-label" className="text-sm text-gray-400">إجمالي الوقت (س)</p>
+                        <p id="total_time_label" className="text-sm text-gray-400">إجمالي الوقت (س)</p>
                     </div>
                 </div>
 
@@ -286,11 +299,11 @@ export default function RoyalDashboard() {
                         {/* Leaderboard */}
                         <div className="leaderboard-card p-4 rounded-lg text-white space-y-3">
                             <div className="flex items-center justify-between font-bold text-lg text-gold-accent">
-                                <div className="flex items-center"><i className="fas fa-trophy mr-2 text-xl"></i><span>الملكة حتشبسوت</span></div>
+                                <div className="flex items-center"><i className="fas fa-trophy mr-2 text-xl"></i><span id="leaderboard_1">الملكة حتشبسوت</span></div>
                                 <span>1500 <i className="fas fa-gem text-sm ml-1"></i></span>
                             </div>
                             <div className="flex items-center justify-between text-lg text-gray-300">
-                                <div className="flex items-center"><span className="ml-2 w-5 text-center">2.</span><span>امنحتب الحكيم</span></div>
+                                <div className="flex items-center"><span className="ml-2 w-5 text-center">2.</span><span id="leaderboard_2">امنحتب الحكيم</span></div>
                                 <span>1350 <i className="fas fa-gem text-sm ml-1"></i></span>
                             </div>
                             <div className="flex items-center justify-between text-lg font-extrabold text-white bg-[#0b4e8d] p-2 rounded-md border-r-4 border-gold-accent">
@@ -298,7 +311,7 @@ export default function RoyalDashboard() {
                                 <span>1200 <i className="fas fa-gem text-sm ml-1"></i></span>
                             </div>
                             <div className="flex items-center justify-between text-lg text-gray-300">
-                                <div className="flex items-center"><span className="ml-2 w-5 text-center">4.</span><span>نفرتيتي الرشيقة</span></div>
+                                <div className="flex items-center"><span className="ml-2 w-5 text-center">4.</span><span id="leaderboard_4">نفرتيتي الرشيقة</span></div>
                                 <span>980 <i className="fas fa-gem text-sm ml-1"></i></span>
                             </div>
                         </div>
@@ -309,3 +322,5 @@ export default function RoyalDashboard() {
     </div>
   )
 }
+
+    
