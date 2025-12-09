@@ -1,0 +1,229 @@
+/**
+ * Core Philosophy: This ruleset enforces a security model based on user roles (students and instructors) and strict data ownership.
+ * It provides public read access to educational content like courses and lessons, facilitating discovery, while locking down
+ * write access to the content creators (instructors). Personal data such as user profiles, submissions, and enrollments
+ * are kept private and accessible only to the owning user and relevant instructors.
+ *
+ * Data Structure: The data is organized into top-level collections for primary entities like `users`, `courses`, and `instructors`
+ * to allow for scalable querying. Course content (lessons, quizzes, assignments) is nested hierarchically under the parent
+ * course, creating a clear and logical data path. This structure supports both direct lookups and relational queries.
+ *
+ * Key Security Decisions:
+ * - User data in `/users/{userId}` is strictly private to the owner. User listing is disabled to prevent data scraping.
+ * - Course content is publicly readable to allow prospective students to browse offerings, but only the designated instructor can modify it.
+ * - Submissions are private, accessible only by the student who submitted them and the course instructor for grading.
+ * - Chat messages are confidential and can only be read by the sender and recipient.
+ * - Default posture for sensitive collections (`submissions`, `enrollments`, `chat_messages`) is to disallow `list` operations to protect user privacy.
+ *
+ * Denormalization for Authorization: To ensure fast and secure authorization checks, this ruleset relies on denormalized
+ * ownership fields. For example, a `/courses/{courseId}` document must contain an `instructorId` field. Similarly, a
+ * `/submissions/{submissionId}` document must contain both a `studentId` and a denormalized `instructorId` to allow
+ * both parties access without performing slow, insecure, and costly cross-collection `get` calls in the rules.
+ *
+ * Structural Segregation: The use of distinct top-level collections for different types of data (e.g., `/users`, `/courses`,
+ * `/submissions`) provides a strong security boundary, simplifying rules and preventing accidental data leakage.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * Returns true if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Returns true if the user's UID matches the provided userId.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Returns true if the document being written to already exists.
+     * Used for update and delete operations.
+     */
+    function isExistingDoc() {
+      return resource != null;
+    }
+
+    /**
+     * Returns true if the user is the owner of an existing document.
+     * A secure combination for update/delete operations.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && isExistingDoc();
+    }
+
+    /**
+     * Checks if the current user is the instructor of a given course by
+     * performing a `get` call on the course document.
+     */
+    function isCourseInstructor(courseId) {
+      return isSignedIn() && get(/databases/$(database)/documents/courses/$(courseId)).data.instructorId == request.auth.uid;
+    }
+
+    // ----------------------------------------------------------------------
+    // Collection Rules
+    // ----------------------------------------------------------------------
+
+    /**
+     * @description Users can create, read, and update their own profile document.
+     *   Listing users is disallowed to protect user privacy.
+     * @path /users/{userId}
+     * @allow (create) An authenticated user with UID 'user123' can create their own document at `/users/user123`.
+     * @deny (get) User 'user123' cannot get the document at `/users/user456`.
+     * @principle Restricts access to a user's own data tree.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Instructor profiles are public to read, but only the associated user can manage them.
+     * @path /instructors/{instructorId}
+     * @allow (get) Any user, signed in or not, can read an instructor's profile.
+     * @deny (update) User 'user123' cannot update an instructor profile where the `userId` field is 'user456'.
+     * @principle Public read with owner-only writes.
+     */
+    match /instructors/{instructorId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingDoc() && isOwner(resource.data.userId);
+      allow delete: if isExistingDoc() && isOwner(resource.data.userId);
+    }
+
+    /**
+     * @description Courses are public to read, but only the designated instructor can create, update, or delete them.
+     * @path /courses/{courseId}
+     * @allow (list) Any user, signed in or not, can list all available courses.
+     * @deny (create) User 'user123' cannot create a course with an `instructorId` of 'user456'.
+     * @principle Public read with owner-only writes.
+     */
+    match /courses/{courseId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.instructorId == request.auth.uid;
+      allow update: if isExistingDoc() && isOwner(resource.data.instructorId);
+      allow delete: if isExistingDoc() && isOwner(resource.data.instructorId);
+
+      /**
+       * @description Lessons are public to read, but only the course instructor can manage them.
+       * @path /courses/{courseId}/lessons/{lessonId}
+       * @allow (get) Any user can read the lessons for a public course.
+       * @deny (create) A user cannot create a lesson in a course where they are not the instructor.
+       * @principle Inherits write access from the parent course document.
+       */
+      match /lessons/{lessonId} {
+        allow get: if true;
+        allow list: if true;
+        allow create: if isCourseInstructor(courseId) && request.resource.data.courseId == courseId;
+        allow update: if isCourseInstructor(courseId) && request.resource.data.courseId == resource.data.courseId;
+        allow delete: if isCourseInstructor(courseId);
+
+        /**
+         * @description Quizzes are public to read, but only the course instructor can manage them.
+         * @path /courses/{courseId}/lessons/{lessonId}/quizzes/{quizId}
+         * @allow (get) Any user can read the quizzes for a lesson.
+         * @deny (update) A user cannot update a quiz in a course where they are not the instructor.
+         * @principle Inherits write access from the parent course document.
+         */
+        match /quizzes/{quizId} {
+          allow get: if true;
+          allow list: if true;
+          allow create: if isCourseInstructor(courseId) && request.resource.data.lessonId == lessonId;
+          allow update: if isCourseInstructor(courseId) && request.resource.data.lessonId == resource.data.lessonId;
+          allow delete: if isCourseInstructor(courseId);
+        }
+      }
+
+      /**
+       * @description Assignments are public to read, but only the course instructor can manage them.
+       * @path /courses/{courseId}/assignments/{assignmentId}
+       * @allow (get) Any user can read the assignments for a course.
+       * @deny (delete) A user cannot delete an assignment in a course where they are not the instructor.
+       * @principle Inherits write access from the parent course document.
+       */
+      match /assignments/{assignmentId} {
+        allow get: if true;
+        allow list: if true;
+        allow create: if isCourseInstructor(courseId) && request.resource.data.courseId == courseId;
+        allow update: if isCourseInstructor(courseId) && request.resource.data.courseId == resource.data.courseId;
+        allow delete: if isCourseInstructor(courseId);
+      }
+    }
+
+    /**
+     * @description Questions are public to read, but write access cannot be securely determined from the schema.
+     * @path /questions/{questionId}
+     * @allow (get) Any user can read any question.
+     * @deny (create) Any user attempts to create a question, as ownership cannot be verified.
+     * @principle Public read with owner-only writes (incomplete).
+     */
+    match /questions/{questionId} {
+      allow get: if true;
+      allow list: if true;
+      // CRITICAL: Cannot implement owner-only writes. The 'Question' entity is missing an 'instructorId' or other ownership field.
+      // To secure this, the `Question` document must contain a denormalized `instructorId` from its parent course.
+      allow create: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow update: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+      allow delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field.
+    }
+
+    /**
+     * @description Submissions are private to the student and the course instructor.
+     * @path /submissions/{submissionId}
+     * @allow (create) Student 'user123' can create a submission where `studentId` is 'user123'.
+     * @deny (get) Student 'user123' cannot read a submission where `studentId` is 'user456'.
+     * @principle Enforces access for a closed set of collaborators (student and instructor).
+     */
+    match /submissions/{submissionId} {
+      allow get: if isSignedIn() && (isOwner(resource.data.studentId) || isOwner(resource.data.instructorId));
+      allow list: if false;
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+      allow update: if isExistingDoc() && (isOwner(resource.data.studentId) || isOwner(resource.data.instructorId));
+      allow delete: if isExistingDoc() && isOwner(resource.data.studentId);
+    }
+
+    /**
+     * @description Enrollments are private and can only be managed by the enrolled user.
+     * @path /enrollments/{enrollmentId}
+     * @allow (get) User 'user123' can read their own enrollment document.
+     * @deny (list) No user can list all enrollments in the system.
+     * @principle Restricts access to a user's own data.
+     */
+    match /enrollments/{enrollmentId} {
+      allow get: if isOwner(resource.data.userId);
+      allow list: if false;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingDoc() && isOwner(resource.data.userId);
+      allow delete: if isExistingDoc() && isOwner(resource.data.userId);
+    }
+
+    /**
+     * @description Chat messages are private between the sender and recipient. Messages are immutable.
+     * @path /chat_messages/{chatMessageId}
+     * @allow (get) User 'user123' can read a message where `senderId` or `recipientId` is 'user123'.
+     * @deny (get) User 'user456' cannot read a message between 'user123' and 'user789'.
+     * @principle Enforces access for a closed set of collaborators (sender and recipient).
+     */
+    match /chat_messages/{chatMessageId} {
+      allow get: if isSignedIn() && (isOwner(resource.data.senderId) || isOwner(resource.data.recipientId));
+      allow list: if false;
+      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      allow update: if false;
+      allow delete: if isExistingDoc() && isOwner(resource.data.senderId);
+    }
+  }
+}
