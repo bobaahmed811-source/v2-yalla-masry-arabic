@@ -3,458 +3,574 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
 
+// This is a simplified type definition based on the data structure in the script.
+// In a full TypeScript application, this would be more detailed.
+type ArtifactData = {
+    title: string;
+    description: string;
+    puzzle: string;
+    position: THREE.Vector3;
+    icon: string;
+    goal: boolean;
+    isExplored: boolean;
+};
+
+type Artifacts = {
+    [key: string]: ArtifactData;
+};
+
 export default function MuseumPage() {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const infoPanelRef = useRef<HTMLDivElement>(null);
-  const blockerRef = useRef<HTMLDivElement>(null);
-  const artifactTitleRef = useRef<HTMLHeadingElement>(null);
-  const artifactDescriptionRef = useRef<HTMLParagraphElement>(null);
-  const puzzleContentRef = useRef<HTMLDivElement>(null);
-  const puzzleTextRef = useRef<HTMLParagraphElement>(null);
-  const wordContentRef = useRef<HTMLDivElement>(null);
-  const wordTextRef = useRef<HTMLParagraphElement>(null);
-  const wordButtonContentRef = useRef<HTMLSpanElement>(null);
-  const wordButtonRef = useRef<HTMLButtonElement>(null);
+    const mountRef = useRef<HTMLDivElement>(null);
+    const markersContainerRef = useRef<HTMLDivElement>(null);
+    const infoPanelRef = useRef<HTMLDivElement>(null);
+    const reportModalRef = useRef<HTMLDivElement>(null);
+    const blockerRef = useRef<HTMLDivElement>(null);
 
-  const state = useRef({
-    camera: null as THREE.PerspectiveCamera | null,
-    scene: null as THREE.Scene | null,
-    renderer: null as THREE.WebGLRenderer | null,
-    raycaster: new THREE.Raycaster(),
-    moveForward: false,
-    moveBackward: false,
-    moveLeft: false,
-    moveRight: false,
-    isMoving: false,
-    isBlocked: true,
-    isDragging: false,
-    lon: 0,
-    lat: 0,
-    onMouseDownMouseX: 0,
-    onMouseDownMouseY: 0,
-    onMouseDownLon: 0,
-    onMouseDownLat: 0,
-    forwardVector: new THREE.Vector3(0, 0, -1),
-    rightVector: new THREE.Vector3(1, 0, 0),
-    cameraVector: new THREE.Vector3(),
-    euler: new THREE.Euler(0, 0, 0, 'YXZ'),
-    intersectedObject: null as THREE.Object3D | null,
-    currentArtifactName: null as string | null,
-    lastTime: performance.now(),
-  }).current;
+    const state = useRef({
+        camera: null as THREE.PerspectiveCamera | null,
+        scene: null as THREE.Scene | null,
+        renderer: null as THREE.WebGLRenderer | null,
+        
+        moveForward: false,
+        moveBackward: false,
+        moveLeft: false,
+        moveRight: false,
+        isMoving: false,
+        
+        isBlocked: true,
+        isReportVisible: false,
 
-  const ARTIFACT_DATA = {
-    'mask': {
-      title: 'قناع توت عنخ آمون الجنائزي',
-      description: 'أشهر قطعة أثرية في العالم. مصنوع من الذهب الخالص ومطعم بالأحجار الكريمة. كان يغطي وجه مومياء الملك الشاب توت عنخ آمون.',
-      puzzle: 'لغز: ما هي الألوان الرئيسية التي استخدمها المصريون القدماء لطلاء القناع الذهبي؟ (الأزرق الفاتح والغامق والأحمر)',
-      word: 'نِفْر. تعني الجمال أو الكمال',
-      color: 0xFFD700,
-      emissiveColor: 0x995500
-    },
-    'rosetta': {
-      title: 'حجر رشيد (Rosetta Stone)',
-      description: 'لوحة حجرية حاسمة لفك رموز اللغة الهيروغليفية في القرن التاسع عشر، لاحتوائها على نفس النص بثلاثة خطوط مختلفة: الهيروغليفية، الديموطيقية، واليونانية القديمة.',
-      puzzle: 'لغز: من هو العالم الفرنسي الذي فك شفرة الحجر في عام 1822؟ (جان فرانسوا شامبوليون)',
-      word: 'مِدُو نِتْشِر. تعني كلمات الإله (الهيروغليفية)',
-      color: 0x54473e,
-      emissiveColor: 0x332a24
-    },
-    'canopic': {
-      title: 'مجموعة الأواني الكانوبية',
-      description: 'الأواني الأربعة المستخدمة لحفظ الأعضاء الداخلية للمتوفى (الكبد، الرئتين، المعدة، الأمعاء) أثناء عملية التحنيط، كل منها تحت حماية أحد أبناء حورس.',
-      puzzle: 'لغز: من هو ابن حورس الذي كان يحمي الرئتين؟ (حعبي)',
-      word: 'إِمْ تْ. تعني الحياة الآخرة أو الأبدية',
-      color: 0x8d6e63,
-      emissiveColor: 0x5d4e43
-    }
-  };
+        isDragging: false,
+        lon: 0,
+        lat: 0,
+        onMouseDownMouseX: 0,
+        onMouseDownMouseY: 0,
+        onMouseDownLon: 0,
+        onMouseDownLat: 0,
+        
+        forwardVector: new THREE.Vector3(0, 0, -1),
+        rightVector: new THREE.Vector3(1, 0, 0),
+        euler: new THREE.Euler(0, 0, 0, 'YXZ'),
+        
+        lastTime: performance.now(),
+        frameCount: 0,
+        fpsTimer: performance.now(),
 
-  const alertMessage = (message: string, type: 'error' | 'success' | 'info') => {
-    const messageContainer = document.createElement('div');
-    const bgColor = type === 'error' ? 'bg-red-700' : (type === 'success' ? 'bg-green-700' : 'bg-blue-700');
-    messageContainer.className = `alert-message text-white font-bold ${bgColor}`;
-    messageContainer.textContent = message;
+        currentArtifactName: null as string | null,
 
-    document.querySelectorAll('.alert-message').forEach(el => el.remove());
+        ARTIFACT_DATA: {
+            'mask': { title: 'قناع توت عنخ آمون', description: 'أشهر قطعة أثرية في العالم. مصنوع من الذهب الخالص ومطعم بالأحجار الكريمة.', puzzle: 'لغز: ما هي الألوان الرئيسية التي استخدمها المصريون القدماء لطلاء القناع الذهبي؟', position: new THREE.Vector3(0, 0, -150), icon: 'fas fa-crown', goal: false, isExplored: false },
+            'rosetta': { title: 'حجر رشيد', description: 'لوحة حجرية حاسمة لفك رموز اللغة الهيروغليفية.', puzzle: 'لغز: من هو العالم الفرنسي الذي فك شفرة الحجر في عام 1822؟', position: new THREE.Vector3(-150, 0, 0), icon: 'fas fa-book-open', goal: true, isExplored: false },
+            'canopic': { title: 'الأواني الكانوبية', description: 'الأواني الأربعة المستخدمة لحفظ الأعضاء الداخلية للمتوفى أثناء عملية التحنيط.', puzzle: 'لغز: من هو ابن حورس الذي كان يحمي الرئتين؟', position: new THREE.Vector3(150, 0, 0), icon: 'fas fa-vial', goal: false, isExplored: false },
+            'ramses': { title: 'تمثال رمسيس الثاني', description: 'تمثال ضخم يمثل فرعوناً عظيماً. اشتهر بحكمه الطويل ومشاريع البناء الهائلة.', puzzle: 'لغز: ما هي المعركة الشهيرة التي قادها رمسيس الثاني ضد الحيثيين؟', position: new THREE.Vector3(-150, 0, 150), icon: 'fas fa-gavel', goal: false, isExplored: false },
+            'hatshepsut': { title: 'تمثال حتشبسوت', description: 'أقوى الحاكمات في التاريخ المصري، حكمت كفرعون كامل.', puzzle: 'لغز: ما هو اللقب الذي أطلقته حتشبسوت على نفسها لتأكيد شرعيتها؟', position: new THREE.Vector3(150, 0, 150), icon: 'fas fa-user-tie', goal: false, isExplored: false },
+            'solar_boat': { title: 'مركب الشمس', description: 'سفينة جنائزية عُثر عليها بجوار الهرم الأكبر. كان الهدف منها نقل روح الفرعون في رحلته الأبدية.', puzzle: 'لغز: ما هي المادة الأساسية التي صنع منها المركب بالكامل؟', position: new THREE.Vector3(0, 0, 50), icon: 'fas fa-ship', goal: false, isExplored: false },
+            'tut_dagger': { title: 'خنجر توت النيزكي', description: 'خنجر استثنائي مصنوع بالكامل من حديد نيزكي (جاء من الفضاء).', puzzle: 'لغز: ما هي الميزة غير العادية التي جعلت هذا الخنجر فريداً؟', position: new THREE.Vector3(-50, 0, -50), icon: 'fas fa-meteor', goal: false, isExplored: false },
+            'gold_jewelry': { title: 'حُلي توت الذهبية', description: 'مجموعة من الأساور والقلادات المصنوعة من الذهب والأحجار الكريمة.', puzzle: 'لغز: ما هو رمز الحماية الشائع الذي يظهر في الكثير من الحلي المصرية القديمة؟', position: new THREE.Vector3(50, 0, -50), icon: 'fas fa-gem', goal: false, isExplored: false }
+        } as Artifacts,
+        markersMap: {} as { [key: string]: HTMLDivElement },
+        tempVector: new THREE.Vector3(),
+    }).current;
 
-    document.body.appendChild(messageContainer);
-    setTimeout(() => {
-      messageContainer.style.opacity = '0';
-      setTimeout(() => messageContainer.remove(), 300);
-    }, 4000);
-  };
+    const alertMessage = useCallback((message: string, type: 'error' | 'success' | 'info') => {
+        const messageContainer = document.createElement('div');
+        const bgColor = type === 'error' ? 'bg-red-700' : (type === 'success' ? 'bg-green-700' : 'bg-blue-700');
+        messageContainer.className = `alert-message fixed bottom-4 right-4 text-white font-bold ${bgColor} p-3 rounded-lg shadow-xl z-[100] transition-opacity duration-300`;
+        messageContainer.textContent = message;
 
-  const hideInfoPanel = useCallback(() => {
-    const panel = infoPanelRef.current;
-    if (panel) {
-      panel.classList.remove('visible');
-    }
-    state.currentArtifactName = null;
-    state.isBlocked = false;
+        document.querySelectorAll('.alert-message').forEach(el => el.remove());
+        document.body.appendChild(messageContainer);
 
-    if (state.renderer) {
-        state.renderer.domElement.focus();
-    }
-    state.isDragging = false;
-  }, [state]);
+        setTimeout(() => {
+            messageContainer.style.opacity = '0';
+            setTimeout(() => messageContainer.remove(), 300);
+        }, 4000);
+    }, []);
 
+    const hideInfoPanel = useCallback(() => {
+        if (infoPanelRef.current) {
+            infoPanelRef.current.classList.remove('visible');
+        }
+        state.isBlocked = false;
+        if (state.renderer) {
+            state.renderer.domElement.focus();
+        }
+        state.isDragging = false;
+    }, [state]);
 
-  const showInfoPanel = useCallback((artifactName: string) => {
-    state.currentArtifactName = artifactName;
-    const data = ARTIFACT_DATA[artifactName as keyof typeof ARTIFACT_DATA];
-    const panel = infoPanelRef.current;
+    const showInfoPanel = useCallback((artifactName: string) => {
+        const data = state.ARTIFACT_DATA[artifactName];
+        if (!data || !infoPanelRef.current) return;
 
-    if (panel && artifactTitleRef.current && artifactDescriptionRef.current && puzzleTextRef.current && wordTextRef.current && puzzleContentRef.current && wordContentRef.current) {
-        artifactTitleRef.current.textContent = data.title;
-        artifactDescriptionRef.current.textContent = data.description;
-        puzzleTextRef.current.textContent = data.puzzle;
-        wordTextRef.current.innerHTML = `النص الصوتي: <strong>${data.word}</strong><br>انقر على زر التشغيل لسماع الكلمة.`;
+        state.currentArtifactName = artifactName;
 
-        puzzleContentRef.current.classList.add('hidden');
-        wordContentRef.current.classList.add('hidden');
-
+        const panel = infoPanelRef.current;
+        (panel.querySelector('#artifact-title') as HTMLElement).textContent = data.title;
+        (panel.querySelector('#artifact-description') as HTMLElement).textContent = data.description;
+        (panel.querySelector('#puzzle-text') as HTMLElement).textContent = data.puzzle;
+        panel.querySelector('#puzzle-content')?.classList.add('hidden');
+        
         panel.classList.add('visible');
         state.isBlocked = true;
-    }
-  }, [state, ARTIFACT_DATA]);
-  
-  const togglePuzzle = () => {
-    puzzleContentRef.current?.classList.toggle('hidden');
-    wordContentRef.current?.classList.add('hidden');
-  };
-
-  const toggleWordAndPlayAudio = async () => {
-    const wordContent = wordContentRef.current;
-    wordContent?.classList.toggle('hidden');
-    puzzleContentRef.current?.classList.add('hidden');
-
-    if (wordContent?.classList.contains('hidden')) {
-        return;
-    }
-
-    if (!state.currentArtifactName || !ARTIFACT_DATA[state.currentArtifactName as keyof typeof ARTIFACT_DATA]) {
-        alertMessage('حدث خطأ: لا توجد تحفة محددة حالياً.', 'error');
-        return;
-    }
-
-    const textToSpeak = ARTIFACT_DATA[state.currentArtifactName as keyof typeof ARTIFACT_DATA].word;
-    if (!textToSpeak) {
-        alertMessage('لا يوجد نص صوتي لهذه التحفة.', 'error');
-        return;
-    }
-
-    if (wordButtonRef.current) wordButtonRef.current.disabled = true;
-    if (wordButtonContentRef.current) wordButtonContentRef.current.innerHTML = '<span class="spinner"></span> جاري توليد الصوت...';
+    }, [state]);
     
-    // NOTE: The user's original code included an empty API key.
-    // This functionality will not work without a valid Google AI API key.
-    // The logic is preserved for when a key is added.
-    alertMessage('ميزة الصوت غير مفعلة. يتطلب مفتاح API صالح.', 'info');
-    
-    if (wordButtonRef.current) wordButtonRef.current.disabled = false;
-    if (wordButtonContentRef.current) wordButtonContentRef.current.innerHTML = '<i class="fas fa-volume-up ml-2"></i> كلمة فرعونية';
-  };
-  
-  const handleInteraction = useCallback(() => {
-    if(!state.camera || !state.scene) return;
+    const updateMarkers = useCallback(() => {
+        if (!state.camera) return;
 
-    state.raycaster.set(state.camera.position, state.cameraVector);
-    
-    const intersectables = state.scene.children.filter(obj => ARTIFACT_DATA[obj.userData.name as keyof typeof ARTIFACT_DATA]);
-    const intersects = state.raycaster.intersectObjects(intersectables);
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const MAX_MARKER_DISTANCE = 1000;
 
-    if (state.intersectedObject && (!intersects.length || intersects[0].object !== state.intersectedObject)) {
-        const obj = state.intersectedObject as THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
-        obj.material.emissive.setHex(obj.userData.originalEmissive || 0x000000);
-        state.intersectedObject = null;
-    }
+        for (const name in state.ARTIFACT_DATA) {
+            state.scene?.traverse(object => {
+                const obj = object as THREE.Mesh;
+                if (obj.userData.name === name && obj.userData.markerPosition) {
+                    const marker = state.markersMap[name];
+                    if (!marker) return;
 
-    if (intersects.length > 0) {
-        const object = intersects[0].object as THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
-        if (intersects[0].distance < 100 && object !== state.intersectedObject) {
-            state.intersectedObject = object;
-            object.material.emissive.setHex(0xaaaaaa);
+                    state.tempVector.copy(obj.userData.markerPosition);
+                    state.tempVector.project(state.camera!);
+
+                    const markerX = (state.tempVector.x * 0.5 + 0.5) * width;
+                    const markerY = (state.tempVector.y * -0.5 + 0.5) * height;
+
+                    const distance = state.camera!.position.distanceTo(obj.userData.markerPosition);
+
+                    if (state.tempVector.z < 1 && distance < MAX_MARKER_DISTANCE) {
+                        marker.style.display = 'flex';
+                        marker.style.left = `${markerX}px`;
+                        marker.style.top = `${markerY}px`;
+
+                        const scale = Math.max(0.9, Math.min(1.5, 300 / distance));
+                        const opacity = Math.max(0.5, Math.min(1.0, 200 / distance));
+
+                        marker.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                        marker.style.opacity = opacity.toString();
+                    } else {
+                        marker.style.display = 'none';
+                    }
+                }
+            });
         }
-    }
-  }, [state, ARTIFACT_DATA]);
-  
-  const animate = useCallback((currentTime: number) => {
-    requestAnimationFrame(animate);
-    if (!state.renderer || !state.scene || !state.camera) return;
+    }, [state]);
 
-    try {
-        const delta = (currentTime - state.lastTime) / 1000;
-        state.lastTime = currentTime;
+    const animate = useCallback((currentTime: number) => {
+        if (!state.renderer || !state.scene || !state.camera) return;
+        requestAnimationFrame(animate);
 
-        state.euler.y = THREE.MathUtils.degToRad(state.lon);
-        state.euler.x = THREE.MathUtils.degToRad(state.lat);
-        state.camera.quaternion.setFromEuler(state.euler);
-        state.camera.getWorldDirection(state.cameraVector);
+        try {
+            const delta = (currentTime - state.lastTime) / 1000;
+            state.lastTime = currentTime;
 
-        if (!state.isBlocked && state.isMoving) {
-            const forward = state.forwardVector.clone().applyQuaternion(state.camera.quaternion);
-            forward.y = 0;
-            forward.normalize();
+            state.euler.y = THREE.MathUtils.degToRad(state.lon);
+            state.euler.x = THREE.MathUtils.degToRad(state.lat);
+            state.camera.quaternion.setFromEuler(state.euler);
+
+            if (!state.isBlocked && !state.isReportVisible && state.isMoving) {
+                const forward = state.forwardVector.clone().applyQuaternion(state.camera.quaternion);
+                forward.y = 0;
+                forward.normalize();
+
+                const right = state.rightVector.clone().applyQuaternion(state.camera.quaternion);
+                right.y = 0;
+                right.normalize();
+
+                const moveSpeed = speed * delta;
+                if (state.moveForward) state.camera.position.addScaledVector(forward, moveSpeed);
+                if (state.moveBackward) state.camera.position.addScaledVector(forward, -moveSpeed);
+                if (state.moveRight) state.camera.position.addScaledVector(right, moveSpeed);
+                if (state.moveLeft) state.camera.position.addScaledVector(right, -moveSpeed);
+            }
+
+            updateMarkers();
             
-            const right = state.rightVector.clone().applyQuaternion(state.camera.quaternion);
-            right.y = 0;
-            right.normalize();
+            // Simplified debug info for React
+            const camPos = state.camera.position;
+            const debugPanel = document.getElementById('debug-panel');
+            if (debugPanel) {
+                (debugPanel.querySelector('#cam-pos') as HTMLElement).textContent = `${camPos.x.toFixed(0)}, ${camPos.y.toFixed(0)}, ${camPos.z.toFixed(0)}`;
+            }
 
-            const speed = 150.0;
-            if (state.moveForward) state.camera.position.addScaledVector(forward, speed * delta);
-            if (state.moveBackward) state.camera.position.addScaledVector(forward, -speed * delta);
-            if (state.moveRight) state.camera.position.addScaledVector(right, speed * delta);
-            if (state.moveLeft) state.camera.position.addScaledVector(right, -speed * delta);
+            state.renderer.render(state.scene, state.camera);
+
+        } catch (error) {
+            console.error("Error during animation frame:", error);
         }
+    }, [state, speed, updateMarkers]);
 
-        handleInteraction();
-        state.renderer.render(state.scene, state.camera);
-    } catch (error) {
-        console.error("Error during animation frame:", error);
-    }
-  }, [state, handleInteraction]);
+    useEffect(() => {
+        if (!mountRef.current) return;
+        const currentMount = mountRef.current;
 
-  useEffect(() => {
-    if (!mountRef.current) return;
+        const init = () => {
+            try {
+                state.scene = new THREE.Scene();
+                state.scene.background = new THREE.Color(0x000000);
+                state.scene.fog = new THREE.Fog(0x000000, 100, 300);
 
-    const currentMount = mountRef.current;
+                state.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+                state.camera.position.set(0, 10, 0);
+                state.lon = 0;
+                state.lat = 0;
 
-    const init = () => {
-      try {
-        state.scene = new THREE.Scene();
-        state.scene.background = new THREE.Color(0x000000);
-        state.scene.fog = new THREE.Fog(0x000000, 100, 300);
+                state.renderer = new THREE.WebGLRenderer({ antialias: true });
+                state.renderer.setPixelRatio(window.devicePixelRatio);
+                state.renderer.setSize(window.innerWidth, window.innerHeight);
+                state.renderer.domElement.tabIndex = 0;
+                currentMount.appendChild(state.renderer.domElement);
 
-        state.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-        state.camera.position.set(0, 10, 0);
+                // Lighting
+                const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5);
+                state.scene.add(ambientLight);
+                const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.7);
+                directionalLight.position.set(50, 100, 50);
+                directionalLight.castShadow = true;
+                directionalLight.shadow.mapSize.width = 1024;
+                directionalLight.shadow.mapSize.height = 1024;
+                state.scene.add(directionalLight);
+                state.renderer.shadowMap.enabled = true;
+                state.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-        state.renderer = new THREE.WebGLRenderer({ antialias: true });
-        state.renderer.setPixelRatio(window.devicePixelRatio);
-        state.renderer.setSize(window.innerWidth, window.innerHeight);
-        state.renderer.domElement.tabIndex = -1;
-        currentMount.appendChild(state.renderer.domElement);
+                // Museum Geometry
+                const wallSize = 500;
+                const wallHeight = 50;
+                const floor = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallSize), new THREE.MeshStandardMaterial({ color: 0x2e2e2e, side: THREE.DoubleSide, metalness: 0.1, roughness: 0.8 }));
+                floor.rotation.x = -Math.PI / 2;
+                floor.receiveShadow = true;
+                state.scene.add(floor);
+                const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x4a2a10, side: THREE.DoubleSide });
+                [{ x: 0, z: -wallSize / 2, rotY: 0 }, { x: 0, z: wallSize / 2, rotY: Math.PI }, { x: wallSize / 2, z: 0, rotY: -Math.PI / 2 }, { x: -wallSize / 2, z: 0, rotY: Math.PI / 2 }].forEach(w => {
+                    const wall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
+                    wall.position.set(w.x, wallHeight / 2, w.z);
+                    wall.rotation.y = w.rotY;
+                    wall.receiveShadow = true;
+                    state.scene!.add(wall);
+                });
+                const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallSize), new THREE.MeshStandardMaterial({ color: 0x111111, side: THREE.DoubleSide }));
+                ceiling.position.y = wallHeight;
+                ceiling.rotation.x = Math.PI / 2;
+                state.scene.add(ceiling);
+
+                // Exhibits
+                for (const name in state.ARTIFACT_DATA) {
+                    const data = state.ARTIFACT_DATA[name as keyof typeof state.ARTIFACT_DATA];
+                    const base = new THREE.Mesh(new THREE.BoxGeometry(30, 10, 30), new THREE.MeshStandardMaterial({ color: 0x666666, metalness: 0.5, roughness: 0.5 }));
+                    base.position.copy(data.position);
+                    base.position.y = 5;
+                    base.receiveShadow = true;
+                    base.castShadow = true;
+                    base.userData.name = name;
+
+                    const artifactMesh = new THREE.Mesh(new THREE.BoxGeometry(10, 10, 10), new THREE.MeshStandardMaterial({ color: data.goal ? 0xFF0000 : 0xFFD700, metalness: 0.9, roughness: 0.1, emissive: data.goal ? 0x990000 : 0xAA8800, emissiveIntensity: 0.5 }));
+                    artifactMesh.position.y = 10;
+                    base.add(artifactMesh);
+
+                    const glassCase = new THREE.Mesh(new THREE.BoxGeometry(32, 25, 32), new THREE.MeshPhysicalMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.1, roughness: 0, metalness: 0, transmission: 0.9, reflectivity: 0.5 }));
+                    glassCase.position.y = 17.5;
+                    base.add(glassCase);
+
+                    base.userData.markerPosition = base.position.clone();
+                    base.userData.markerPosition.y += 35;
+                    state.scene!.add(base);
+                }
+                
+                // Markers
+                const container = markersContainerRef.current;
+                if(container){
+                    for (const name in state.ARTIFACT_DATA) {
+                        const data = state.ARTIFACT_DATA[name as keyof typeof state.ARTIFACT_DATA];
+                        const markerDiv = document.createElement('div');
+                        markerDiv.className = 'artifact-marker';
+                        markerDiv.id = `marker-${name}`;
+                        markerDiv.innerHTML = `<i class="${data.icon}"></i><span class="marker-title">${data.title}</span>`;
+                        markerDiv.style.display = 'none';
+                        markerDiv.onclick = () => showInfoPanel(name);
+                        container.appendChild(markerDiv);
+                        state.markersMap[name] = markerDiv;
+                    }
+                }
+
+                animate(performance.now());
+
+            } catch (error: any) {
+                alertMessage("فشل تشغيل المتحف: " + error.message, 'error');
+            }
+        };
+
+        init();
+
+        // Event listeners
+        const onStartClick = () => {
+            if (blockerRef.current) blockerRef.current.classList.add('hidden');
+            state.isBlocked = false;
+            if (state.renderer) state.renderer.domElement.focus();
+            document.getElementById('report-button')?.classList.remove('hidden');
+            alertMessage('بدأ التجول! استخدمي الماوس أو اللمس للدوران والنظر حولكِ.', 'success');
+        };
+
+        const onMouseDown = (event: MouseEvent) => {
+            if (state.isBlocked || state.isReportVisible) return;
+            event.preventDefault();
+            state.isDragging = true;
+            state.onMouseDownMouseX = event.clientX;
+            state.onMouseDownMouseY = event.clientY;
+            state.onMouseDownLon = state.lon;
+            state.onMouseDownLat = state.lat;
+        };
+        const onMouseMove = (event: MouseEvent) => {
+            if (state.isBlocked || state.isReportVisible || !state.isDragging) return;
+            event.preventDefault();
+            const deltaX = event.clientX - state.onMouseDownMouseX;
+            const deltaY = event.clientY - state.onMouseDownMouseY;
+            state.lon = state.onMouseDownLon - deltaX * 0.1;
+            state.lat = Math.max(-85, Math.min(85, state.onMouseDownLat - deltaY * 0.1));
+        };
+        const onMouseUp = () => {
+            if (state.isBlocked || state.isReportVisible) return;
+            state.isDragging = false;
+        };
+
+        const onTouchStart = (event: TouchEvent) => {
+            if (state.isBlocked || state.isReportVisible || event.touches.length !== 1) return;
+            event.preventDefault();
+            state.isDragging = true;
+            const touch = event.touches[0];
+            state.onMouseDownMouseX = touch.clientX;
+            state.onMouseDownMouseY = touch.clientY;
+            state.onMouseDownLon = state.lon;
+            state.onMouseDownLat = state.lat;
+        };
+        const onTouchMove = (event: TouchEvent) => {
+            if (state.isBlocked || state.isReportVisible || !state.isDragging || event.touches.length !== 1) return;
+            event.preventDefault();
+            const touch = event.touches[0];
+            const deltaX = touch.clientX - state.onMouseDownMouseX;
+            const deltaY = touch.clientY - state.onMouseDownMouseY;
+            state.lon = state.onMouseDownLon - deltaX * 0.2;
+            state.lat = Math.max(-85, Math.min(85, state.onMouseDownLat - deltaY * 0.2));
+        };
+        const onTouchEnd = () => {
+            if (state.isBlocked || state.isReportVisible) return;
+            state.isDragging = false;
+        };
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (['KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(event.code)) event.preventDefault();
+            if (state.isBlocked || state.isReportVisible) return;
+            state.isMoving = true;
+            switch (event.code) {
+                case 'KeyW': state.moveForward = true; break;
+                case 'KeyA': state.moveLeft = true; break;
+                case 'KeyS': state.moveBackward = true; break;
+                case 'KeyD': state.moveRight = true; break;
+            }
+        };
+        const onKeyUp = (event: KeyboardEvent) => {
+            if (state.isBlocked || state.isReportVisible) return;
+            switch (event.code) {
+                case 'KeyW': state.moveForward = false; break;
+                case 'KeyA': state.moveLeft = false; break;
+                case 'KeyS': state.moveBackward = false; break;
+                case 'KeyD': state.moveRight = false; break;
+            }
+            if (!state.moveForward && !state.moveBackward && !state.moveLeft && !state.moveRight) {
+                state.isMoving = false;
+            }
+        };
+
+        const onWindowResize = () => {
+            if (state.camera && state.renderer) {
+                state.camera.aspect = window.innerWidth / window.innerHeight;
+                state.camera.updateProjectionMatrix();
+                state.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        };
+
+        const rendererDom = state.renderer?.domElement;
+        document.getElementById('start-button')?.addEventListener('click', onStartClick);
+        if (rendererDom) {
+            rendererDom.addEventListener('mousedown', onMouseDown);
+            rendererDom.addEventListener('mousemove', onMouseMove);
+            rendererDom.addEventListener('mouseup', onMouseUp);
+            rendererDom.addEventListener('touchstart', onTouchStart, { passive: false });
+            rendererDom.addEventListener('touchmove', onTouchMove, { passive: false });
+            rendererDom.addEventListener('touchend', onTouchEnd);
+        }
+        document.addEventListener('keydown', onKeyDown);
+        document.addEventListener('keyup', onKeyUp);
+        window.addEventListener('resize', onWindowResize);
         
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0x444444, 0.1);
-        state.scene.add(ambientLight);
-        const hemiLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.2);
-        state.scene.add(hemiLight);
+        return () => {
+            window.removeEventListener('resize', onWindowResize);
+            document.removeEventListener('keydown', onKeyDown);
+            document.removeEventListener('keyup', onKeyUp);
+            if (rendererDom) {
+                rendererDom.removeEventListener('mousedown', onMouseDown);
+                rendererDom.removeEventListener('mousemove', onMouseMove);
+                rendererDom.removeEventListener('mouseup', onMouseUp);
+                rendererDom.removeEventListener('touchstart', onTouchStart);
+                rendererDom.removeEventListener('touchmove', onTouchMove);
+                rendererDom.removeEventListener('touchend', onTouchEnd);
+                try{
+                    currentMount.removeChild(rendererDom);
+                } catch(e) {
+                    // ignore if already removed
+                }
+            }
+        };
+    }, [state, animate, alertMessage, showInfoPanel, hideInfoPanel]);
+
+    // React component handlers
+    const handleTogglePuzzle = () => {
+        const puzzleContent = infoPanelRef.current?.querySelector('#puzzle-content');
+        puzzleContent?.classList.toggle('hidden');
+        if (state.currentArtifactName) {
+             state.ARTIFACT_DATA[state.currentArtifactName as keyof typeof state.ARTIFACT_DATA].isExplored = true;
+        }
+    };
+    
+    const speakArtifactDescription = async () => {
+        if (!state.currentArtifactName) return;
+
+        const speakButton = document.getElementById('speak-description');
+        if (!speakButton || (speakButton as HTMLButtonElement).disabled) return;
+
+        (speakButton as HTMLButtonElement).disabled = true;
+        speakButton.textContent = '...جاري التحميل';
+        alertMessage('جاري تحويل النص إلى كلام...', 'info');
         
-        const artifactPositions = [{ x: 0, z: -50 }, { x: -100, z: 50 }, { x: 100, z: 50 }];
-        artifactPositions.forEach(pos => {
-            const spotLight = new THREE.SpotLight(0xFFB300, 5.0);
-            spotLight.position.set(pos.x, 50, pos.z);
-            spotLight.angle = Math.PI / 12;
-            spotLight.penumbra = 0.8;
-            spotLight.decay = 0.5;
-            spotLight.distance = 150;
-            spotLight.castShadow = true;
-            spotLight.shadow.mapSize.width = 1024;
-            spotLight.shadow.mapSize.height = 1024;
-            spotLight.target.position.set(pos.x, 10, pos.z);
-            state.scene!.add(spotLight);
-            state.scene!.add(spotLight.target);
+        // This is a placeholder. In the real app, we will use a server action
+        // to call the Genkit flow for security and reliability.
+        alertMessage('ميزة الصوت غير متوفرة في هذا النموذج الأولي. سيتم ربطها بالـ AI قريبًا.', 'info');
+        
+        setTimeout(() => {
+             (speakButton as HTMLButtonElement).disabled = false;
+             speakButton.innerHTML = `<i class="fas fa-volume-up ml-2"></i> استمع للوصف`;
+        }, 2000);
+    };
+
+    const updateReportContent = () => {
+        const modal = reportModalRef.current;
+        if (!modal) return;
+
+        const statusListContainer = modal.querySelector('#artifact-status-list');
+        if(!statusListContainer) return;
+        
+        statusListContainer.innerHTML = '';
+        let exploredCount = 0;
+        let isGoalAchieved = false;
+
+        Object.entries(state.ARTIFACT_DATA).forEach(([name, data]) => {
+            if (data.isExplored) {
+                exploredCount++;
+                if (data.goal) isGoalAchieved = true;
+            }
+            const item = document.createElement('div');
+            item.className = 'artifact-status-item';
+            const statusHtml = data.isExplored ? `<span class="achieved-icon"><i class="fas fa-check-circle ml-1"></i> تم الاستكشاف</span>` : `<span class="pending-icon"><i class="fas fa-circle-notch ml-1"></i> لم يُفتح اللغز</span>`;
+            const goalTag = data.goal ? `<span class="text-sm font-bold text-red-500 bg-red-900 px-2 py-1 rounded-full mr-2">هدف رئيسي</span>` : '';
+            item.innerHTML = `<div class="flex items-center"><span class="font-extrabold text-white text-lg">${data.title}</span>${goalTag}</div>${statusHtml}`;
+            statusListContainer.appendChild(item);
         });
 
-        if (state.renderer) {
-            state.renderer.shadowMap.enabled = true;
-            state.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        (modal.querySelector('#explored-count') as HTMLElement).textContent = exploredCount.toString();
+        const goalStatusElement = (modal.querySelector('#goal-status') as HTMLElement);
+        const goalTextElement = (modal.querySelector('#goal-text') as HTMLElement);
+
+        if (isGoalAchieved) {
+            goalTextElement.textContent = 'تم إيجاده بنجاح!';
+            goalStatusElement.classList.replace('text-red-400', 'text-green-400');
+        } else {
+            goalTextElement.textContent = 'لم يتم الوصول إليه بعد';
+            goalStatusElement.classList.replace('text-green-400', 'text-red-400');
         }
-        
-        // Museum geometry
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshStandardMaterial({ color: 0x2e2e2e, side: THREE.DoubleSide }));
-        floor.rotation.x = -Math.PI / 2;
-        floor.receiveShadow = true;
-        state.scene.add(floor);
-        
-        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x4a2a10, side: THREE.DoubleSide });
-        const wall1 = new THREE.Mesh(new THREE.PlaneGeometry(500, 50), wallMaterial);
-        wall1.position.set(0, 25, -250); wall1.receiveShadow = true; state.scene.add(wall1);
-        const wall2 = new THREE.Mesh(new THREE.PlaneGeometry(500, 50), wallMaterial);
-        wall2.position.set(0, 25, 250); wall2.rotation.y = Math.PI; wall2.receiveShadow = true; state.scene.add(wall2);
-        const wall3 = new THREE.Mesh(new THREE.PlaneGeometry(500, 50), wallMaterial);
-        wall3.position.set(250, 25, 0); wall3.rotation.y = -Math.PI / 2; wall3.receiveShadow = true; state.scene.add(wall3);
-        const wall4 = new THREE.Mesh(new THREE.PlaneGeometry(500, 50), wallMaterial);
-        wall4.position.set(-250, 25, 0); wall4.rotation.y = Math.PI / 2; wall4.receiveShadow = true; state.scene.add(wall4);
-        const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(500, 500), new THREE.MeshStandardMaterial({ color: 0x111111, side: THREE.DoubleSide }));
-        ceiling.position.y = 50; ceiling.rotation.x = Math.PI / 2; state.scene.add(ceiling);
-
-        // Exhibits
-        const createExhibit = (position: THREE.Vector3, name: string, color: number, emissiveColor: number) => {
-            let geometry, material;
-            switch (name) {
-                case 'mask': geometry = new THREE.BoxGeometry(8, 20, 8); break;
-                case 'rosetta': geometry = new THREE.BoxGeometry(20, 15, 2); break;
-                case 'canopic': geometry = new THREE.BoxGeometry(15, 12, 15); break;
-                default: return;
-            }
-            material = new THREE.MeshStandardMaterial({ color, metalness: name === 'mask' ? 0.9 : 0.1, roughness: name === 'mask' ? 0.1 : 0.8, emissive: emissiveColor, emissiveIntensity: name === 'mask' ? 0.5 : 0.3 });
-            const artifact = new THREE.Mesh(geometry, material);
-            artifact.position.copy(position);
-            artifact.position.y += geometry.parameters.height / 2;
-            artifact.userData.name = name;
-            artifact.userData.originalEmissive = new THREE.Color(emissiveColor).getHex();
-            artifact.castShadow = true;
-            state.scene!.add(artifact);
-        };
-        
-        createExhibit(new THREE.Vector3(0, 0, -50), 'mask', ARTIFACT_DATA.mask.color, ARTIFACT_DATA.mask.emissiveColor);
-        createExhibit(new THREE.Vector3(-100, 0, 50), 'rosetta', ARTIFACT_DATA.rosetta.color, ARTIFACT_DATA.rosetta.emissiveColor);
-        createExhibit(new THREE.Vector3(100, 0, 50), 'canopic', ARTIFACT_DATA.canopic.color, ARTIFACT_DATA.canopic.emissiveColor);
-
-        animate(performance.now());
-      } catch (error: any) {
-        console.error("Critical error during Three.js initialization:", error);
-        alertMessage("فشل تشغيل المتحف بسبب خطأ حرج: " + error.message, 'error');
-      }
     };
 
-    const onStartClick = () => {
-      if (blockerRef.current) blockerRef.current.classList.add('hidden');
-      state.isBlocked = false;
-      if (state.renderer) state.renderer.domElement.focus();
-      alertMessage('بدأ التجول! استخدم الماوس مع السحب للنظر حولك والـ W A S D للحركة.', 'success');
+    const showReportModal = () => {
+        if(reportModalRef.current) reportModalRef.current.style.display = 'flex';
+        state.isReportVisible = true;
+        state.isBlocked = true;
+        updateReportContent();
     };
 
-    const onMouseDown = (event: MouseEvent) => {
-        if (state.isBlocked) return;
-        event.preventDefault();
-        state.isDragging = true;
-        state.onMouseDownMouseX = event.clientX;
-        state.onMouseDownMouseY = event.clientY;
-        state.onMouseDownLon = state.lon;
-        state.onMouseDownLat = state.lat;
+    const hideReportModal = () => {
+        if(reportModalRef.current) reportModalRef.current.style.display = 'none';
+        state.isReportVisible = false;
+        state.isBlocked = false;
         if (state.renderer) state.renderer.domElement.focus();
     };
-
-    const onMouseMove = (event: MouseEvent) => {
-        if (state.isBlocked || !state.isDragging) return;
-        event.preventDefault();
-        const deltaX = event.clientX - state.onMouseDownMouseX;
-        const deltaY = event.clientY - state.onMouseDownMouseY;
-        state.lon = state.onMouseDownLon - deltaX * 0.1;
-        state.lat = state.onMouseDownLat - deltaY * 0.1;
-        state.lat = Math.max(-85, Math.min(85, state.lat));
-    };
-
-    const onMouseUp = (event: MouseEvent) => {
-        if (state.isBlocked) return;
-        state.isDragging = false;
-        if (state.intersectedObject && ARTIFACT_DATA[state.intersectedObject.userData.name as keyof typeof ARTIFACT_DATA]) {
-            const deltaX = Math.abs(event.clientX - state.onMouseDownMouseX);
-            const deltaY = Math.abs(event.clientY - state.onMouseDownMouseY);
-            if (deltaX < 5 && deltaY < 5) {
-                showInfoPanel(state.intersectedObject.userData.name);
-            }
-        }
-    };
-
-    const onKeyDown = (event: KeyboardEvent) => {
-        if (state.isBlocked) return;
-        state.isMoving = true;
-        switch (event.code) {
-            case 'KeyW': state.moveForward = true; break;
-            case 'KeyA': state.moveLeft = true; break;
-            case 'KeyS': state.moveBackward = true; break;
-            case 'KeyD': state.moveRight = true; break;
-        }
-    };
-
-    const onKeyUp = (event: KeyboardEvent) => {
-        if (state.isBlocked) return;
-        switch (event.code) {
-            case 'KeyW': state.moveForward = false; break;
-            case 'KeyA': state.moveLeft = false; break;
-            case 'KeyS': state.moveBackward = false; break;
-            case 'KeyD': state.moveRight = false; break;
-        }
-        if (!state.moveForward && !state.moveBackward && !state.moveLeft && !state.moveRight) {
-            state.isMoving = false;
-        }
-    };
     
-    const onWindowResize = () => {
-        if (state.camera && state.renderer) {
-            state.camera.aspect = window.innerWidth / window.innerHeight;
-            state.camera.updateProjectionMatrix();
-            state.renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-    };
-    
-    init();
+    return (
+        <div ref={mountRef} className="museum-body">
+            <div ref={infoPanelRef} id="info-panel">
+                <h2 id="artifact-title" className="text-xl font-extrabold mb-2 border-b border-[#D4AF37] pb-1 text-[#FFD700]"></h2>
+                <p id="artifact-description" className="text-sm mb-4 text-gray-200"></p>
+                <div id="puzzle-content" className="bg-gray-800 p-3 rounded-lg text-white mb-4 hidden">
+                    <h3 className="font-bold text-base mb-1 text-yellow-300">لغز اليوم:</h3>
+                    <p id="puzzle-text" className="text-sm"></p>
+                </div>
+                <div className="flex flex-col space-y-3 mt-4">
+                    <button id="speak-description" onClick={speakArtifactDescription} className="info-button bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:opacity-50 disabled:cursor-wait">
+                        <i className="fas fa-volume-up ml-2"></i> استمع للوصف
+                    </button>
+                    <button id="toggle-puzzle" onClick={handleTogglePuzzle} className="info-button bg-yellow-600 text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors shadow-md">
+                        <i className="fas fa-brain ml-2"></i> لغز اليوم
+                    </button>
+                    <button id="close-panel" onClick={hideInfoPanel} className="info-button bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors shadow-md">
+                        <i className="fas fa-times ml-2"></i> إغلاق
+                    </button>
+                </div>
+            </div>
 
-    const startButton = document.getElementById('start-button');
-    if (startButton) startButton.addEventListener('click', onStartClick);
-    
-    const rendererDom = state.renderer?.domElement;
-    if (rendererDom) {
-        rendererDom.addEventListener('mousedown', onMouseDown);
-        rendererDom.addEventListener('mousemove', onMouseMove);
-        rendererDom.addEventListener('mouseup', onMouseUp);
-    }
-    
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
-    window.addEventListener('resize', onWindowResize);
+            <div ref={markersContainerRef} id="markers-container"></div>
 
-    return () => {
-        window.removeEventListener('resize', onWindowResize);
-        document.removeEventListener('keydown', onKeyDown);
-        document.removeEventListener('keyup', onKeyUp);
-        if (rendererDom) {
-            rendererDom.removeEventListener('mousedown', onMouseDown);
-            rendererDom.removeEventListener('mousemove', onMouseMove);
-            rendererDom.removeEventListener('mouseup', onMouseUp);
-            currentMount.removeChild(rendererDom);
-        }
-        if (startButton) startButton.removeEventListener('click', onStartClick);
-    };
-  }, [state, animate, ARTIFACT_DATA, showInfoPanel, hideInfoPanel]);
+            <button id="report-button" onClick={showReportModal} className="py-2 px-4 bg-yellow-600 text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors shadow-lg hidden fixed top-2.5 right-2.5 z-10">
+                <i className="fas fa-graduation-cap ml-2"></i> تقرير الطالب
+            </button>
+            
+            <div id="debug-panel" className="fixed top-10 right-10 z-[100] text-white bg-black/50 p-2 rounded hidden">
+                <div>FPS: <span id="fps-value">0</span></div>
+                <div>Dragging: <span id="dragging-status">No</span></div>
+                <div>Moving: <span id="moving-status">No</span></div>
+                <div>Camera Pos: <span id="cam-pos">0, 0, 0</span></div>
+            </div>
 
-  return (
-    <div ref={mountRef} style={{ width: '100vw', height: '100vh', overflow: 'hidden', margin: 0 }}>
-      {/* Blocker */}
-      <div ref={blockerRef} id="blocker" className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-95 flex flex-col items-center justify-center z-20">
-        <h1 className="font-extrabold text-5xl text-[#FFD700] mb-8" style={{ fontFamily: "'El Messiri', sans-serif" }}>المتحف الفرعوني الافتراضي</h1>
-        <button id="start-button" className="py-4 px-10 bg-yellow-600 text-black font-bold text-2xl rounded-xl hover:bg-yellow-500 transition-colors shadow-2xl transform hover:scale-105" style={{ fontFamily: "'El Messiri', sans-serif" }}>
-          انقر للبدء في التجول
-        </button>
-        <div id="control-instructions" className="text-white mt-12 text-lg p-4 bg-gray-800 bg-opacity-70 rounded-lg">
-          <p className="font-bold text-xl mb-2 text-[#FFD700]">دليل التحكم الجديد (إضاءة درامية):</p>
-          <p><strong>الحركة:</strong> W | A | S | D</p>
-          <p><strong>النظر/الدوران:</strong> <span className="text-yellow-400">اضغط بزر الماوس الأيسر واسحب</span> (تحكم دقيق)</p>
-          <p><strong>التفاعل:</strong> انظر إلى تحفة (حتى تتوهج) ثم انقر عليها (نقرة واحدة)</p>
-        </div>
-      </div>
-      
-      {/* Info Panel */}
-      <div ref={infoPanelRef} id="info-panel">
-        <h2 ref={artifactTitleRef} id="artifact-title" className="text-3xl font-extrabold mb-3 border-b border-[#D4AF37] pb-2 text-[#FFD700]"></h2>
-        <p ref={artifactDescriptionRef} id="artifact-description" className="text-lg mb-4 text-gray-200"></p>
-        <div ref={puzzleContentRef} id="puzzle-content" className="bg-gray-800 p-3 rounded-lg text-white mb-4 hidden">
-          <h3 className="font-bold text-lg mb-1">لغز اليوم:</h3>
-          <p ref={puzzleTextRef} id="puzzle-text" className="text-sm"></p>
-        </div>
-        <div ref={wordContentRef} id="word-content" className="bg-gray-800 p-3 rounded-lg text-white mb-4 hidden">
-            <h3 className="font-bold text-lg mb-1">كلمة فرعونية (Audio Clue):</h3>
-            <p ref={wordTextRef} id="word-text" className="text-sm">انقر على زر التشغيل لسماع الكلمة.</p>
-        </div>
-        <div className="flex flex-col space-y-3 mt-4">
-          <button id="toggle-puzzle" onClick={togglePuzzle} className="py-2 px-4 bg-yellow-600 text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors shadow-md">
-            <i className="fas fa-brain ml-2"></i> لغز اليوم
-          </button>
-          <button ref={wordButtonRef} id="toggle-word" onClick={toggleWordAndPlayAudio} className="py-2 px-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition-colors shadow-md">
-            <span ref={wordButtonContentRef} id="word-button-content"><i className="fas fa-volume-up ml-2"></i> كلمة فرعونية</span>
-          </button>
-          <button id="close-panel" onClick={hideInfoPanel} className="py-2 px-4 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors shadow-md">
-            <i className="fas fa-times ml-2"></i> إغلاق
-          </button>
-        </div>
-      </div>
+            <div ref={reportModalRef} id="academic-report-modal">
+                <div className="report-card">
+                    <h1 className="text-4xl font-extrabold text-[#FFD700] mb-6 border-b pb-3">لوحة التقارير الأكاديمية</h1>
+                    <div className="bg-gray-800 p-4 rounded-lg mb-6 shadow-inner">
+                        <h2 className="text-2xl font-bold text-yellow-400 mb-3">ملخص الإنجاز</h2>
+                        <div id="achievement-summary" className="text-lg">
+                            <p className="mb-2"><i className="fas fa-scroll ml-2 text-yellow-500"></i> عدد التحف التي تم استكشافها: <span id="explored-count" className="font-extrabold text-white">0</span> / 8</p>
+                            <p id="goal-status" className="font-extrabold text-red-400 transition-colors">
+                                <i className="fas fa-flag ml-2"></i> حالة الهدف الرئيسي (حجر رشيد): <span id="goal-text">لم يتم الوصول إليه بعد</span>
+                            </p>
+                        </div>
+                    </div>
+                    <h2 className="text-2xl font-bold text-yellow-400 mt-6 mb-3 border-b pb-2">حالة ألغاز التحف</h2>
+                    <div id="artifact-status-list"></div>
+                    <h2 className="text-2xl font-bold text-yellow-400 mt-8 mb-3 border-b pb-2">مصادر التعلم (Citations)</h2>
+                    <div id="citations-list" className="bg-gray-800 p-4 rounded-lg text-sm space-y-2">
+                        <p className="text-gray-400 italic" id="citation-placeholder">البيانات هنا سيتم تزويدها من الواجهة الخلفية (Back-End) بمجرد ربطها بـ Google Search API. حالياً لا توجد مصادر.</p>
+                    </div>
+                    <button id="close-report-modal" onClick={hideReportModal} className="mt-8 py-3 px-8 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors shadow-lg transform hover:scale-105">
+                        <i className="fas fa-times ml-2"></i> إغلاق التقرير والعودة للمتحف
+                    </button>
+                </div>
+            </div>
 
-      {/* Crosshair */}
-      <div id="crosshair"></div>
-    </div>
-  );
+            <div ref={blockerRef} id="blocker">
+                <h1 className="font-extrabold text-5xl text-[#FFD700] mb-8" style={{ fontFamily: "'El Messiri', sans-serif" }}>المتحف الفرعوني الافتراضي</h1>
+                <button id="start-button" className="py-4 px-10 bg-yellow-600 text-black font-bold text-2xl rounded-xl hover:bg-yellow-500 transition-colors shadow-2xl transform hover:scale-105" style={{ fontFamily: "'El Messiri', sans-serif" }}>
+                    انقر للبدء في التجول
+                </button>
+                <div id="control-instructions" className="text-white mt-12 text-lg p-4 bg-gray-800 bg-opacity-70 rounded-lg">
+                    <p className="font-bold text-xl mb-2 text-[#FFD700]">دليل التحكم والرموز:</p>
+                    <p><strong>الحركة:</strong> W | A | S | D</p>
+                    <p><strong>النظر/الدوران:</strong> <span className="text-yellow-400">اضغط بزر الماوس الأيسر واسحب</span> أو <span className="text-yellow-400">اسحب بالإصبع</span> (ضروري لرؤية جميع التحف)</p>
+                    <p><strong>التفاعل:</strong> ابحث عن الرموز الذهبية وانقر عليها لاستكشاف التحف الثمانية.</p>
+                </div>
+            </div>
+        </div>
+    );
 }

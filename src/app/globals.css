@@ -179,7 +179,7 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-/* 3D Museum Styles */
+/* 3D Museum Styles (Updated) */
 .museum-body {
     margin: 0;
     overflow: hidden;
@@ -189,26 +189,25 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 }
 .museum-body canvas { display: block; }
 
-#info-panel, #blocker {
-    position: absolute;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.95);
-    color: #FFD700;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    transition: all 0.5s ease-in-out;
-    max-width: 400px;
-    text-align: right;
-    border: 2px solid #D4AF37;
-}
 #info-panel {
+    position: fixed; 
+    z-index: 30;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
+    background: rgba(0, 0, 0, 0.95);
+    color: #FFD700;
+    border-radius: 12px; 
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+    padding: 16px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    max-width: 350px;
+    width: 90%; 
+    text-align: right;
+    border: 2px solid #D4AF37; 
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.8);
 }
 #info-panel.visible {
     visibility: visible;
@@ -217,14 +216,21 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
     transform: translate(-50%, -50%) scale(1);
 }
 
+#artifact-title {
+    font-size: 1.25rem; 
+    margin-bottom: 8px;
+}
+#artifact-description, #puzzle-text {
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
 #blocker {
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    max-width: none;
-    border: none;
     background: rgba(0, 0, 0, 0.98);
     display: flex;
     flex-direction: column;
@@ -240,19 +246,99 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
     pointer-events: none;
 }
 
-#crosshair {
+#markers-container {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 8px;
-    height: 8px;
-    background: #FFD700;
-    border-radius: 50%;
-    z-index: 5;
-    box-shadow: 0 0 5px #FFD700;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
-    opacity: 1; 
+    z-index: 8;
+}
+
+.artifact-marker {
+    position: absolute;
+    pointer-events: auto;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    background-color: rgba(255, 215, 0, 0.9); 
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    transform: translate(-50%, -50%) scale(1);
+}
+.artifact-marker:hover {
+    background-color: #FFD700;
+    box-shadow: 0 0 15px #FFD700;
+    transform: translate(-50%, -50%) scale(1.15); 
+}
+.marker-title {
+    position: absolute;
+    top: 40px; 
+    font-size: 0.75rem;
+    color: #FFD700;
+    text-shadow: 0 0 4px #000;
+    white-space: nowrap;
+}
+
+#report-button {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+#academic-report-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.98);
+    z-index: 25;
+    display: none;
+    overflow-y: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.report-card {
+    background-color: #1a1a1a;
+    border: 2px solid #D4AF37;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+    max-width: 900px;
+    width: 90%;
+    padding: 30px;
+    margin: 20px auto;
+    color: #fff;
+    text-align: right;
+    transform: scale(1);
+}
+
+.artifact-status-item {
+    background-color: #2e2e2e;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.achieved-icon { color: #38a169; }
+.pending-icon { color: #f6ad55; }
+
+.info-button {
+    padding: 8px 12px; 
+    font-size: 0.9rem;
 }
 
 .alert-message {
