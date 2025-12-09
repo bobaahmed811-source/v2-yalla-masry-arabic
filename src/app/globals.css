@@ -70,23 +70,6 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 .royal-title { font-family: 'Cairo', sans-serif; font-weight: 900; color: var(--gold-accent); }
 .bg-nile-dark { background-color: #0d284e; }
 
-#language-select {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    background-color: var(--gold-accent);
-    color: var(--dark-granite);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    z-index: 100;
-    appearance: none; 
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
 .dashboard-card {
     background: linear-gradient(145deg, #1c3d6d, #0d284e);
     border: 2px solid var(--gold-accent);
@@ -128,6 +111,12 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
     background-color: #e5b800;
     transform: translateY(-2px);
 }
+.cta-button:disabled {
+    background-color: #7a7a7a;
+    cursor: not-allowed;
+    transform: none;
+}
+
 
 .challenge-item {
     background-color: #0b4e8d;
@@ -173,6 +162,11 @@ body { font-family: 'El Messiri', sans-serif; background-color: #0d284e; }
 #alias-input::placeholder {
     color: #d6b876aa;
 }
+#alias-input:disabled {
+    background-color: #1c2c44;
+    cursor: not-allowed;
+}
+
 .alias-management-card {
     background-color: #17365e;
     border: 1px solid var(--sand-ochre);

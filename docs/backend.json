@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -19,6 +20,10 @@
           "type": "string",
           "description": "Full name of the user."
         },
+        "alias": {
+          "type": "string",
+          "description": "The user's Pharaonic alias."
+        },
         "registrationDate": {
           "type": "string",
           "description": "Date and time the user registered.",
@@ -27,9 +32,7 @@
       },
       "required": [
         "id",
-        "email",
-        "name",
-        "registrationDate"
+        "email"
       ]
     },
     "Course": {
