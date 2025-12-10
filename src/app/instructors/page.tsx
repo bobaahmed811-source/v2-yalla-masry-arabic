@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -55,7 +56,7 @@ const InstructorCard = ({ instructor }: { instructor: Instructor }) => (
           </div>
         )}
       <Button asChild className="w-full cta-button mt-auto">
-        <Link href={`/booking?instructor=${instructor.id}`}>احجز الآن</Link>
+        <Link href={`/booking?instructorId=${instructor.id}`}>احجز الآن</Link>
       </Button>
     </CardContent>
   </Card>
