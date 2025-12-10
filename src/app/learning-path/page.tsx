@@ -4,7 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useUser, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Map, CheckCircle, ArrowLeft, Lock, Loader2 } from 'lucide-react';
 
@@ -21,21 +21,28 @@ interface Lesson {
   order: number;
 }
 
-// Mock user progress - in a real app, this would also come from Firestore
-const userProgress = {
-  completedLessons: ['lesson-101'],
-  currentLesson: 'lesson-102',
-};
+interface Progress {
+  id: string;
+  userId: string;
+  courseId: string;
+  completedLessons: string[];
+  currentLessonId: string;
+}
 
-const getStatusForLesson = (lessonId: string) => {
-  if (userProgress.completedLessons.includes(lessonId)) {
+const getStatusForLesson = (lessonId: string, progress: Progress | undefined) => {
+  if (!progress) return 'locked';
+  if (progress.completedLessons.includes(lessonId)) {
     return 'completed';
   }
-  if (userProgress.currentLesson === lessonId) {
+  if (progress.currentLessonId === lessonId) {
     return 'current';
   }
-  return 'locked';
+  // If the lesson is after the current one, it's locked.
+  // This simple logic assumes linear progression.
+  const isFutureLesson = !progress.completedLessons.includes(lessonId) && lessonId !== progress.currentLessonId;
+  return isFutureLesson ? 'locked' : 'locked'; // Default to locked
 };
+
 
 const getStatusIcon = (status: string) => {
   switch (status) {
@@ -50,7 +57,7 @@ const getStatusIcon = (status: string) => {
   }
 };
 
-const CourseSection = ({ course }: { course: Course }) => {
+const CourseSection = ({ course, progress }: { course: Course, progress: Progress | undefined }) => {
   const firestore = useFirestore();
 
   const lessonsQuery = useMemoFirebase(() => {
@@ -59,6 +66,14 @@ const CourseSection = ({ course }: { course: Course }) => {
   }, [firestore, course.id]);
 
   const { data: lessons, isLoading: isLoadingLessons, error: lessonsError } = useCollection<Lesson>(lessonsQuery);
+  
+  // This logic is a bit complex: We need to determine if a lesson is locked based on the order and progress.
+  const getIsLocked = (lessonOrder: number) => {
+      if(!progress) return true;
+      const currentLesson = lessons?.find(l => l.id === progress.currentLessonId);
+      if(!currentLesson) return true;
+      return lessonOrder > currentLesson.order;
+  };
 
   return (
     <div className="dashboard-card p-6 rounded-2xl">
@@ -72,17 +87,19 @@ const CourseSection = ({ course }: { course: Course }) => {
 
       <div className="space-y-4">
         {lessons && lessons.map((lesson) => {
-          const status = getStatusForLesson(lesson.id);
+          const isLocked = getIsLocked(lesson.order);
+          const status = progress?.completedLessons.includes(lesson.id) ? 'completed' : (progress?.currentLessonId === lesson.id ? 'current' : 'locked');
+          
           return (
             <Link
               key={lesson.id}
-              href={status !== 'locked' ? `/learning-path/${lesson.id}?courseId=${course.id}` : '#'}
+              href={!isLocked ? `/learning-path/${lesson.id}?courseId=${course.id}` : '#'}
               passHref
-              className={`block ${status === 'locked' ? 'pointer-events-none' : ''}`}
+              className={`block ${isLocked ? 'pointer-events-none' : ''}`}
             >
               <div
                 className={`flex items-center justify-between p-4 rounded-lg transition-all duration-300 ${
-                  status === 'locked'
+                  isLocked
                     ? 'bg-nile/50 cursor-not-allowed opacity-60'
                     : 'bg-nile hover:bg-sand-ochre/20 cursor-pointer'
                 }`}
@@ -93,7 +110,7 @@ const CourseSection = ({ course }: { course: Course }) => {
                   </div>
                   <span className="font-bold text-lg">{lesson.title}</span>
                 </div>
-                {status !== 'locked' && (
+                {!isLocked && (
                   <Button asChild className="cta-button text-sm px-5 py-2">
                      <a>{status === 'current' ? 'ابدأ الدرس' : 'مراجعة'}</a>
                   </Button>
@@ -109,6 +126,7 @@ const CourseSection = ({ course }: { course: Course }) => {
 };
 
 export default function LearningPathPage() {
+  const { user } = useUser();
   const firestore = useFirestore();
 
   const coursesQuery = useMemoFirebase(() => {
@@ -116,7 +134,18 @@ export default function LearningPathPage() {
     return collection(firestore, 'courses');
   }, [firestore]);
 
+  // Fetch progress for the current user. A user can be enrolled in multiple courses.
+  const progressQuery = useMemoFirebase(() => {
+      if (!firestore || !user) return null;
+      return query(collection(firestore, `users/${user.uid}/progress`));
+  }, [firestore, user]);
+
   const { data: courses, isLoading: isLoadingCourses, error: coursesError } = useCollection<Course>(coursesQuery);
+  const { data: progresses, isLoading: isLoadingProgress, error: progressError } = useCollection<Progress>(progressQuery);
+
+  const findProgressForCourse = (courseId: string) => {
+      return progresses?.find(p => p.courseId === courseId);
+  }
 
   return (
     <div
@@ -136,17 +165,18 @@ export default function LearningPathPage() {
       </header>
 
       <main className="max-w-4xl mx-auto w-full">
-         {isLoadingCourses && (
+         {(isLoadingCourses || isLoadingProgress) && (
             <div className="flex justify-center items-center h-64">
                 <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
-                <p className="text-center text-lg text-sand-ochre ml-4">جاري تحميل الدورات الدراسية...</p>
+                <p className="text-center text-lg text-sand-ochre ml-4">جاري تحميل مسارك التعليمي...</p>
             </div>
         )}
         {coursesError && <p className="text-center text-lg text-red-400">حدث خطأ أثناء تحميل الدورات: {coursesError.message}</p>}
+        {progressError && <p className="text-center text-lg text-red-400">حدث خطأ أثناء تحميل تقدمك: {progressError.message}</p>}
         
         <div className="space-y-12">
           {courses && courses.map((course) => (
-            <CourseSection key={course.id} course={course} />
+            <CourseSection key={course.id} course={course} progress={findProgressForCourse(course.id)} />
           ))}
         </div>
          {!isLoadingCourses && courses?.length === 0 && (

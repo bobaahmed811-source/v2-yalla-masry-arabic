@@ -1,13 +1,15 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useFirestore, useDoc, useUser, useMemoFirebase } from '@/firebase';
+import { doc, collection, getDocs, query, orderBy, setDoc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import { updateProgress } from '@/lib/course-utils';
 
 // Define the type for the lesson document
 interface Lesson {
@@ -18,10 +20,9 @@ interface Lesson {
     order: number;
 }
 
-// Mock next/prev lesson IDs - in a real app, this would be calculated based on the course's lesson order
-const mockNavigation = {
-    nextLessonId: 'lesson-103',
-    prevLessonId: 'lesson-101',
+interface NavigationState {
+    prevLessonId: string | null;
+    nextLessonId: string | null;
 }
 
 export default function LessonPage() {
@@ -29,9 +30,14 @@ export default function LessonPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const firestore = useFirestore();
+  const { user } = useUser();
+  const { toast } = useToast();
 
   const lessonId = Array.isArray(params.lessonId) ? params.lessonId[0] : params.lessonId;
   const courseId = searchParams.get('courseId');
+
+  const [navigation, setNavigation] = useState<NavigationState>({ prevLessonId: null, nextLessonId: null });
+  const [isNavLoading, setIsNavLoading] = useState(true);
 
   const lessonDocRef = useMemoFirebase(() => {
     if (!firestore || !courseId || !lessonId) return null;
@@ -40,12 +46,55 @@ export default function LessonPage() {
 
   const { data: lesson, isLoading, error } = useDoc<Lesson>(lessonDocRef);
 
-  const handleNavigate = (id: string | null) => {
-    if (id) {
-      // Pass courseId in navigation to maintain context
-      router.push(`/learning-path/${id}?courseId=${courseId}`);
+  useEffect(() => {
+    const fetchCourseLessons = async () => {
+      if (!firestore || !courseId || !lesson) return;
+
+      setIsNavLoading(true);
+      const lessonsQuery = query(collection(firestore, `courses/${courseId}/lessons`), orderBy('order'));
+      const querySnapshot = await getDocs(lessonsQuery);
+      const allLessons = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Lesson));
+      
+      const currentIndex = allLessons.findIndex(l => l.id === lessonId);
+      
+      if (currentIndex !== -1) {
+        setNavigation({
+          prevLessonId: currentIndex > 0 ? allLessons[currentIndex - 1].id : null,
+          nextLessonId: currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1].id : null,
+        });
+      }
+      setIsNavLoading(false);
+    };
+
+    fetchCourseLessons();
+  }, [firestore, courseId, lessonId, lesson]);
+
+
+  const handleNavigate = async (targetLessonId: string | null) => {
+    if (!targetLessonId || !courseId || !user || !firestore) return;
+    
+    // Optimistically navigate
+    router.push(`/learning-path/${targetLessonId}?courseId=${courseId}`);
+
+    // Update progress in the background only when moving to the next lesson
+    if (targetLessonId === navigation.nextLessonId) {
+        try {
+            await updateProgress(firestore, user.uid, courseId, lessonId);
+            toast({
+              title: "الإنجاز الملكي!",
+              description: `أحسنت! لقد أكملت درس "${lesson?.title}"`,
+            });
+        } catch (error) {
+            console.error("Failed to update progress:", error);
+            toast({
+                variant: 'destructive',
+                title: 'خطأ',
+                description: 'فشل تحديث تقدمك. لكن لا تقلق، يمكنك متابعة التعلم.',
+            });
+        }
     }
   };
+
 
   if (isLoading) {
     return (
@@ -120,12 +169,12 @@ export default function LessonPage() {
 
           {/* Navigation */}
           <footer className="mt-10 pt-6 border-t-2 border-sand-ochre/20 flex justify-between items-center">
-            <Button onClick={() => handleNavigate(mockNavigation.prevLessonId)} disabled={!mockNavigation.prevLessonId} className="utility-button">
+            <Button onClick={() => handleNavigate(navigation.prevLessonId)} disabled={!navigation.prevLessonId || isNavLoading} className="utility-button">
               <ArrowRight className="ml-2 h-5 w-5" />
-              الدرس السابق
+              {isNavLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'الدرس السابق'}
             </Button>
-            <Button onClick={() => handleNavigate(mockNavigation.nextLessonId)} disabled={!mockNavigation.nextLessonId} className="cta-button">
-              الدرس التالي
+            <Button onClick={() => handleNavigate(navigation.nextLessonId)} disabled={!navigation.nextLessonId || isNavLoading} className="cta-button">
+              {isNavLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'أكملت الدرس! التالي'}
               <ArrowLeft className="mr-2 h-5 w-5" />
             </Button>
           </footer>

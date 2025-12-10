@@ -5,26 +5,50 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Users, LineChart, Map, Ankh, ArrowLeft } from 'lucide-react';
+import { Users, LineChart, Map, Ankh, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { createInitialProgress } from '@/lib/course-utils';
 
 export default function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
 
   const handleSelectGoal = (goal: string) => {
     setSelectedGoal(goal);
   };
 
-  const handleNextStep = () => {
-    if (selectedGoal) {
-      // In a real app, you'd save the goal to Firestore here.
+  const handleNextStep = async () => {
+    if (selectedGoal && user && firestore) {
+      setIsSubmitting(true);
       toast({
-        title: 'تم تحديد الهدف بنجاح!',
-        description: `هدف رحلتك هو: ${selectedGoal}. مرحباً بك في المملكة!`,
+        title: 'جاري تسجيل هدفك الملكي...',
+        description: 'لحظات ونبدأ رحلتك في المملكة.',
       });
-      router.push('/');
+
+      try {
+        // This is where we create the user's progress document in Firestore.
+        await createInitialProgress(firestore, user.uid);
+        
+        toast({
+          title: 'تم تحديد الهدف وبدء الرحلة!',
+          description: `هدف رحلتك هو: ${selectedGoal}. مرحباً بك في المملكة!`,
+        });
+        router.push('/');
+      } catch (error) {
+        console.error("Error creating initial progress:", error);
+        toast({
+          variant: 'destructive',
+          title: 'حدث خطأ ملكي',
+          description: 'لم نتمكن من تسجيل بداية رحلتك. يرجى المحاولة مرة أخرى.',
+        });
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -128,11 +152,15 @@ export default function GoalsPage() {
           <Button
             id="next-button"
             className="cta-button px-10 py-3 text-lg rounded-full"
-            disabled={!selectedGoal}
+            disabled={!selectedGoal || isSubmitting}
             onClick={handleNextStep}
           >
-            الانتقال إلى لوحة التحكم{' '}
-            <ArrowLeft className="mr-2 h-5 w-5" />
+            {isSubmitting ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+                <ArrowLeft className="mr-2 h-5 w-5" />
+            )}
+            الانتقال إلى لوحة التحكم
           </Button>
         </div>
       </div>
