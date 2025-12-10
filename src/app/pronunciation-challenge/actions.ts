@@ -31,8 +31,8 @@ export async function getSpeechAudio(values: z.infer<typeof InputSchema>) {
       if (attempt === maxRetries) {
         return { error: 'Failed to get audio from the AI after multiple attempts. Please try again.' };
       }
-      // Exponential backoff
-      await new Promise(res => setTimeout(res, Math.pow(2, attempt) * 1000));
+      // Optional: add a small delay before retrying
+      await new Promise(res => setTimeout(res, 1000 * attempt));
     }
   }
   return { error: 'An unknown error occurred.' };
