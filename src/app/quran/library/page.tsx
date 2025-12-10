@@ -14,13 +14,13 @@ const mockBooks = [
 ];
 
 const BookCard = ({ book }: { book: (typeof mockBooks)[0] }) => (
-  <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+  <div className="dashboard-card rounded-xl overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-gold-accent flex flex-col">
     <img src={book.cover} alt={`غلاف كتاب ${book.title}`} className="w-full h-56 object-cover" />
-    <div className="p-5">
-      <p className="text-xs text-teal-300 font-semibold mb-1">{book.category}</p>
-      <h3 className="text-xl font-bold text-white mb-2 truncate">{book.title}</h3>
-      <p className="text-sm text-gray-400 mb-4">المؤلف: {book.author}</p>
-      <button className="w-full py-2 bg-teal-500 text-white font-bold rounded-lg hover:bg-teal-600 transition-colors">
+    <div className="p-5 flex flex-col flex-grow">
+      <p className="text-xs text-sand-ochre font-semibold mb-1">{book.category}</p>
+      <h3 className="text-xl font-bold text-white mb-2 truncate royal-title">{book.title}</h3>
+      <p className="text-sm text-gray-400 mb-4 flex-grow">المؤلف: {book.author}</p>
+      <button className="w-full mt-auto cta-button">
         تصفح الكتاب
       </button>
     </div>
@@ -30,20 +30,19 @@ const BookCard = ({ book }: { book: (typeof mockBooks)[0] }) => (
 export default function LibraryPage() {
   return (
     <div 
-      className="min-h-screen p-4 md:p-8 flex flex-col"
+      className="min-h-screen p-4 md:p-8 flex flex-col bg-nile-dark"
       style={{
         direction: 'rtl',
-        background: 'linear-gradient(to bottom, #011C2A, #023436)',
       }}
     >
       <header className="text-center my-12">
-        <div className="inline-block p-4 bg-white/10 rounded-full shadow-lg mb-4">
+        <div className="inline-block p-4 bg-nile rounded-full shadow-lg mb-4 border-2 border-gold-accent">
           <i className="fas fa-book-atlas text-5xl text-white"></i>
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2" style={{ fontFamily: "'El Messiri', sans-serif" }}>
+        <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2 royal-title">
           المكتبة الإسلامية الرقمية
         </h1>
-        <p className="text-xl text-gray-300">
+        <p className="text-xl text-sand-ochre">
           بحر من العلوم الشرعية بين يديك.
         </p>
       </header>
@@ -58,7 +57,7 @@ export default function LibraryPage() {
       </main>
 
       <footer className="mt-auto pt-12 text-center text-gray-400 text-sm">
-         <Link href="/quran" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center bg-white/10 border-gray-400/50 text-white hover:bg-white/20 mx-auto w-fit">
+         <Link href="/quran" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center mx-auto w-fit">
             <i className="fas fa-arrow-right ml-2"></i>
             <span>العودة إلى واحة القرآن</span>
         </Link>

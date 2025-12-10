@@ -13,10 +13,10 @@ const mockHadiths = [
 ];
 
 const HadithCard = ({ hadith }: { hadith: (typeof mockHadiths)[0] }) => (
-  <div className="bg-white/10 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-gray-200/20 transform transition-all duration-300 hover:border-teal-300/50 hover:shadow-teal-500/10">
-    <p className="text-lg md:text-xl text-white font-serif mb-4 leading-relaxed">"{hadith.text}"</p>
-    <div className="flex justify-between items-center border-t border-gray-500/50 pt-3">
-        <span className="text-xs font-bold text-teal-300 bg-teal-800/50 px-2 py-1 rounded-full">{hadith.topic}</span>
+  <div className="dashboard-card text-white rounded-xl shadow-lg p-6 border-l-4 border-gold-accent transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+    <p className="text-lg md:text-xl font-serif mb-4 leading-relaxed text-sand-ochre">"{hadith.text}"</p>
+    <div className="flex justify-between items-center border-t border-sand-ochre/20 pt-4">
+        <span className="text-xs font-bold text-gold-accent bg-nile-dark/50 px-3 py-1 rounded-full">{hadith.topic}</span>
         <span className="text-sm text-gray-400">{hadith.source}</span>
     </div>
   </div>
@@ -25,20 +25,19 @@ const HadithCard = ({ hadith }: { hadith: (typeof mockHadiths)[0] }) => (
 export default function SunnahPage() {
   return (
     <div 
-      className="min-h-screen p-4 md:p-8 flex flex-col"
+      className="min-h-screen p-4 md:p-8 flex flex-col bg-nile-dark"
       style={{
         direction: 'rtl',
-        background: 'linear-gradient(to bottom, #011C2A, #023436)',
       }}
     >
       <header className="text-center my-12">
-        <div className="inline-block p-4 bg-white/10 rounded-full shadow-lg mb-4">
+        <div className="inline-block p-4 bg-nile rounded-full shadow-lg mb-4 border-2 border-gold-accent">
           <i className="fas fa-book-open text-5xl text-white"></i>
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2" style={{ fontFamily: "'El Messiri', sans-serif" }}>
+        <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2 royal-title">
           روضة السنة النبوية
         </h1>
-        <p className="text-xl text-gray-300">
+        <p className="text-xl text-sand-ochre">
           قطوف من كلام سيد المرسلين صلى الله عليه وسلم.
         </p>
       </header>
@@ -52,7 +51,7 @@ export default function SunnahPage() {
       </main>
 
        <footer className="mt-auto pt-12 text-center text-gray-400 text-sm">
-         <Link href="/quran" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center bg-white/10 border-gray-400/50 text-white hover:bg-white/20 mx-auto w-fit">
+         <Link href="/quran" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center mx-auto w-fit">
             <i className="fas fa-arrow-right ml-2"></i>
             <span>العودة إلى واحة القرآن</span>
         </Link>
