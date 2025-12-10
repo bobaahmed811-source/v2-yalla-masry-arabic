@@ -178,7 +178,7 @@ export default function PronunciationChallengePage() {
       <div className="relative flex items-center justify-center min-h-screen bg-nile-dark p-4 overflow-hidden">
         <div 
             className="absolute inset-0 bg-cover bg-center z-0 opacity-20"
-            style={{backgroundImage: "url('https://picsum.photos/seed/hatshepsut-challenge/1200/800')", filter: 'blur(4px)'}}
+            style={{backgroundImage: "url('https://picsum.photos/seed/hatshepsut-challenge/1200/800')"}}
             data-ai-hint="pharaoh temple"
         ></div>
 
