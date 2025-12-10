@@ -27,7 +27,7 @@ export default function SignupPage() {
     e.preventDefault();
     // We can extend this later to also save the name to Firestore
     initiateEmailSignUp(auth, email, password);
-    router.push('/');
+    router.push('/goals');
   };
 
   return (
