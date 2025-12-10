@@ -57,21 +57,20 @@ export function initiateEmailSignIn(authInstance: Auth, email: string, password:
 
 
 /** Update user profile (non-blocking). */
-export function updateProfileNonBlocking(user: User, profileData: { displayName?: string; photoURL?: string; }): void {
-    updateProfile(user, profileData).catch(error => {
+export function updateProfileNonBlocking(user: User, profileData: { displayName?: string; photoURL?: string; }, callback?: (result: AuthResult) => void): void {
+    updateProfile(user, profileData)
+    .then(() => {
+        if (callback) {
+            callback({ success: true, user });
+        }
+    })
+    .catch(error => {
         console.error("Error updating profile:", error);
+        if (callback) {
+            callback({ success: false, error: error });
+        }
     });
 }
 
 /** Initiate sign-out (non-blocking). */
-export function initiateSignOut(authInstance: Auth, callback?: () => void): void {
-  signOut(authInstance)
-    .then(() => {
-        if (callback) {
-            callback();
-        }
-    })
-    .catch(error => {
-        console.error("Error signing out:", error);
-    });
-}
+export function initiateSignOut(authInstance: Auth, callback?: () => void): void

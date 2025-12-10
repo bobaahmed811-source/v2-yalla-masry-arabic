@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -53,14 +52,34 @@ export default function SignupPage() {
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!auth) {
+        toast({
+            variant: "destructive",
+            title: "خطأ في التهيئة",
+            description: "خدمة المصادقة غير متاحة. يرجى المحاولة لاحقًا.",
+        });
+        return;
+    }
+
     initiateEmailSignUp(auth, email, password, (result) => {
         if (result.success && result.user) {
-            updateProfileNonBlocking(result.user, { displayName: name });
-            toast({
-                title: "تم إنشاء الحساب بنجاح!",
-                description: "سيتم توجيهك الآن لتحديد أهدافك."
+            // This is the crucial step: update the profile *after* user creation.
+            updateProfileNonBlocking(result.user, { displayName: name }, (profileResult) => {
+                if(profileResult.success) {
+                    toast({
+                        title: "تم إنشاء الحساب بنجاح!",
+                        description: "سيتم توجيهك الآن لتحديد أهدافك."
+                    });
+                    router.push('/goals');
+                } else {
+                     toast({
+                        variant: "destructive",
+                        title: "نجح إنشاء الحساب، ولكن فشل تحديث الاسم",
+                        description: profileResult.error?.message || 'يرجى تحديث اسمك من صفحة الملف الشخصي لاحقًا.'
+                    });
+                    router.push('/'); // Redirect even if name update fails
+                }
             });
-            router.push('/goals');
         } else if (result.error) {
             let description = "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.";
             switch(result.error.code) {
