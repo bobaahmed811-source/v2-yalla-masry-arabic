@@ -31,7 +31,7 @@ export default function RoyalDashboard() {
               setAliasInput(userData.alias);
             } else if (user) {
               // If no alias, set initial one in db non-blockingly
-              const initialData = { alias: pharaonicAlias, id: user.uid, email: user.email };
+              const initialData = { alias: pharaonicAlias, id: user.uid, email: user.email, name: user.displayName || 'Anonymous' };
               setDocumentNonBlocking(userDocRef, initialData, { merge: true });
             }
         } catch (error) {
@@ -64,6 +64,7 @@ export default function RoyalDashboard() {
           museum_button: "المتحف الافتراضي",
           store_button: "متجر البرديات",
           tutor_button: "المعلم الخصوصي",
+          word_scramble_button: "تحدي الكلمات",
           logout_button: "تسجيل الخروج",
           login_button: "تسجيل الدخول"
       },
@@ -81,6 +82,7 @@ export default function RoyalDashboard() {
           museum_button: "Virtual Museum",
           store_button: "Papyri Store",
           tutor_button: "AI Tutor",
+          word_scramble_button: "Word Scramble",
           logout_button: "Log Out",
           login_button: "Log In",
       },
@@ -104,12 +106,11 @@ export default function RoyalDashboard() {
         if(querySelector('#update-alias-button')) querySelector('#update-alias-button').textContent = texts.alias_button;
         if(querySelector('#current-user-rank')) querySelector('#current-user-rank').textContent = pharaonicAlias;
         
-        if(querySelector('#library-button-text')) querySelector('#library-button-text').textContent = texts.library_button;
-        if(querySelector('#review-button-text')) querySelector('#review-button-text').textContent = texts.review_button;
         if(querySelector('#comic-studio-button-text')) querySelector('#comic-studio-button-text').textContent = texts.comic_studio_button;
         if(querySelector('#museum-button-text')) querySelector('#museum-button-text').textContent = texts.museum_button;
         if(querySelector('#store-button-text')) querySelector('#store-button-text').textContent = texts.store_button;
         if(querySelector('#tutor-button-text')) querySelector('#tutor-button-text').textContent = texts.tutor_button;
+        if(querySelector('#word-scramble-button-text')) querySelector('#word-scramble-button-text').textContent = texts.word_scramble_button;
 
         if (user) {
           if (querySelector('#auth-link-text')) querySelector('#auth-link-text').textContent = texts.logout_button;
@@ -206,7 +207,7 @@ export default function RoyalDashboard() {
                 </button>
             </div>
 
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
                 <Link href="/comic-studio" id="comic-studio-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-amber-400 text-amber-400">
                     <i className="fas fa-paint-brush text-xl ml-3"></i>
                     <span id="comic-studio-button-text">استوديو القصص المصورة</span>
@@ -222,6 +223,10 @@ export default function RoyalDashboard() {
                 <Link href="/tutor" id="tutor-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-rose-400 text-rose-400">
                     <i className="fas fa-user-graduate text-xl ml-3"></i>
                     <span id="tutor-button-text">المعلم الخصوصي</span>
+                </Link>
+                <Link href="/word-scramble" id="word-scramble-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-indigo-400 text-indigo-400">
+                    <i className="fas fa-random text-xl ml-3"></i>
+                    <span id="word-scramble-button-text">تحدي الكلمات</span>
                 </Link>
             </div>
 
@@ -329,8 +334,3 @@ export default function RoyalDashboard() {
     </div>
   )
 }
-
-    
-    
-
-    
