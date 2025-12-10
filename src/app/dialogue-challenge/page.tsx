@@ -55,41 +55,6 @@ const storyScenario = [
   },
 ];
 
-const mockEvaluateDialogue = async (input: { userAnswer: string, choiceType: 'correct' | 'wrong' | 'good' | 'excellent' }) => {
-    let score = 0;
-    let feedback = '';
-    let isPositive = false;
-
-    switch (input.choiceType) {
-        case 'excellent':
-        score = 75;
-        feedback = "أحسنت! الإجابة كانت كاملة ومهذبة جداً باستخدام 'شكراً جزيلاً'. لقد استخدمت لغة السوق اليومية بطلاقة. حصلت على مكافأة جودة التعبير!";
-        isPositive = true;
-        break;
-        case 'good':
-        score = 50;
-        feedback = "إجابة صحيحة ومفهومة. لكن تذكّر أن استخدام كلمة 'شكراً' و 'اتفضل' يزيد من طلاقتك الاجتماعية في مصر. حصلت على نقاط الإجابة الصحيحة.";
-        isPositive = true;
-        break;
-        case 'correct':
-        score = 50;
-        feedback = "إجابة صحيحة. لقد طلبت ما تريده بوضوح ولباقة باستخدام 'لو سمحت'.";
-        isPositive = true;
-        break;
-        case 'wrong':
-        score = -20;
-        feedback = 'توقفي! هذا السؤال غير مناسب في سياق شراء الطماطم. راجعِ مفردات الحوار في المتجر.';
-        isPositive = false;
-        break;
-        default:
-        score = 0;
-        feedback = 'حدث خطأ في تقييم الإجابة.';
-        isPositive = false;
-  }
-  return { success: { score, feedback, isPositive } };
-}
-
-
 // === Sub-components ===
 
 const ScoreHeader = ({ alias, nilePoints }: { alias: string, nilePoints: number }) => (
@@ -179,8 +144,7 @@ export default function DialogueChallengePage() {
     setIsEvaluating(true);
     setFeedback(null);
   
-    // Use the mock evaluation function directly since Genkit is disabled
-    const result = await mockEvaluateDialogue({ userAnswer: userText, choiceType: choice.type });
+    const result = await getDialogueEvaluation({ userAnswer: userText, choiceType: choice.type });
   
     setIsEvaluating(false);
 
@@ -204,14 +168,14 @@ export default function DialogueChallengePage() {
                 setIsChallengeComplete(true);
             }
         }
-      }, 3000); // Wait 3 seconds to let user read feedback
+      }, 4000); // Wait 4 seconds to let user read feedback
     } else {
-        // Fallback in case mock function fails or for future real implementation
         toast({
             variant: 'destructive',
-            title: 'الميزة معطلة',
-            description: 'ميزة تقييم الحوار بالذكاء الاصطناعي معطلة مؤقتاً.',
+            title: 'خطأ في التقييم',
+            description: result.error || 'فشل الاتصال بالمعلم الذكي. سنكمل بدون تقييم.',
         });
+        // Proceed without evaluation on error
         setTimeout(() => {
             const nextStep = storyScenario.find(s => s.id === choice.nextId);
             if (nextStep) {

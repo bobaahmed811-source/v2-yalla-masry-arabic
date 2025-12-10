@@ -5,19 +5,20 @@
  */
 
 import { z } from 'zod';
+import { getDialogueEvaluationFlow, DialogueEvaluationInputSchema } from '@/ai/flows/dialogue-evaluation-flow';
 
-const InputSchema = z.object({
-  userAnswer: z.string(),
-  choiceType: z.enum(['correct', 'wrong', 'good', 'excellent']),
-});
 
 /**
  * Server action to get an evaluation for a user's dialogue choice.
  * @param values The user's answer and the type of choice made.
- * @returns A promise that resolves to an error as the feature is disabled.
+ * @returns A promise that resolves to the AI's evaluation.
  */
-export async function getDialogueEvaluation(values: z.infer<typeof InputSchema>) {
-  console.log("getDialogueEvaluation called with:", values);
-  // The Genkit functionality was removed due to dependency conflicts.
-  return { error: 'Failed to get evaluation from the AI. This feature is temporarily disabled.' };
+export async function getDialogueEvaluation(values: z.infer<typeof DialogueEvaluationInputSchema>) {
+  try {
+    const result = await getDialogueEvaluationFlow(values);
+    return { success: result };
+  } catch (e: any) {
+    console.error("Error in getDialogueEvaluation action:", e);
+    return { error: "Failed to get evaluation from the AI. " + (e.message || "Please try again later.") };
+  }
 }
