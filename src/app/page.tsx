@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,7 +11,9 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useUser, useAuth } from '@/firebase';
+import { updateProfileNonBlocking } from '@/firebase/non-blocking-login';
 import {
   ArrowRight,
   BookOpen,
@@ -34,6 +36,9 @@ import {
   Landmark,
   BookMarked,
   ShieldQuestion,
+  Edit,
+  Save,
+  Loader2,
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
@@ -67,7 +72,7 @@ const ChallengeLink = ({
   icon,
 }: {
   href: string;
-  title: string;
+  title:string;
   description: string;
   icon: React.ReactNode;
 }) => (
@@ -88,12 +93,66 @@ const ChallengeLink = ({
   </Link>
 );
 
+const AliasManagement = ({ user, toast }: { user: any, toast: any }) => {
+    const [alias, setAlias] = useState(user.displayName || '');
+    const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    const handleSaveAlias = () => {
+        if (!alias.trim()) {
+            toast({ variant: 'destructive', title: 'خطأ', description: 'لا يمكن ترك الاسم المستعار فارغاً.' });
+            return;
+        }
+        setIsSubmitting(true);
+        updateProfileNonBlocking(user, { displayName: alias }, (result) => {
+            if (result.success) {
+                toast({ title: 'تم التحديث بنجاح!', description: 'تم تغيير اسمك المستعار في جميع أنحاء المملكة.' });
+                setIsEditing(false);
+            } else {
+                toast({ variant: 'destructive', title: 'فشل التحديث', description: result.error?.message || 'حدث خطأ غير متوقع.' });
+            }
+            setIsSubmitting(false);
+        });
+    };
+
+    return (
+        <Card className="alias-management-card p-4">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <Crown className="w-6 h-6 text-gold-accent"/>
+                    {isEditing ? (
+                        <Input
+                            id="alias-input"
+                            value={alias}
+                            onChange={(e) => setAlias(e.target.value)}
+                            className="bg-nile-dark border-sand-ochre text-white"
+                            disabled={isSubmitting}
+                        />
+                    ) : (
+                        <span className="text-lg font-bold text-white user-alias">{user.displayName || 'زائر ملكي'}</span>
+                    )}
+                </div>
+                {isEditing ? (
+                    <Button onClick={handleSaveAlias} size="sm" className="cta-button" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : <Save className="w-4 h-4"/>}
+                        <span className="hidden sm:inline ml-2">حفظ</span>
+                    </Button>
+                ) : (
+                    <Button onClick={() => setIsEditing(true)} size="sm" variant="ghost" className="text-sand-ochre hover:text-gold-accent">
+                        <Edit className="w-4 h-4" />
+                        <span className="hidden sm:inline ml-2">تغيير</span>
+                    </Button>
+                )}
+            </div>
+        </Card>
+    );
+}
+
 export default function HomePage() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const { toast } = useToast();
 
-  const alias = user?.displayName || 'الزائر الملكي';
   const nilePoints = 1250; // Mock data
 
   const handleSignOut = () => {
@@ -114,8 +173,9 @@ export default function HomePage() {
     >
       <div className="max-w-7xl mx-auto">
         {isUserLoading ? (
-          <div className="text-center p-10">
-            <p className="text-xl text-sand-ochre">
+          <div className="text-center p-10 flex justify-center items-center h-[80vh]">
+            <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
+            <p className="text-xl text-sand-ochre mr-4">
               جاري استدعاء السجلات الملكية...
             </p>
           </div>
@@ -125,10 +185,10 @@ export default function HomePage() {
             <header className="mb-10 flex flex-wrap gap-4 justify-between items-center">
               <div>
                 <h1 className="text-4xl md:text-5xl font-black royal-title mb-2">
-                  مرحباً بعودتكِ يا <span className="text-white">{alias}</span>!
+                  ديوان الإنجازات الملكية
                 </h1>
                 <p className="text-xl text-sand-ochre">
-                  لوحة التحكم الملكية الخاصة بكِ في أكاديمية يلا مصري.
+                  مرحباً بعودتكِ يا <span className="font-bold text-white">{user.displayName || 'أيتها الملكة'}</span>!
                 </p>
               </div>
               <div className="flex gap-2">
@@ -150,23 +210,39 @@ export default function HomePage() {
             </header>
 
             <main>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <StatCard
-                  icon={<Gem className="h-6 w-6 text-sand-ochre" />}
-                  value={`${nilePoints}`}
-                  label="نقاط النيل"
-                />
-                <StatCard
-                  icon={<BookOpen className="h-6 w-6 text-sand-ochre" />}
-                  value="3"
-                  label="الدروس المكتملة"
-                />
-                <StatCard
-                  icon={<Crown className="h-6 w-6 text-sand-ochre" />}
-                  value="تلميذ النيل"
-                  label="المستوى الحالي"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  <div className="lg:col-span-2">
+                     <AliasManagement user={user} toast={toast} />
+                  </div>
+                  <StatCard
+                    icon={<Gem className="h-6 w-6 text-sand-ochre" />}
+                    value={`${nilePoints}`}
+                    label="نقاط النيل"
+                  />
+                  <StatCard
+                    icon={<BookOpen className="h-6 w-6 text-sand-ochre" />}
+                    value="3 من 20"
+                    label="الدروس المكتملة"
+                  />
               </div>
+
+               {/* Progress and Achievements Section */}
+                <Card className="dashboard-card mb-8">
+                    <CardHeader>
+                        <CardTitle className="royal-title text-2xl">تقدمكِ في المملكة</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sand-ochre mb-4">أنتِ حالياً في مستوى: <span className="font-bold text-white">تلميذ النيل</span></p>
+                        <div className="progress-bar-royal mb-4">
+                           <div className="progress-fill-royal" style={{ width: '15%' }}></div>
+                        </div>
+                        <div className="flex justify-between text-xs text-sand-ochre">
+                            <span>المستوى الحالي</span>
+                            <span>المستوى التالي: كاتب البردي</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
 
               {/* Main Content Sections */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

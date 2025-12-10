@@ -21,7 +21,7 @@ const storyScenario = [
   },
   {
     id: 2,
-    speaker: "تحتمس القوي",
+    speaker: "المستخدم", // Placeholder, will be replaced by user's alias
     text: "صباح النور. عايز كيلو طماطم لو سمحت.",
     isUser: true,
     options: [
@@ -38,7 +38,7 @@ const storyScenario = [
   },
   {
     id: 4,
-    speaker: "تحتمس القوي",
+    speaker: "المستخدم", // Placeholder
     text: "تمام، شكراً جزيلاً. اتفضل الحساب.",
     isUser: true,
     options: [
@@ -104,8 +104,8 @@ DialogueBubble.displayName = "DialogueBubble";
 export default function DialogueChallengePage() {
   const { user, isUserLoading } = useUser();
   const { toast } = useToast();
-  const [alias, setAlias] = useState("تحتمس القوي"); // Default alias
-  const [nilePoints, setNilePoints] = useState(1200);
+  
+  const [nilePoints, setNilePoints] = useState(1250); // Mock points
 
   const [dialogue, setDialogue] = useState<any[]>([]);
   const [currentStepId, setCurrentStepId] = useState(1);
@@ -113,6 +113,8 @@ export default function DialogueChallengePage() {
   const [feedback, setFeedback] = useState<{ message: string; score: number; isPositive: boolean } | null>(null);
   const [isChallengeComplete, setIsChallengeComplete] = useState(false);
   const dialogueEndRef = useRef<HTMLDivElement>(null);
+
+  const alias = user?.displayName || "الزائر الملكي";
 
   const scrollToBottom = () => {
     dialogueEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -124,21 +126,19 @@ export default function DialogueChallengePage() {
 
 
   useEffect(() => {
-    // In a real app, fetch user alias and points from Firestore
-    if (user?.displayName) {
-        setAlias(user.displayName);
-    }
     const firstStep = storyScenario.find(s => s.id === 1);
     if (firstStep) {
       setDialogue([firstStep]);
     }
-  }, [user]);
+  }, []);
 
   const handleUserChoice = useCallback(async (choice: any) => {
     if (isEvaluating || isChallengeComplete) return;
   
     const userText = choice.text.substring(choice.text.indexOf(':') + 2);
-    const userDialogueStep = { ...storyScenario.find(s => s.id === currentStepId), text: userText };
+    // Find the step in the scenario and dynamically set the speaker to the user's alias
+    const userDialogueStepTemplate = storyScenario.find(s => s.id === currentStepId);
+    const userDialogueStep = { ...userDialogueStepTemplate, text: userText, speaker: alias };
     setDialogue(prev => [...prev, userDialogueStep]);
   
     setIsEvaluating(true);
