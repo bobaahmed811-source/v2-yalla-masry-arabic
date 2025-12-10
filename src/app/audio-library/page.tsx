@@ -67,17 +67,18 @@ const PhraseRow = ({ phrase }: { phrase: { id: string, text: string, translation
     const result = await getSpeechAudio({ text: phrase.text });
     setIsLoading(false);
 
-    if (result.success) {
-      setAudioUrl(result.success);
-      const audio = new Audio(result.success);
+    if ('success' in result && result.success) {
+      setAudioUrl(result.success as string);
+      const audio = new Audio(result.success as string);
       audio.play();
       toast({ title: '🎵 تم التشغيل', description: `جاري تشغيل: "${phrase.text}"` });
     } else {
-      setError(result.error || 'فشل توليد الصوت.');
+      const errorMessage = (result as {error: string}).error || 'فشل توليد الصوت.';
+      setError(errorMessage);
       toast({
         variant: 'destructive',
         title: '❌ خطأ',
-        description: result.error || 'لم نتمكن من توليد المقطع الصوتي.',
+        description: errorMessage,
       });
     }
   };

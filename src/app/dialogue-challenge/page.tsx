@@ -89,7 +89,8 @@ const mockEvaluateDialogue = async (input: { userAnswer: string, choiceType: 'co
       nextId = 2;
   }
 
-  return { success: { score, feedback, nextId } };
+  // Simulate the fact that the Genkit feature is disabled
+  return { error: "Failed to get evaluation from the AI. This feature is temporarily disabled." };
 }
 
 
@@ -187,63 +188,25 @@ export default function DialogueChallengePage() {
     // 3. Get evaluation from mock function
     const result = await mockEvaluateDialogue({ userAnswer: userText, choiceType: choice.type });
   
-    if (result.success) {
-      const evaluation = result.success;
-      
-      // Use setTimeout to create a cinematic delay before showing feedback
-      setTimeout(() => {
-        setIsEvaluating(false);
-        setNilePoints(prev => prev + evaluation.score);
-        setFeedback({
-          message: evaluation.feedback,
-          score: evaluation.score,
-          isPositive: evaluation.score >= 0,
-        });
-
-        const nextStepId = evaluation.nextId;
-
-        // If the choice was wrong and we need to repeat, don't proceed
-        if (nextStepId === currentStepId) {
-          // Re-add the question options for the user to try again
-          setTimeout(() => {
-            const currentQuestionStep = storyScenario.find(s => s.id === currentStepId);
-            setDialogue(prev => [...prev, currentQuestionStep]);
-            setFeedback(null);
-          }, 2000);
-          return;
-        }
-
-        const nextStep = storyScenario.find(s => s.id === nextStepId);
-        
-        // Another delay before the next character speaks
-        setTimeout(() => {
-          if (nextStep) {
-            setDialogue(prev => [...prev, nextStep]);
-            setCurrentStepId(nextStepId);
-
-            // Check if this is a final statement before the end
-            if (!nextStep.isUser && !nextStep.options) {
-                const finalStep = storyScenario.find(s => s.id === nextStep.id + 1);
-                if (finalStep && !finalStep.isUser && !finalStep.options) {
-                    setTimeout(() => {
-                        setDialogue(prev => [...prev, finalStep]);
-                        setIsChallengeComplete(true);
-                    }, 1500);
-                } else if (!finalStep) {
-                   setIsChallengeComplete(true);
-                }
-            }
-          } else {
+    setIsEvaluating(false);
+    toast({
+        variant: 'destructive',
+        title: 'الميزة معطلة',
+        description: 'ميزة تقييم الحوار بالذكاء الاصطناعي معطلة مؤقتاً.',
+    });
+    // Immediately show the next step without AI feedback logic
+     setTimeout(() => {
+        const nextStep = storyScenario.find(s => s.id === choice.nextId);
+        if (nextStep) {
+             setDialogue(prev => [...prev, nextStep]);
+             setCurrentStepId(choice.nextId);
+        } else {
              setIsChallengeComplete(true);
-          }
-        }, 1500);
-      }, 1000); 
+        }
+     }, 1000);
 
-    } else {
-      setIsEvaluating(false);
-      setFeedback({ message: 'حدث خطأ في التقييم. حاول مرة أخرى.', score: 0, isPositive: false });
-    }
-  }, [alias, currentStepId, isEvaluating, isChallengeComplete]);
+
+  }, [alias, currentStepId, isEvaluating, isChallengeComplete, toast]);
   
   
   if (isUserLoading) {

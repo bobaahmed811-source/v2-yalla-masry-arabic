@@ -19,6 +19,8 @@ import {
   LogIn,
   UserPlus,
   LogOut,
+  MessageCircleQuestion,
+  GraduationCap,
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
@@ -116,14 +118,22 @@ export default function HomePage() {
                   لوحة التحكم الملكية الخاصة بكِ في أكاديمية يلا مصري.
                 </p>
               </div>
-              <Button
-                onClick={handleSignOut}
-                variant="outline"
-                className="utility-button"
-              >
-                <LogOut className="ml-2 h-4 w-4" />
-                تسجيل الخروج
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSignOut}
+                  variant="outline"
+                  className="utility-button"
+                >
+                  <LogOut className="ml-2 h-4 w-4" />
+                  تسجيل الخروج
+                </Button>
+                <Link href="/admin" passHref>
+                   <Button variant="outline" className="utility-button">
+                      <Crown className="ml-2 h-4 w-4" />
+                      الإدارة
+                   </Button>
+                </Link>
+              </div>
             </header>
 
             <main>
@@ -164,12 +174,6 @@ export default function HomePage() {
                       icon={<i className="fas fa-microphone-alt"></i>}
                     />
                     <ChallengeLink
-                      href="/word-scramble"
-                      title="ألغاز الكلمات"
-                      description="أعيدي ترتيب الكلمات لتكوين جمل صحيحة."
-                      icon={<i className="fas fa-random"></i>}
-                    />
-                    <ChallengeLink
                       href="/dialogue-challenge"
                       title="حوارات السوق"
                       description="تحدي محاكاة المواقف اليومية."
@@ -180,6 +184,12 @@ export default function HomePage() {
                       title="استوديو القصص المصورة"
                       description="اصنعي قصصاً بصوتكِ."
                       icon={<i className="fas fa-paint-brush"></i>}
+                    />
+                    <ChallengeLink
+                      href="/word-scramble"
+                      title="ألغاز الكلمات"
+                      description="أعيدي ترتيب الكلمات لتكوين جمل صحيحة."
+                      icon={<i className="fas fa-random"></i>}
                     />
                   </CardContent>
                 </Card>
@@ -206,17 +216,60 @@ export default function HomePage() {
                       description="استمعي للنطق الصحيح للعبارات."
                       icon={<i className="fas fa-volume-up"></i>}
                     />
+                     <ChallengeLink
+                      href="/tutor"
+                      title="المعلم الخصوصي الذكي"
+                      description="احصلي على إجابات فورية لأسئلتكِ."
+                      icon={<GraduationCap />}
+                    />
                     <ChallengeLink
+                      href="/community-chat"
+                      title="ساحة الحوار الكبرى"
+                      description="تواصلي مع بقية الطالبات."
+                      icon={<MessageCircleQuestion />}
+                    />
+                  </CardContent>
+                </Card>
+
+                 <Card className="dashboard-card lg:col-span-2">
+                  <CardHeader>
+                    <CardTitle className="royal-title text-2xl">
+                      استكشاف المملكة
+                    </CardTitle>
+                    <CardDescription className="text-sand-ochre">
+                      موارد إضافية لتجربة تعليمية فريدة.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <ChallengeLink
                       href="/instructors"
                       title="معلمات المملكة"
-                      description="تصفحي ملفات المعلمات المعتمدات."
+                      description="تصفحي ملفات المعلمات."
                       icon={<i className="fas fa-chalkboard-teacher"></i>}
                     />
                      <ChallengeLink
                       href="/booking"
-                      title="حجز الدروس الخصوصية"
-                      description="احجزي موعدكِ القادم مع معلمة."
+                      title="حجز الدروس"
+                      description="احجزي موعدكِ القادم."
                       icon={<i className="fas fa-calendar-check"></i>}
+                    />
+                     <ChallengeLink
+                      href="/store"
+                      title="متجر الكنوز"
+                      description="منتجات رقمية وهدايا."
+                      icon={<i className="fas fa-store"></i>}
+                    />
+                     <ChallengeLink
+                      href="/museum"
+                      title="المتحف الافتراضي"
+                      description="تجربة تفاعلية ثلاثية الأبعاد."
+                      icon={<i className="fas fa-landmark"></i>}
+                    />
+                     <ChallengeLink
+                      href="/quran"
+                      title="واحة القرآن"
+                      description="قسم خاص بالعلوم الشرعية."
+                      icon={<i className="fas fa-quran"></i>}
                     />
                   </CardContent>
                 </Card>

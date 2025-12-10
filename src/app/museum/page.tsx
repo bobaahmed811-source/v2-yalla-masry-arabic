@@ -472,12 +472,12 @@ export default function MuseumPage() {
 
         const result = await getSpeechAudio({ text: textToSpeak });
 
-        if (result.success) {
-            const audio = new Audio(result.success);
+        if ('success' in result && result.success) {
+            const audio = new Audio(result.success as string);
             audio.play().catch(e => console.error("Audio play failed", e));
             alertMessage('تم تشغيل وصف التحفة بنجاح.', 'success');
         } else {
-            alertMessage(result.error || 'فشل في توليد الصوت.', 'error');
+            alertMessage((result as { error: string }).error || 'فشل في توليد الصوت.', 'error');
         }
         
         (speakButton as HTMLButtonElement).disabled = false;

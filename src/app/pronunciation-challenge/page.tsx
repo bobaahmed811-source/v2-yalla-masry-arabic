@@ -104,18 +104,19 @@ export default function PronunciationChallengePage() {
 
     const result = await getSpeechAudio({ text: challengePhrase });
 
-    if (result.success) {
-      setMentorAudioUrl(result.success);
+    if ('success' in result && result.success) {
+      setMentorAudioUrl(result.success as string);
       toast({
         title: `✅ ${texts.audio_ready}`,
         description: texts.audio_ready_desc,
       });
     } else {
-      setError(result.error || texts.error);
+      const errorMessage = (result as { error: string }).error || texts.error;
+      setError(errorMessage);
       toast({
         variant: 'destructive',
         title: `❌ ${texts.audio_error_title}`,
-        description: result.error || texts.audio_error_desc,
+        description: errorMessage,
       });
     }
     setIsLoading(false);
