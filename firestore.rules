@@ -174,7 +174,7 @@ service cloud.firestore {
      * @description Student reviews for a specific instructor.
      * @path /instructors/{instructorId}/reviews/{reviewId}
      * @allow (get, list) Anyone can read reviews.
-     * @allow (create) Any signed-in user can create a review for an instructor.
+     * @allow (create) Any signed-in user can create a review for an instructor, but only for themselves.
      * @deny (update, delete) No one can update or delete reviews to maintain integrity.
      */
     match /instructors/{instructorId}/reviews/{reviewId} {

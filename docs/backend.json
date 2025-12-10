@@ -282,6 +282,31 @@
           "type": "string",
           "description": "Email address of the instructor.",
           "format": "email"
+        },
+        "character": {
+          "type": "string",
+          "description": "An emoji or character symbol representing the instructor."
+        },
+        "subject": {
+          "type": "string",
+          "description": "The main subject the instructor teaches."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Active", "Inactive"],
+          "description": "The current status of the instructor."
+        },
+        "pricePerHour": {
+          "type": "number",
+          "description": "The instructor's hourly rate for lessons."
+        },
+        "averageRating": {
+          "type": "number",
+          "description": "The instructor's average rating from student reviews."
+        },
+        "totalReviews": {
+          "type": "number",
+          "description": "The total number of reviews the instructor has received."
         }
       },
       "required": [
