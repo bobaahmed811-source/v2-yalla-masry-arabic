@@ -1,12 +1,12 @@
-
 'use client';
 
 import { useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
-import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking, setDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import {
@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Edit, Trash2, User, Crown } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, User, Crown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 // Define the type for an instructor
@@ -56,26 +56,28 @@ const AdminDashboardPage = () => {
 
   const handleSaveInstructor = async () => {
     if (!firestore || !instructorsCollection) return;
-    setIsSubmitting(true);
-
+    
     const { teacherName, email, shortBio, lessonPrice } = currentInstructor;
 
     if (!teacherName || !email || !shortBio || lessonPrice === undefined || lessonPrice < 0) {
       toast({ variant: 'destructive', title: 'خطأ', description: 'الرجاء ملء جميع الحقول المطلوبة بشكل صحيح.' });
-      setIsSubmitting(false);
       return;
     }
+    
+    setIsSubmitting(true);
 
     const instructorData = { teacherName, email, shortBio, lessonPrice };
 
     try {
         if (currentInstructor.id) {
+            // Updating an existing instructor
             const instructorDoc = doc(firestore, 'instructors', currentInstructor.id);
-            await updateDocumentNonBlocking(instructorDoc, instructorData);
+            setDocumentNonBlocking(instructorDoc, instructorData, { merge: true });
             toast({ title: 'تم التحديث', description: 'تم تحديث بيانات المعلمة بنجاح.' });
         } else {
+            // Adding a new instructor
             await addDocumentNonBlocking(instructorsCollection, instructorData);
-            toast({ title: 'تمت الإضافة', description: 'تم إضافة المعلمة بنجاح.' });
+            toast({ title: 'تمت الإضافة', description: 'تم إضافة معلمة جديدة بنجاح.' });
         }
         setIsDialogOpen(false);
         setCurrentInstructor({});
@@ -135,7 +137,7 @@ const AdminDashboardPage = () => {
             <div className="grid gap-4 py-4">
               <Input name="teacherName" placeholder="اسم المعلمة" value={currentInstructor.teacherName || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
               <Input name="email" type="email" placeholder="البريد الإلكتروني" value={currentInstructor.email || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
-              <Input name="shortBio" placeholder="وصف قصير" value={currentInstructor.shortBio || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
+              <Textarea name="shortBio" placeholder="وصف قصير" value={currentInstructor.shortBio || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
               <Input name="lessonPrice" type="number" placeholder="سعر الساعة (بالدولار)" value={currentInstructor.lessonPrice || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
             </div>
             <DialogFooter>
@@ -143,7 +145,7 @@ const AdminDashboardPage = () => {
                     <Button variant="outline" className="utility-button">إلغاء</Button>
                 </DialogClose>
                 <Button onClick={handleSaveInstructor} disabled={isSubmitting} className="cta-button">
-                    {isSubmitting ? 'جاري الحفظ...' : 'حفظ'}
+                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'حفظ'}
                 </Button>
             </DialogFooter>
           </DialogContent>
@@ -205,6 +207,9 @@ const AdminDashboardPage = () => {
                 </div>
               ))}
             </div>
+            {instructors && instructors.length === 0 && !isLoadingInstructors && (
+                <p className="text-center text-sand-ochre py-8">لا يوجد معلمات في السجل حالياً. ابدأ بإضافة واحدة!</p>
+            )}
           </CardContent>
         </Card>
       </div>
