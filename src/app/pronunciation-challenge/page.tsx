@@ -219,12 +219,6 @@ export default function PronunciationChallengePage() {
           <SelectContent>
             <SelectItem value="ar">العربية (AR)</SelectItem>
             <SelectItem value="en">English (EN)</SelectItem>
-            <SelectItem value="fr">Français (FR)</SelectItem>
-            <SelectItem value="es">Español (ES)</SelectItem>
-            <SelectItem value="zh">中文 (ZH)</SelectItem>
-            <SelectItem value="it">Italiano (IT)</SelectItem>
-            <SelectItem value="nl">Nederlands (NL)</SelectItem>
-            <SelectItem value="de">Deutsch (DE)</SelectItem>
           </SelectContent>
         </Select>
          <Link href="/" className="utility-button px-4 py-2 text-md font-bold rounded-lg flex items-center justify-center">
