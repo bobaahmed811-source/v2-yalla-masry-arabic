@@ -54,34 +54,37 @@ const AdminDashboardPage = () => {
     setCurrentInstructor(prev => ({ ...prev, [name]: name === 'lessonPrice' ? Number(value) : value }));
   };
 
-  const handleSaveInstructor = () => {
+  const handleSaveInstructor = async () => {
     if (!firestore || !instructorsCollection) return;
     setIsSubmitting(true);
 
     const { teacherName, email, shortBio, lessonPrice } = currentInstructor;
 
-    if (!teacherName || !email || !shortBio || !lessonPrice) {
-      toast({ variant: 'destructive', title: 'خطأ', description: 'الرجاء ملء جميع الحقول المطلوبة.' });
+    if (!teacherName || !email || !shortBio || lessonPrice === undefined || lessonPrice < 0) {
+      toast({ variant: 'destructive', title: 'خطأ', description: 'الرجاء ملء جميع الحقول المطلوبة بشكل صحيح.' });
       setIsSubmitting(false);
       return;
     }
 
     const instructorData = { teacherName, email, shortBio, lessonPrice };
 
-    if (currentInstructor.id) {
-      // Update existing instructor
-      const instructorDoc = doc(firestore, 'instructors', currentInstructor.id);
-      updateDocumentNonBlocking(instructorDoc, instructorData);
-      toast({ title: 'تم التحديث', description: 'تم تحديث بيانات المعلم بنجاح.' });
-    } else {
-      // Add new instructor
-      addDocumentNonBlocking(instructorsCollection, instructorData);
-      toast({ title: 'تمت الإضافة', description: 'تم إضافة المعلم بنجاح.' });
+    try {
+        if (currentInstructor.id) {
+            const instructorDoc = doc(firestore, 'instructors', currentInstructor.id);
+            await updateDocumentNonBlocking(instructorDoc, instructorData);
+            toast({ title: 'تم التحديث', description: 'تم تحديث بيانات المعلم بنجاح.' });
+        } else {
+            await addDocumentNonBlocking(instructorsCollection, instructorData);
+            toast({ title: 'تمت الإضافة', description: 'تم إضافة المعلم بنجاح.' });
+        }
+        setIsDialogOpen(false);
+        setCurrentInstructor({});
+    } catch (error) {
+        console.error("Error saving instructor: ", error);
+        toast({ variant: 'destructive', title: 'خطأ فادح', description: 'فشل حفظ بيانات المعلم. يرجى مراجعة صلاحيات الوصول.' });
+    } finally {
+        setIsSubmitting(false);
     }
-    
-    setIsDialogOpen(false);
-    setCurrentInstructor({});
-    setIsSubmitting(false);
   };
 
   const handleDeleteInstructor = (instructorId: string) => {
@@ -211,3 +214,5 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
+
+    
