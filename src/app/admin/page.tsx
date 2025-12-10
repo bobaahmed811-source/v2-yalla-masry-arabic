@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Edit, Trash2, User } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, User, Crown } from 'lucide-react';
 import Link from 'next/link';
 
 // Define the type for an instructor
@@ -107,7 +107,7 @@ const AdminDashboardPage = () => {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-nile-dark text-white p-4 text-center">
-          <i className="fas fa-lock text-5xl text-gold-accent mb-6"></i>
+          <Crown className="w-20 h-20 text-gold-accent mb-6"/>
           <h1 className="text-3xl font-bold royal-title mb-4">ديوان الإدارة الملكية (محتوى محمي)</h1>
           <p className="text-sand-ochre mb-8 max-w-md">عفواً أيها الزائر، هذه القاعة مخصصة فقط لحكام المملكة. يرجى تسجيل الدخول باستخدام أوراق اعتمادك الملكية للوصول إلى ديوان الإدارة.</p>
           <Link href="/login">
@@ -121,9 +121,8 @@ const AdminDashboardPage = () => {
     <div className="min-h-screen bg-nile-dark p-8 text-white" style={{ direction: 'rtl' }}>
       <div className="max-w-7xl mx-auto">
         <header className="flex justify-between items-center mb-10 pb-4 border-b-4 border-gold-accent">
-          <h1 className="text-4xl royal-title">ديوان إدارة المملكة</h1>
+          <h1 className="text-4xl royal-title flex items-center gap-3"><Crown className="w-10 h-10"/>ديوان إدارة المملكة</h1>
           <Link href="/" className="utility-button px-4 py-2 text-sm font-bold rounded-lg flex items-center justify-center">
-                <i className="fas fa-arrow-left ml-2"></i>
                 <span>العودة للوحة التحكم الرئيسية</span>
           </Link>
         </header>
@@ -214,5 +213,3 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
-
-    
