@@ -199,6 +199,10 @@ export default function HomePage() {
                             <i className="fas fa-comments text-xl ml-3"></i>
                             <span>تحدي حوار السوق</span>
                         </Link>
+                         <Link href="/pronunciation-challenge" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-pink-400 text-pink-400">
+                            <i className="fas fa-bullhorn text-xl ml-3"></i>
+                            <span>تحدي النطق الصحيح</span>
+                        </Link>
                     </div>
                 </div>
                 
@@ -243,10 +247,6 @@ export default function HomePage() {
                         <Link href="/word-scramble" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-indigo-400 text-indigo-400">
                             <i className="fas fa-random text-xl ml-3"></i>
                             <span>تحدي خلط الكلمات</span>
-                        </Link>
-                         <Link href="/pronunciation-challenge" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-pink-400 text-pink-400">
-                            <i className="fas fa-bullhorn text-xl ml-3"></i>
-                            <span>تحدي النطق الصحيح</span>
                         </Link>
                     </div>
                 </div>
