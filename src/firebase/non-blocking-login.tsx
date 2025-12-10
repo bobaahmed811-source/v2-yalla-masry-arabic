@@ -1,54 +1,56 @@
+
 'use client';
 import {
-  Auth, // Import Auth type for type hinting
+  Auth,
   signInAnonymously,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
   User,
-  NextOrObserver,
   onAuthStateChanged,
   signOut,
-  // Assume getAuth and app are initialized elsewhere
+  FirebaseError,
 } from 'firebase/auth';
+
+type AuthResult = {
+    success: boolean;
+    user?: User | null;
+    error?: FirebaseError;
+};
 
 /** Initiate anonymous sign-in (non-blocking). */
 export function initiateAnonymousSignIn(authInstance: Auth): void {
-  // CRITICAL: Call signInAnonymously directly. Do NOT use 'await signInAnonymously(...)'.
   signInAnonymously(authInstance);
-  // Code continues immediately. Auth state change is handled by onAuthStateChanged listener.
 }
 
 /** Initiate email/password sign-up (non-blocking). */
-export function initiateEmailSignUp(authInstance: Auth, email: string, password: string, callback?: (user: User | null) => void): void {
-  // CRITICAL: Call createUserWithEmailAndPassword directly. Do NOT use 'await createUserWithEmailAndPassword(...)'.
+export function initiateEmailSignUp(authInstance: Auth, email: string, password: string, callback?: (result: AuthResult) => void): void {
   createUserWithEmailAndPassword(authInstance, email, password)
     .then(userCredential => {
         if (callback) {
-            callback(userCredential.user);
+            callback({ success: true, user: userCredential.user });
         }
     })
-    .catch(error => {
+    .catch((error: FirebaseError) => {
         console.error("Error signing up:", error);
         if (callback) {
-            callback(null);
+            callback({ success: false, error: error });
         }
     });
 }
 
 /** Initiate email/password sign-in (non-blocking). */
-export function initiateEmailSignIn(authInstance: Auth, email: string, password: string, callback?: (user: User | null) => void): void {
-  // CRITICAL: Call signInWithEmailAndPassword directly. Do NOT use 'await signInWithEmailAndPassword(...)'.
+export function initiateEmailSignIn(authInstance: Auth, email: string, password: string, callback?: (result: AuthResult) => void): void {
   signInWithEmailAndPassword(authInstance, email, password)
     .then(userCredential => {
         if (callback) {
-            callback(userCredential.user);
+            callback({ success: true, user: userCredential.user });
         }
     })
-    .catch(error => {
+    .catch((error: FirebaseError) => {
         console.error("Error signing in:", error);
         if (callback) {
-            callback(null);
+            callback({ success: false, error: error });
         }
     });
 }

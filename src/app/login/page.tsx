@@ -17,6 +17,7 @@ import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import type { FirebaseError } from 'firebase/app';
 
 const Logo = () => (
     <div className="flex items-center justify-center space-x-2 space-x-reverse">
@@ -53,18 +54,30 @@ export default function LoginPage() {
   
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    initiateEmailSignIn(auth, email, password, (user) => {
-        if(user) {
+    initiateEmailSignIn(auth, email, password, (result) => {
+        if(result.success && result.user) {
             toast({
-                title: `مرحباً بعودتك يا ${user.displayName || 'فرعون'}!`,
+                title: `مرحباً بعودتك يا ${result.user.displayName || 'فرعون'}!`,
                 description: "تم تسجيل دخولك بنجاح."
             });
             router.push('/');
-        } else {
+        } else if (result.error) {
+            let description = "البريد الإلكتروني أو كلمة السر غير صحيحة. يرجى المحاولة مرة أخرى.";
+            switch(result.error.code) {
+                case 'auth/user-not-found':
+                    description = "هذا الحساب غير مسجل. هل تودين إنشاء حساب جديد؟";
+                    break;
+                case 'auth/wrong-password':
+                    description = "كلمة السر غير صحيحة. يرجى المحاولة مرة أخرى.";
+                    break;
+                case 'auth/invalid-credential':
+                    description = "بيانات الدخول غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة السر.";
+                    break;
+            }
             toast({
                 variant: "destructive",
                 title: "فشل تسجيل الدخول",
-                description: "البريد الإلكتروني أو كلمة السر غير صحيحة. يرجى المحاولة مرة أخرى."
+                description: description
             });
         }
     });
@@ -118,7 +131,7 @@ export default function LoginPage() {
                 تسجيل الدخول
               </Button>
               <Button variant="outline" className="w-full utility-button" disabled>
-                الدخول بواسطة Google
+                الدخول بواسطة Google (قريباً)
               </Button>
             </div>
           </form>
@@ -133,5 +146,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

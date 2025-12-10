@@ -53,14 +53,32 @@ export default function SignupPage() {
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    initiateEmailSignUp(auth, email, password, (user) => {
-        if (user) {
-            updateProfileNonBlocking(user, { displayName: name });
+    initiateEmailSignUp(auth, email, password, (result) => {
+        if (result.success && result.user) {
+            updateProfileNonBlocking(result.user, { displayName: name });
             toast({
                 title: "تم إنشاء الحساب بنجاح!",
                 description: "سيتم توجيهك الآن لتحديد أهدافك."
             });
             router.push('/goals');
+        } else if (result.error) {
+            let description = "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.";
+            switch(result.error.code) {
+                case 'auth/email-already-in-use':
+                    description = "هذا البريد الإلكتروني مسجل بالفعل. هل تريدين تسجيل الدخول؟";
+                    break;
+                case 'auth/weak-password':
+                    description = "كلمة السر ضعيفة جدًا. يجب أن تتكون من 6 أحرف على الأقل.";
+                    break;
+                case 'auth/invalid-email':
+                    description = "صيغة البريد الإلكتروني غير صحيحة.";
+                    break;
+            }
+            toast({
+                variant: "destructive",
+                title: "فشل إنشاء الحساب",
+                description: description,
+            });
         }
     });
   };
@@ -116,7 +134,7 @@ export default function SignupPage() {
                 إنشاء حساب ملكي
               </Button>
               <Button variant="outline" className="w-full utility-button" disabled>
-                التسجيل بواسطة Google
+                التسجيل بواسطة Google (قريباً)
               </Button>
             </div>
           </form>
@@ -131,5 +149,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-    
