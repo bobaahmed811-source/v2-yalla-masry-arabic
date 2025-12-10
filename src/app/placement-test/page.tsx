@@ -19,6 +19,7 @@ const lang: Record<string, any> = {
     ar: {
         title: "اختبار تحديد المستوى الملكي", mentor: "استمع جيداً لمرشدك وابدأ رحلتك", next_button: "السؤال التالي", start_journey: "ابدأ رحلتك الآن",
         tala7ot: "الرجاء اختيار إجابة أولاً.",
+        go_back: "العودة للوحة التحكم",
         levels: { t: "تلميذ النيل", k: "كاتب البردي", f: "الفرعون القوي" },
         result: {
             title_prefix: "مستواك الملكي:",
@@ -30,6 +31,7 @@ const lang: Record<string, any> = {
     en: {
         title: "The Royal Level Assessment Test", mentor: "Listen carefully to your mentor and start your journey", next_button: "Next Question", start_journey: "Start Your Journey Now",
         tala7ot: "Please select an answer first.",
+        go_back: "Back to Dashboard",
         levels: { t: "Disciple of the Nile", k: "Scribe of the Papyrus", f: "The Mighty Pharaoh" },
         result: {
             title_prefix: "Your Royal Level:",
@@ -40,6 +42,7 @@ const lang: Record<string, any> = {
     },
     fr: {
         title: "Test d'Évaluation de Niveau Royal", mentor: "Écoutez attentivement votre mentor et commencez votre voyage", next_button: "Question Suivante", start_journey: "Commencez votre voyage maintenant", tala7ot: "Veuillez d'abord sélectionner une réponse.",
+        go_back: "Retour au tableau de bord",
         levels: { t: "Disciple du Nil", k: "Scribe du Papyrus", f: "Le Pharaon Puissant" },
         result: { title_prefix: "Votre Niveau Royal:", t_message: "Excellent niveau de départ! Nous vous enseignerons les bases quotidiennes et vous soutiendrons pour atteindre le niveau 'Scribe du Papyrus' avec confiance.",
             k_message: "Niveau très fort! Vous avez de bonnes bases, et nous nous concentrerons sur le développement de dialogues complexes et de structures linguistiques avancées.",
@@ -48,28 +51,33 @@ const lang: Record<string, any> = {
     },
     es: { 
         title: "Test de Nivel Real", mentor: "Escuche a su mentor y comience su viaje.", next_button: "Siguiente Pregunta", start_journey: "Comience su viaje ahora.", tala7ot: "Seleccione una respuesta primero.",
+        go_back: "Volver al Panel",
         levels: { t: "Discípulo del Nilo", k: "Escriba del Papiro", f: "El Faraón Poderoso" },
-        result: { title_prefix: "Su Nivel Real:", t_message: "Placeholder for Spanish (ES) result.", k_message: "Placeholder for Spanish (ES) result.", f_message: "Placeholder for Spanish (ES) result." }
+        result: { title_prefix: "Su Nivel Real:", t_message: "¡Excelente nivel de partida! Te enseñaremos lo básico del día a día y te apoyaremos para que alcances el nivel 'Escriba del Papiro' con confianza.", k_message: "¡Nivel muy fuerte! Tienes una base sólida, y nos centraremos en desarrollar habilidades de diálogo complejas y estructuras lingüísticas avanzadas.", f_message: "¡Nivel excepcional! Estás listo para los desafíos y discusiones más complejos. Tu viaje final hacia la maestría comienza ahora." }
     },
     zh: { 
         title: "皇家等级评估测试", mentor: "听从导师，开始旅程。", next_button: "下一题", start_journey: "立即开始您的旅程", tala7ot: "请先选择一个答案。",
+        go_back: "返回仪表板",
         levels: { t: "尼罗河弟子", k: "纸莎草书记", f: "强大的法老" },
-        result: { title_prefix: "您的皇家等级:", t_message: "Placeholder for Chinese (ZH) result.", k_message: "Placeholder for Chinese (ZH) result.", f_message: "Placeholder for Chinese (ZH) result." }
+        result: { title_prefix: "您的皇家等级:", t_message: "优秀的起点！我们将教您日常基础知识，并支持您自信地达到“纸莎草书记”级别。", k_message: "非常强大的水平！您有扎实的基础，我们将专注于发展复杂的对话技巧和高级语言结构。", f_message: "卓越的水平！您已准备好迎接最复杂的挑战和讨论。您的终极掌握之旅现在开始。" }
     },
     it: { 
         title: "Test Reale di Livello", mentor: "Ascolta il tuo mentore e inizia il tuo viaggio.", next_button: "Domanda Successiva", start_journey: "Inizia il tuo viaggio ora", tala7ot: "Si prega di selezionare prima una risposta.",
+        go_back: "Torna alla Dashboard",
         levels: { t: "Discepolo del Nilo", k: "Scriba del Papiro", f: "Il Potente Faraone" },
-        result: { title_prefix: "Il tuo Livello Reale:", t_message: "Placeholder for Italian (IT) result.", k_message: "Placeholder for Italian (IT) result.", f_message: "Placeholder for Italian (IT) result." }
+        result: { title_prefix: "Il tuo Livello Reale:", t_message: "Eccellente livello di partenza! Ti insegneremo le basi quotidiane e ti supporteremo per raggiungere con sicurezza il livello 'Scriba del Papiro'.", k_message: "Livello molto forte! Hai solide basi e ci concentreremo sullo sviluppo di complesse abilità di dialogo e strutture linguistiche avanzate.", f_message: "Livello eccezionale! Sei pronto per le sfide e le discussioni più complesse. Il tuo viaggio di padronanza finale inizia ora." }
     },
     nl: { 
         title: "Koninklijke Niveautest", mentor: "Luister naar je mentor en begin je reis.", next_button: "Volgende Vraag", start_journey: "Start nu je reis", tala7ot: "Selecteer eerst een antwoord.",
+        go_back: "Terug naar Dashboard",
         levels: { t: "Leerling van de Nijl", k: "Papyrusschrijver", f: "De Machtige Farao" },
-        result: { title_prefix: "Jouw Koninklijke Niveau:", t_message: "Placeholder for Dutch (NL) result.", k_message: "Placeholder for Dutch (NL) result.", f_message: "Placeholder for Dutch (NL) result." }
+        result: { title_prefix: "Jouw Koninklijke Niveau:", t_message: "Uitstekend startniveau! We leren je de dagelijkse basis en ondersteunen je om vol vertrouwen het niveau 'Papyrusschrijver' te bereiken.", k_message: "Zeer sterk niveau! Je hebt een solide basis, en we zullen ons richten op het ontwikkelen van complexe dialoogvaardigheden en geavanceerde linguïstische structuren.", f_message: "Uitzonderlijk niveau! Je bent klaar voor de meest complexe uitdagingen en discussies. Je laatste meesterschapsreis begint nu." }
     },
     de: { 
-        title: "Königlicher Level-Test", mentor: "Hören Sie auf Ihren Mentor und beginnen Sie Ihre Reise.", next_button: "Nächste Frage", start_journey: "Starten Sie jetzt Ihre Reise", tala7ot: "Bitte wählen Sie zuerst eine Antwort.",
-        levels: { t: "Schüler des Nils", k: "Papyrus-Schreiber", f: "Der Mächtige Pharao" },
-        result: { title_prefix: "Ihr Königliches Level:", t_message: "Placeholder for German (DE) result.", k_message: "Placeholder for German (DE) result.", f_message: "Placeholder for German (DE) result." }
+        title: "Königlicher Einstufungstest", mentor: "Hören Sie auf Ihren Mentor und beginnen Sie Ihre Reise.", next_button: "Nächste Frage", start_journey: "Beginnen Sie jetzt Ihre Reise", tala7ot: "Bitte wählen Sie zuerst eine Antwort.",
+        go_back: "Zurück zum Dashboard",
+        levels: { t: "Schüler des Nils", k: "Schreiber des Papyrus", f: "Der mächtige Pharao" },
+        result: { title_prefix: "Ihr Königliches Level:", t_message: "Ausgezeichnetes Einstiegslevel! Wir bringen Ihnen die täglichen Grundlagen bei und unterstützen Sie dabei, das Level 'Schreiber des Papyrus' selbstbewusst zu erreichen.", k_message: "Sehr starkes Level! Sie haben solide Grundlagen, und wir werden uns auf die Entwicklung komplexer Dialogfähigkeiten und fortgeschrittener sprachlicher Strukturen konzentrieren.", f_message: "Außergewöhnliches Level! Sie sind bereit für die komplexesten Herausforderungen und Diskussionen. Ihre endgültige Reise zur Meisterschaft beginnt jetzt." }
     }
 };
 
@@ -96,8 +104,10 @@ export default function PlacementTestPage() {
     const isRtl = currentLang === 'ar';
 
     useEffect(() => {
-        document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
-        document.documentElement.lang = currentLang;
+        if (typeof document !== 'undefined') {
+            document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+        }
     }, [currentLang, isRtl]);
 
     const handleSelectOption = (index: number) => {
@@ -160,10 +170,10 @@ export default function PlacementTestPage() {
     const { iconClass, resultTitle, resultMessage } = getResultDetails();
     
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-            <div className="fixed top-4 right-4 z-10 flex items-center gap-4">
+        <div className="flex items-center justify-center min-h-screen bg-nile-dark p-4">
+            <div className="fixed top-4 left-4 z-10 flex items-center gap-4">
                  <Select onValueChange={setCurrentLang} defaultValue={currentLang}>
-                    <SelectTrigger className="w-[180px] bg-nile text-white border-none royal-title">
+                    <SelectTrigger className="w-[180px] bg-gold-accent text-dark-granite border-none royal-title font-bold shadow-lg">
                         <SelectValue placeholder="Language" />
                     </SelectTrigger>
                     <SelectContent>
@@ -179,16 +189,16 @@ export default function PlacementTestPage() {
                 </Select>
                  <Link href="/" className="utility-button px-4 py-2 text-md font-bold rounded-lg flex items-center justify-center">
                     <i className={`fas fa-arrow-left ${isRtl ? 'ml-2' : 'mr-2'}`}></i>
-                    <span>العودة للوحة التحكم</span>
+                    <span id="go_back-text">{texts.go_back}</span>
                 </Link>
             </div>
 
-            <div className="max-w-3xl mx-auto w-full p-6 bg-white rounded-2xl shadow-2xl border-t-8 border-gold-accent">
+            <div className="max-w-3xl mx-auto w-full p-6 bg-white rounded-2xl shadow-2xl dashboard-card text-white">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-extrabold text-dark-granite mb-2">
-                        <span className="royal-title text-nile">{texts.title}</span>
+                        <span id="title-text" className="royal-title text-gold-accent">{texts.title}</span>
                     </h1>
-                    <p className="text-lg text-gray-600 flex items-center justify-center">
+                    <p id="mentor-text" className="text-lg text-sand-ochre flex items-center justify-center">
                         <span>{texts.mentor}</span>
                         <svg className="pharaoh-mentor-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                            <circle cx="50" cy="40" r="30" fill="#fadc99"/>
@@ -206,12 +216,12 @@ export default function PlacementTestPage() {
 
                 {!showResult ? (
                     <>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
-                            <div className="bg-nile h-2.5 rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+                        <div className="progress-bar-royal mb-8">
+                            <div className="progress-fill-royal" style={{ width: `${progress}%` }}></div>
                         </div>
 
                         <div className="question-container">
-                            <h2 className="text-2xl font-bold mb-6 text-dark-granite text-right">
+                            <h2 className="text-2xl font-bold mb-6 text-white text-right">
                                 {`(${currentLevel}) - ${currentQuestion.question.ar}`}
                             </h2>
                             
@@ -222,8 +232,8 @@ export default function PlacementTestPage() {
                                         className={cn(
                                             'w-full text-right p-4 rounded-lg border-2 transition-all duration-200 text-lg',
                                             selectedOption === index 
-                                                ? 'bg-nile text-white border-gold-accent shadow-lg' 
-                                                : 'bg-white text-dark-granite border-gray-300 hover:bg-gray-100 hover:border-nile'
+                                                ? 'bg-gold-accent text-nile-dark border-gold-accent shadow-lg scale-105' 
+                                                : 'bg-nile text-sand-ochre border-sand-ochre hover:bg-sand-ochre/20'
                                         )}
                                         onClick={() => handleSelectOption(index)}
                                     >
@@ -232,13 +242,13 @@ export default function PlacementTestPage() {
                                 ))}
                             </div>
                             
-                            <div className="flex justify-end mt-8">
+                            <div className={`flex ${isRtl ? 'justify-start' : 'justify-end'} mt-8`}>
                                 <Button
                                     id="next-question-button"
                                     className="cta-button px-8 py-3 text-lg rounded-full"
                                     onClick={handleNextQuestion}
                                 >
-                                    {texts.next_button}
+                                    <span id="next_button-text">{texts.next_button}</span>
                                     <i className={`fas ${isRtl ? 'fa-chevron-left mr-2' : 'fa-chevron-right ml-2'}`}></i>
                                 </Button>
                             </div>
@@ -247,10 +257,10 @@ export default function PlacementTestPage() {
                 ) : (
                     <div className="text-center p-4">
                         <i className={`fas ${iconClass} text-6xl mb-4 text-gold-accent`}></i>
-                        <h3 className="text-3xl font-bold mb-4 text-dark-granite royal-title">{resultTitle}</h3>
-                        <p className="text-lg mb-6 text-gray-700">{resultMessage}</p>
+                        <h3 id="result-title-text" className="text-3xl font-bold mb-4 text-white royal-title">{resultTitle}</h3>
+                        <p id="result-message-text" className="text-lg mb-6 text-sand-ochre">{resultMessage}</p>
                         <Link href="/">
-                            <Button className="cta-button px-6 py-2 rounded-full">
+                            <Button id="start_journey-button" className="cta-button px-6 py-2 rounded-full">
                                 {texts.start_journey}
                             </Button>
                         </Link>
@@ -261,6 +271,5 @@ export default function PlacementTestPage() {
     );
 }
 
-    
 
     
