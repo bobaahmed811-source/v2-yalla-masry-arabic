@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@genkit-ai/google-genai": "1.20.0",
-    "@genkit-ai/next": "1.20.0",
     "@hookform/resolvers": "^3.3.4",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -41,7 +40,7 @@
     "firebase": "^10.12.2",
     "genkit": "1.20.0",
     "lucide-react": "^0.400.0",
-    "next": "15.0.0-rc.0",
+    "next": "14.2.4",
     "patch-package": "^8.0.0",
     "react": "18.3.1",
     "react-dnd": "^16.0.1",
@@ -63,7 +62,7 @@
     "@types/three": "^0.165.0",
     "@types/wav": "^1.0.3",
     "eslint": "^8.57.0",
-    "eslint-config-next": "15.0.0-rc.0",
+    "eslint-config-next": "14.2.4",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.4.5"

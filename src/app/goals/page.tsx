@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Users, LineChart, Map, Ankh, ArrowLeft } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSelectGoal = (goal: string) => {
     setSelectedGoal(goal);
@@ -18,10 +20,11 @@ export default function GoalsPage() {
   const handleNextStep = () => {
     if (selectedGoal) {
       // In a real app, you'd save the goal to Firestore here.
-      console.log(
-        `Goal selected: ${selectedGoal}. Redirecting to placement test.`
-      );
-      router.push('/placement-test');
+      toast({
+        title: 'تم تحديد الهدف بنجاح!',
+        description: `هدف رحلتك هو: ${selectedGoal}. مرحباً بك في المملكة!`,
+      });
+      router.push('/');
     }
   };
 
@@ -128,7 +131,7 @@ export default function GoalsPage() {
             disabled={!selectedGoal}
             onClick={handleNextStep}
           >
-            الخطوة التالية: تحديد المستوى{' '}
+            الانتقال إلى لوحة التحكم{' '}
             <ArrowLeft className="mr-2 h-5 w-5" />
           </Button>
         </div>

@@ -72,7 +72,7 @@ export default function SignupPage() {
                 if(profileResult.success) {
                     toast({
                         title: "تم إنشاء الحساب بنجاح!",
-                        description: `مرحباً بكِ يا ${name}! سيتم توجيهك الآن إلى الخطوة التالية.`
+                        description: `مرحباً بكِ يا ${name}! سيتم توجيهك الآن لاختيار هدفك.`
                     });
                     // Redirect to the onboarding flow
                     router.push('/goals');
