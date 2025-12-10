@@ -42,15 +42,44 @@ const faqs = [
   { q: 'هل تقدمون شهادة إتمام؟', a: 'نعم! مع الباقة الملكية، ستحصلين على شهادة إتمام معتمدة من الأكاديمية يمكنك إضافتها إلى سيرتك الذاتية.' }
 ];
 
+const Logo = () => (
+    <div className="flex items-center justify-center space-x-2 space-x-reverse">
+        <svg
+            className="w-12 h-12 text-gold-accent"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+            <path d="M12 18a6 6 0 0 0-6-6h12a6 6 0 0 0-6 6z"></path>
+            <path d="M12 2v4"></path>
+            <path d="M12 12v6"></path>
+            <path d="M4.93 4.93l2.83 2.83"></path>
+            <path d="M16.24 16.24l2.83 2.83"></path>
+            <path d="M2 12h4"></path>
+            <path d="M18 12h4"></path>
+            <path d="M4.93 19.07l2.83-2.83"></path>
+            <path d="M16.24 7.76l2.83-2.83"></path>
+        </svg>
+        <span className="text-4xl md:text-6xl font-black royal-title text-gold-accent">
+            يلا مصري
+        </span>
+    </div>
+);
+
+
 export default function LandingPage() {
   return (
     <div className="bg-nile-dark text-white" style={{ direction: 'rtl' }}>
       {/* Hero Section */}
       <header className="py-12 md:py-20 bg-gray-900/50 text-center">
         <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl md:text-6xl font-black royal-title mb-4">
-            يلا مصري
-          </h1>
+            <div className="mb-4">
+                <Logo />
+            </div>
           <p className="text-2xl md:text-3xl text-sand-ochre mb-8">
             بيئة آمنة وممتعة للنساء والأطفال لإتقان اللهجة المصرية
           </p>
@@ -215,3 +244,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    

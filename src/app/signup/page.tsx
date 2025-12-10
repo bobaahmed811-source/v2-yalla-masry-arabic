@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -16,6 +17,31 @@ import { initiateEmailSignUp, updateProfileNonBlocking } from '@/firebase/non-bl
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+
+const Logo = () => (
+    <div className="flex items-center justify-center space-x-2 space-x-reverse">
+        <svg
+            className="w-12 h-12 text-gold-accent"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+            <path d="M12 18a6 6 0 0 0-6-6h12a6 6 0 0 0-6 6z"></path>
+            <path d="M12 2v4"></path>
+            <path d="M12 12v6"></path>
+            <path d="M4.93 4.93l2.83 2.83"></path>
+            <path d="M16.24 16.24l2.83 2.83"></path>
+            <path d="M2 12h4"></path>
+            <path d="M18 12h4"></path>
+            <path d="M4.93 19.07l2.83-2.83"></path>
+            <path d="M16.24 7.76l2.83-2.83"></path>
+        </svg>
+    </div>
+);
 
 export default function SignupPage() {
   const auth = useAuth();
@@ -44,7 +70,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-sm mx-auto dashboard-card text-white">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center mb-4">
-            <i className="fas fa-scroll text-4xl text-gold-accent"></i>
+            <Logo />
           </div>
           <CardTitle className="text-3xl royal-title">سجل هويتك الفرعونية</CardTitle>
           <CardDescription className="text-sand-ochre">انضم إلى نخبة المتعلمين في أكاديمية يلا مصري</CardDescription>
@@ -105,3 +131,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+    
