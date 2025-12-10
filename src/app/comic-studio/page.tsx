@@ -189,6 +189,7 @@ export default function ComicStudioPage() {
     // and then save the URL in Firestore. For this prototype, we'll just save the metadata.
     const performanceCollectionPath = `/artifacts/${appId}/users/${user.uid}/comic_performances`;
     const performanceData = {
+      userId: user.uid,
       scene: scene,
       generatedDialog: dialogue,
       recordingDate: new Date().toISOString(),
@@ -210,7 +211,7 @@ export default function ComicStudioPage() {
 
 
   return (
-    <div className="min-h-screen bg-[#e0f2f1] p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-[#e0f2f1] p-4 sm:p-6 lg:p-8" style={{direction: 'rtl'}}>
       <header className="comic-bg shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
             <h1 className="text-3xl font-extrabold text-white tracking-tight">استوديو القصص المصورة</h1>
@@ -288,9 +289,58 @@ export default function ComicStudioPage() {
                     </div>
                 )}
             </Card>
-
         </div>
     </main>
+    <style jsx>{`
+      .comic-bg {
+        background: linear-gradient(45deg, #f97316, #ef4444);
+        border-radius: 0.75rem;
+      }
+      .comic-btn-primary {
+        background-color: #2563eb;
+        color: white;
+        font-weight: bold;
+        border-radius: 9999px;
+        padding: 0.75rem 1.5rem;
+        transition: background-color 0.3s;
+      }
+      .comic-btn-primary:hover:not(:disabled) {
+        background-color: #1d4ed8;
+      }
+      .comic-panel {
+        background-color: white;
+        border: 4px solid black;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        box-shadow: 5px 5px 0px black;
+      }
+      .speech-bubble {
+        margin-top: 1rem;
+        position: relative;
+        background: #e0f2f1;
+        border-radius: .4em;
+        padding: 1rem;
+        border: 2px solid black;
+      }
+
+      .speech-bubble:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border: 20px solid transparent;
+        border-top-color: #e0f2f1;
+        border-bottom: 0;
+        border-left: 0;
+        margin-left: -10px;
+        margin-bottom: -20px;
+      }
+    `}</style>
     </div>
   );
 }
