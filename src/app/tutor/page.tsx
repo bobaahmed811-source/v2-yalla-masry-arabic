@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -61,22 +62,26 @@ export default function TutorPage() {
     const userMessage: ChatMessage = { type: 'user', text: values.question };
     setChatHistory(prev => [...prev, userMessage]);
 
-    // As Genkit is removed, we get a predictable error response.
     const result = await getTutorResponse(values);
     
-    // We create the tutor message based on the error.
+    let tutorMessageText: string;
+    if (result.error) {
+        tutorMessageText = result.error;
+        toast({
+            variant: 'destructive',
+            title: '❌ خطأ في المعلم الذكي',
+            description: result.error,
+        });
+    } else {
+        tutorMessageText = result.answer || "عفواً، لم أتمكن من إيجاد إجابة.";
+    }
+
     const tutorMessage: ChatMessage = { 
         type: 'tutor', 
-        text: result.error || "عفواً، خدمة المعلم الذكي معطلة مؤقتاً." 
+        text: tutorMessageText
     };
+
     setChatHistory(prev => [...prev, tutorMessage]);
-    
-    toast({
-        variant: 'destructive',
-        title: '❌ الميزة معطلة',
-        description: result.error || 'فشل الحصول على إجابة.',
-    });
-    
     setIsLoading(false);
     form.resetField('question');
   }
@@ -86,7 +91,7 @@ export default function TutorPage() {
       <Card className="w-full max-w-2xl dashboard-card text-white flex flex-col h-[90vh]">
         <CardHeader className="text-center flex-shrink-0">
           <div className="flex justify-center items-center mb-4">
-            <i className="fas fa-user-graduate text-4xl text-gold-accent"></i>
+            <GraduationCap className="text-4xl text-gold-accent" />
           </div>
           <CardTitle className="text-3xl royal-title">
             المعلم الخصوصي الذكي
