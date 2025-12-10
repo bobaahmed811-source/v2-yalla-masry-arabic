@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Users, LineChart, Map, Ankh, ArrowLeft } from 'lucide-react';
 
 export default function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
@@ -88,7 +89,7 @@ export default function GoalsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           <GoalCard
             goal="social"
-            icon="fas fa-users"
+            icon={<Users className="w-12 h-12 text-gold-accent" />}
             title="نقرة الحياة (التواصل الاجتماعي)"
             description="إتقان اللهجة للحديث اليومي، فهم الأفلام، والاندماج مع الأصدقاء."
             selectedGoal={selectedGoal}
@@ -96,7 +97,7 @@ export default function GoalsPage() {
           />
           <GoalCard
             goal="business"
-            icon="fas fa-chart-line"
+            icon={<LineChart className="w-12 h-12 text-gold-accent" />}
             title="نقرة التجارة (الأعمال)"
             description="القدرة على التفاوض وإدارة الاجتماعات والعمل في بيئات احترافية مصرية."
             selectedGoal={selectedGoal}
@@ -104,7 +105,7 @@ export default function GoalsPage() {
           />
           <GoalCard
             goal="travel"
-            icon="fas fa-map-marked-alt"
+            icon={<Map className="w-12 h-12 text-gold-accent" />}
             title="نقرة الاكتشاف (السفر والسياحة)"
             description="التحدث بثقة في الشوارع، الأسواق، والمطاعم أثناء زيارة مصر."
             selectedGoal={selectedGoal}
@@ -112,7 +113,7 @@ export default function GoalsPage() {
           />
           <GoalCard
             goal="academic"
-            icon="ankh"
+            icon={<Ankh className="w-12 h-12 text-gold-accent" />}
             title="نقرة البردية (الدراسات المتقدمة)"
             description="إتقان النحو والصرف والمفردات التاريخية للبحث الأكاديمي."
             selectedGoal={selectedGoal}
@@ -128,7 +129,7 @@ export default function GoalsPage() {
             onClick={handleNextStep}
           >
             الخطوة التالية: تحديد المستوى{' '}
-            <i className="fas fa-arrow-left mr-2"></i>
+            <ArrowLeft className="mr-2 h-5 w-5" />
           </Button>
         </div>
       </div>
@@ -145,7 +146,7 @@ const GoalCard = ({
   onSelect,
 }: {
   goal: string;
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
   selectedGoal: string | null;
@@ -166,22 +167,9 @@ const GoalCard = ({
       onClick={() => onSelect(goal)}
     >
       <div className="text-center">
-        {icon === 'ankh' ? (
-          <svg
-            className="pharaonic-icon-ankh icon-royal mx-auto mb-3 w-12 h-12 text-gold-accent"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 2v6m-4 4h8m-4 0v10m-2 0h4m-4 0c0 1.104.896 2 2 2s2-.896 2-2h-4z" />
-            <circle cx="12" cy="8" r="4" />
-          </svg>
-        ) : (
-          <i className={cn(icon, 'icon-royal text-5xl mb-3 text-gold-accent')}></i>
-        )}
+        <div className="icon-royal mx-auto mb-3">
+            {icon}
+        </div>
         <h3 className="text-xl font-bold mb-2 text-white">{title}</h3>
         <p className="text-sand-ochre">{description}</p>
       </div>

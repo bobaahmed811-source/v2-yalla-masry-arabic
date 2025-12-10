@@ -11,16 +11,13 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import {
-  Loader,
   Mic,
   StopCircle,
   ChevronLeft,
   ChevronRight,
-  AlertTriangle,
   Play,
-  Pause,
+  ArrowLeft,
 } from 'lucide-react';
-import { getSpeechAudio } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 
@@ -180,7 +177,7 @@ export default function PronunciationChallengePage() {
           </SelectContent>
         </Select>
          <Link href="/" className="utility-button px-4 py-2 text-md font-bold rounded-lg flex items-center justify-center">
-            <i className={`fas fa-arrow-left ${isRtl ? 'ml-2' : 'mr-2'}`}></i>
+            <ArrowLeft className={`${isRtl ? 'ml-2' : 'mr-2'} h-4 w-4`} />
             <span>{texts.go_back}</span>
         </Link>
       </div>

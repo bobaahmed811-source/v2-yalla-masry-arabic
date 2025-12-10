@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { CheckCircle } from 'lucide-react';
 
 const testimonials = [
   { name: 'سارة، الولايات المتحدة', quote: 'أفضل تجربة تعليمية مررت بها! تعلمت اللهجة المصرية في أسابيع قليلة وبدأت أفهم الأفلام.' },
@@ -185,7 +186,7 @@ export default function LandingPage() {
                               <p className="text-5xl font-extrabold text-center text-white mb-2">{pkg.price}</p>
                               <p className="text-center text-gray-400 mb-6">{pkg.price_note}</p>
                               <ul className="space-y-2 text-white">
-                                  {pkg.benefits.map((benefit, i) => <li key={i} className="flex items-center"><i className="fas fa-check-circle text-green-400 ml-2"></i>{benefit}</li>)}
+                                  {pkg.benefits.map((benefit, i) => <li key={i} className="flex items-center"><CheckCircle className="w-4 h-4 text-green-400 ml-2" />{benefit}</li>)}
                               </ul>
                           </CardContent>
                           <div className="p-6 pt-0">

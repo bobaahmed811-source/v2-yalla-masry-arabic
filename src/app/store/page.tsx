@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -5,7 +6,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection, query, where } from 'firebase/firestore';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Gift, PiggyBank, ShoppingCart, History } from 'lucide-react';
+import { Gift, PiggyBank, ShoppingCart, History, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 // Define the structure for a payment message
@@ -158,7 +159,7 @@ export default function StorePage() {
           <div className="flex items-center space-x-4 space-x-reverse">
             <span className="text-sm text-gray-600 font-semibold">متجر برديات العامية والهدايا</span>
             <Link href="/" className="utility-button px-4 py-2 text-sm font-bold rounded-lg flex items-center justify-center">
-                <i className="fas fa-arrow-left ml-2"></i>
+                <ArrowLeft className="ml-2 h-4 w-4" />
                 <span>العودة للوحة التحكم</span>
             </Link>
           </div>
@@ -177,7 +178,7 @@ export default function StorePage() {
           {isUserLoading && (
             <div className="text-center mb-8">
               <p className="text-lg font-semibold text-blue-600 flex items-center justify-center gap-2">
-                <i className="fas fa-spinner fa-spin"></i>
+                <Loader2 className="animate-spin" />
                 جاري تأمين الاتصال بالنظام...
               </p>
             </div>
@@ -236,7 +237,7 @@ export default function StorePage() {
 
             <TabsContent value="redeem_points" className="mt-8">
               <div className="text-center mb-6 p-4 bg-blue-100 border border-blue-400 rounded-lg">
-                  <p className="text-lg font-bold text-blue-800">رصيدك الحالي: <span className="text-2xl">{nilePoints}</span> نقطة نيل <i className="fas fa-gem text-yellow-500"></i></p>
+                  <p className="text-lg font-bold text-blue-800">رصيدك الحالي: <span className="text-2xl">{nilePoints}</span> نقطة نيل </p>
               </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="product-card bg-white p-6 rounded-xl border-t-4 border-green-500">

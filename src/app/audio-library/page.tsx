@@ -10,7 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Loader, Volume2, AlertCircle } from 'lucide-react';
+import { Volume2, Handshake, ShoppingBasket, MessagesSquare, ArrowRight, Library } from 'lucide-react';
 import { getSpeechAudio } from './actions';
 import { useToast } from '@/hooks/use-toast';
 
@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 const audioLibraryData = [
   {
     category: 'التحيات والمجاملات',
-    icon: 'fa-handshake',
+    icon: <Handshake className="w-6 h-6 text-gold-accent" />,
     phrases: [
       { id: 'g1', text: 'صباح الخير', translation: 'Good morning' },
       { id: 'g2', text: 'مساء الخير', translation: 'Good evening' },
@@ -29,7 +29,7 @@ const audioLibraryData = [
   },
   {
     category: 'في السوق',
-    icon: 'fa-shopping-basket',
+    icon: <ShoppingBasket className="w-6 h-6 text-gold-accent" />,
     phrases: [
       { id: 'm1', text: 'بكام ده؟', translation: 'How much is this?' },
       { id: 'm2', text: 'عايز كيلو طماطم', translation: 'I want a kilo of tomatoes' },
@@ -39,7 +39,7 @@ const audioLibraryData = [
   },
   {
     category: 'تعبيرات يومية',
-    icon: 'fa-comments',
+    icon: <MessagesSquare className="w-6 h-6 text-gold-accent" />,
     phrases: [
       { id: 'd1', text: 'يلا بينا', translation: "Let's go" },
       { id: 'd2', text: 'معلش', translation: "Sorry / It's okay / Never mind" },
@@ -89,7 +89,7 @@ export default function AudioLibraryPage() {
     >
       <header className="text-center my-12">
         <div className="inline-block p-4 bg-nile rounded-full shadow-lg mb-4 border-2 border-gold-accent">
-          <i className="fas fa-volume-up text-5xl text-white"></i>
+          <Library className="w-12 h-12 text-white" />
         </div>
         <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2 royal-title">
           خزانة كنوز الأصوات
@@ -105,7 +105,7 @@ export default function AudioLibraryPage() {
             <AccordionItem key={category.category} value={`item-${index}`} className="dashboard-card border-gold-accent/50 rounded-xl overflow-hidden">
               <AccordionTrigger className="p-6 text-xl text-white royal-title hover:no-underline hover:bg-gold-accent/10">
                 <div className="flex items-center gap-4">
-                  <i className={`fas ${category.icon} text-2xl text-gold-accent`}></i>
+                  {category.icon}
                   <span>{category.category}</span>
                 </div>
               </AccordionTrigger>
@@ -123,7 +123,7 @@ export default function AudioLibraryPage() {
 
       <footer className="mt-auto pt-12 text-center text-gray-400 text-sm">
          <Link href="/" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center mx-auto w-fit">
-            <i className="fas fa-arrow-right ml-2"></i>
+            <ArrowRight className="ml-2 h-4 w-4" />
             <span>العودة للوحة التحكم</span>
         </Link>
         <p className="mt-4">جميع الحقوق محفوظة لأكاديمية يلا مصري © 2024</p>

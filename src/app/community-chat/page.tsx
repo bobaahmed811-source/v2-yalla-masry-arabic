@@ -6,9 +6,9 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessagesSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // Define the type for a chat message
@@ -79,7 +79,7 @@ const CommunityChatPage = () => {
   if (!user) {
      return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-nile-dark text-white p-4 text-center">
-        <i className="fas fa-comments text-5xl text-gold-accent mb-6"></i>
+        <MessagesSquare className="w-16 h-16 text-gold-accent mb-6" />
         <h1 className="text-3xl font-bold royal-title mb-4">ساحة الحوار الكبرى (محتوى محمي)</h1>
         <p className="text-sand-ochre mb-8 max-w-md">هذه الساحة مخصصة فقط لأعضاء المملكة المسجلين. يرجى تسجيل الدخول للمشاركة في الحوارات.</p>
         <Link href="/login">

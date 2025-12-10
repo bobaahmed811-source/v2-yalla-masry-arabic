@@ -1,7 +1,9 @@
+
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
+import { ArrowRight, Library } from 'lucide-react';
 
 // Mock data for books
 const mockBooks = [
@@ -37,7 +39,7 @@ export default function LibraryPage() {
     >
       <header className="text-center my-12">
         <div className="inline-block p-4 bg-nile rounded-full shadow-lg mb-4 border-2 border-gold-accent">
-          <i className="fas fa-book-atlas text-5xl text-white"></i>
+          <Library className="w-12 h-12 text-white" />
         </div>
         <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2 royal-title">
           المكتبة الإسلامية الرقمية
@@ -58,7 +60,7 @@ export default function LibraryPage() {
 
       <footer className="mt-auto pt-12 text-center text-gray-400 text-sm">
          <Link href="/quran" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center mx-auto w-fit">
-            <i className="fas fa-arrow-right ml-2"></i>
+            <ArrowRight className="ml-2 h-4 w-4" />
             <span>العودة إلى واحة القرآن</span>
         </Link>
         <p className="mt-4">جميع الحقوق محفوظة لأكاديمية يلا مصري © 2024</p>

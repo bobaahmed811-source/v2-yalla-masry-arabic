@@ -1,8 +1,10 @@
+
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Map, CheckCircle, ArrowLeft, Lock } from 'lucide-react';
 
 // Mock data - in the future, this will come from Firestore
 const learningPath = {
@@ -39,11 +41,11 @@ const learningPath = {
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'completed':
-      return <i className="fas fa-check-circle text-green-400"></i>;
+      return <CheckCircle className="text-green-400" />;
     case 'current':
-      return <i className="fas fa-arrow-left text-yellow-400 animate-pulse"></i>;
+      return <ArrowLeft className="text-yellow-400 animate-pulse" />;
     case 'locked':
-      return <i className="fas fa-lock text-gray-500"></i>;
+      return <Lock className="text-gray-500" />;
     default:
       return null;
   }
@@ -57,7 +59,7 @@ export default function LearningPathPage() {
     >
       <header className="text-center mb-12">
         <div className="inline-block p-4 bg-nile rounded-full shadow-lg mb-4 border-2 border-gold-accent">
-          <i className="fas fa-map-signs text-5xl text-white"></i>
+          <Map className="w-12 h-12 text-white" />
         </div>
         <h1 className="text-5xl md:text-6xl font-extrabold text-white mb-2 royal-title">
           مسار التعلم الملكي
@@ -115,7 +117,7 @@ export default function LearningPathPage() {
           href="/"
           className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center mx-auto w-fit"
         >
-          <i className="fas fa-arrow-right ml-2"></i>
+          <ArrowRight className="ml-2 h-4 w-4" />
           <span>العودة للوحة التحكم</span>
         </Link>
         <p className="mt-4">أكاديمية يلا مصري © 2024</p>

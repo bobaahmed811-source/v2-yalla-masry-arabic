@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star } from 'lucide-react';
+import { Star, ArrowRight, GraduationCap } from 'lucide-react';
 
 interface Instructor {
   id: string;
@@ -78,7 +78,7 @@ export default function InstructorsPage() {
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-12">
            <div className="inline-block p-4 bg-nile-dark/50 border-2 border-gold-accent rounded-full shadow-lg mb-4">
-              <i className="fas fa-chalkboard-teacher text-5xl text-gold-accent"></i>
+              <GraduationCap className="w-12 h-12 text-gold-accent" />
            </div>
           <h1 className="text-5xl md:text-6xl font-black royal-title mb-2">
             قابلِ معلمات المملكة
@@ -101,7 +101,7 @@ export default function InstructorsPage() {
 
         <footer className="mt-12 text-center">
             <Link href="/" className="utility-button px-6 py-2 text-md font-bold rounded-lg flex items-center justify-center mx-auto w-fit">
-                <i className="fas fa-arrow-right ml-2"></i>
+                <ArrowRight className="ml-2 h-4 w-4" />
                 <span>العودة للوحة التحكم الرئيسية</span>
             </Link>
         </footer>

@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { User, Store, Crown, Medal, Skull, Loader2 } from 'lucide-react';
+import { User, Store, Crown, Medal, Skull, Loader2, Lock, Gem } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { getDialogueEvaluation } from './actions';
 
@@ -68,7 +68,7 @@ const mockEvaluateDialogue = async (input: { userAnswer: string, choiceType: 'co
         break;
         case 'good':
         score = 50;
-        feedback = "إجابة صحيحة ومفهومة. لكن تذّكر أن استخدام كلمة 'شكراً' و 'اتفضل' يزيد من طلاقتك الاجتماعية في مصر. حصلت على نقاط الإجابة الصحيحة.";
+        feedback = "إجابة صحيحة ومفهومة. لكن تذكّر أن استخدام كلمة 'شكراً' و 'اتفضل' يزيد من طلاقتك الاجتماعية في مصر. حصلت على نقاط الإجابة الصحيحة.";
         isPositive = true;
         break;
         case 'correct':
@@ -99,7 +99,7 @@ const ScoreHeader = ({ alias, nilePoints }: { alias: string, nilePoints: number 
       <p className="text-xl font-extrabold text-[#FFD700] user-alias">{alias}</p>
     </div>
     <div className="flex items-center space-x-2 space-x-reverse">
-      <i className="fas fa-gem text-2xl text-[#FFD700]"></i>
+      <Gem className="w-6 h-6 text-[#FFD700]" />
       <p className="text-2xl font-black text-white">{nilePoints}</p>
       <p className="text-sm text-gray-400 mr-1">نقاط النيل</p>
     </div>
@@ -236,7 +236,7 @@ export default function DialogueChallengePage() {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-nile-dark text-white p-4 text-center">
-        <i className="fas fa-lock text-5xl text-gold-accent mb-6"></i>
+        <Lock className="w-16 h-16 text-gold-accent mb-6" />
         <h1 className="text-3xl font-bold royal-title mb-4">محتوى ملكي محمي</h1>
         <p className="text-sand-ochre mb-8 max-w-md">
           عفواً أيها الزائر، هذه القاعة مخصصة فقط لأفراد المملكة المسجلين. يرجى تسجيل الدخول للوصول إلى هذا التحدي.

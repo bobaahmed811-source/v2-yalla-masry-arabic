@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -5,6 +6,7 @@ import { useDrag, useDrop, DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Check, ArrowLeft, Gem } from 'lucide-react';
 
 // === Game Data ===
 const ALIAS = "تحتمس الصغير";
@@ -168,7 +170,7 @@ const GameContent = () => {
         <p className="text-xl font-extrabold text-[#FFD700] user-alias">{alias}</p>
       </div>
       <div className="flex items-center space-x-2 space-x-reverse">
-        <i className="fas fa-gem text-2xl text-[#FFD700]"></i>
+        <Gem className="w-6 h-6 text-[#FFD700]" />
         <p className="text-2xl font-black text-white">{nilePoints}</p>
         <p className="text-sm text-gray-400 mr-1">نقاط النيل</p>
       </div>
@@ -228,12 +230,12 @@ const GameContent = () => {
         <div className="mt-6 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 sm:space-x-reverse">
           {!isCorrect ? (
             <Button onClick={checkAnswer} className="cta-button px-8 py-3 text-lg rounded-full w-full sm:w-auto">
-              <i className="fas fa-check ml-2"></i> تحقق من الإجابة
+              <Check className="ml-2 h-5 w-5" /> تحقق من الإجابة
             </Button>
           ) : (
             <Button onClick={nextPuzzle} className="cta-button bg-green-600 hover:bg-green-700 px-8 py-3 text-lg rounded-full w-full sm:w-auto">
               {currentPuzzleIndex < PUZZLES.length - 1 ? 'التحدي التالي' : 'إنهاء التحدي'}
-              <i className="fas fa-arrow-left mr-2"></i>
+              <ArrowLeft className="mr-2 h-5 w-5" />
             </Button>
           )}
           <Link href="/" className="w-full sm:w-auto">
