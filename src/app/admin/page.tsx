@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -304,5 +305,3 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
-
-  

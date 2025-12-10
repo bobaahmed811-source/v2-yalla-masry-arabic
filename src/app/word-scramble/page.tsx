@@ -273,5 +273,3 @@ const WordScramblePage = () => {
 };
 
 export default WordScramblePage;
-
-  
