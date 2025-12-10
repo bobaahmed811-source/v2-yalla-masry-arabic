@@ -3,7 +3,8 @@
 
 import { useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
+import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -53,8 +54,8 @@ const AdminDashboardPage = () => {
     setCurrentInstructor(prev => ({ ...prev, [name]: name === 'lessonPrice' ? Number(value) : value }));
   };
 
-  const handleSaveInstructor = async () => {
-    if (!firestore) return;
+  const handleSaveInstructor = () => {
+    if (!firestore || !instructorsCollection) return;
     setIsSubmitting(true);
 
     const { teacherName, email, shortBio, lessonPrice } = currentInstructor;
@@ -65,36 +66,29 @@ const AdminDashboardPage = () => {
       return;
     }
 
-    try {
-      if (currentInstructor.id) {
-        // Update existing instructor
-        const instructorDoc = doc(firestore, 'instructors', currentInstructor.id);
-        await updateDoc(instructorDoc, { teacherName, email, shortBio, lessonPrice });
-        toast({ title: 'تم التحديث', description: 'تم تحديث بيانات المعلم بنجاح.' });
-      } else {
-        // Add new instructor
-        await addDoc(collection(firestore, 'instructors'), { teacherName, email, shortBio, lessonPrice });
-        toast({ title: 'تمت الإضافة', description: 'تم إضافة المعلم بنجاح.' });
-      }
-      setIsDialogOpen(false);
-      setCurrentInstructor({});
-    } catch (error: any) {
-      console.error("Error saving instructor:", error);
-      toast({ variant: 'destructive', title: 'خطأ', description: error.message });
-    } finally {
-      setIsSubmitting(false);
+    const instructorData = { teacherName, email, shortBio, lessonPrice };
+
+    if (currentInstructor.id) {
+      // Update existing instructor
+      const instructorDoc = doc(firestore, 'instructors', currentInstructor.id);
+      updateDocumentNonBlocking(instructorDoc, instructorData);
+      toast({ title: 'تم التحديث', description: 'تم تحديث بيانات المعلم بنجاح.' });
+    } else {
+      // Add new instructor
+      addDocumentNonBlocking(instructorsCollection, instructorData);
+      toast({ title: 'تمت الإضافة', description: 'تم إضافة المعلم بنجاح.' });
     }
+    
+    setIsDialogOpen(false);
+    setCurrentInstructor({});
+    setIsSubmitting(false);
   };
 
-  const handleDeleteInstructor = async (instructorId: string) => {
+  const handleDeleteInstructor = (instructorId: string) => {
     if (!firestore) return;
-    try {
-      await deleteDoc(doc(firestore, 'instructors', instructorId));
-      toast({ title: 'تم الحذف', description: 'تم حذف المعلم بنجاح.' });
-    } catch (error: any) {
-      console.error("Error deleting instructor:", error);
-      toast({ variant: 'destructive', title: 'خطأ', description: error.message });
-    }
+    const instructorDoc = doc(firestore, 'instructors', instructorId);
+    deleteDocumentNonBlocking(instructorDoc);
+    toast({ title: 'تم الحذف', description: 'تم حذف المعلم بنجاح.' });
   };
 
   const openAddDialog = () => {
