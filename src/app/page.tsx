@@ -72,6 +72,7 @@ export default function RoyalDashboard() {
           placement_test_button: "ابدأ تحديد المستوى",
           booking_button: "حجز الدروس الملكية",
           quran_button: "واحة القرآن والسنة",
+          pronunciation_challenge_button: "تحدي النطق",
           logout_button: "تسجيل الخروج",
           login_button: "تسجيل الدخول"
       },
@@ -94,6 +95,7 @@ export default function RoyalDashboard() {
           placement_test_button: "Start Placement Test",
           booking_button: "Royal Lesson Booking",
           quran_button: "Quran & Sunnah Oasis",
+          pronunciation_challenge_button: "Pronunciation Challenge",
           logout_button: "Log Out",
           login_button: "Log In",
       },
@@ -129,6 +131,7 @@ export default function RoyalDashboard() {
         if(querySelector('#dialogue-challenge-button-text')) querySelector('#dialogue-challenge-button-text').textContent = texts.dialogue_challenge_button;
         if(querySelector('#booking-button-text')) querySelector('#booking-button-text').textContent = texts.booking_button;
         if(querySelector('#quran-button-text')) querySelector('#quran-button-text').textContent = texts.quran_button;
+        if(querySelector('#pronunciation-challenge-button-text')) querySelector('#pronunciation-challenge-button-text').textContent = texts.pronunciation_challenge_button;
 
         if (user) {
           if (querySelector('#auth-link-text')) querySelector('#auth-link-text').textContent = texts.logout_button;
@@ -376,5 +379,5 @@ export default function RoyalDashboard() {
             </div>
         </div>
     </div>
-  )
+  );
 }
