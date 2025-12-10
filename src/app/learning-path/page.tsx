@@ -26,6 +26,14 @@ export default function LearningPathPage() {
            { title: 'الوحدة 6: السفر والمواصلات', status: 'locked' },
         ]
       },
+      {
+        title: 'المستوى الثالث: الفرعون القوي',
+        description: 'إتقان التعبيرات المعقدة والنقاشات العميقة.',
+        modules: [
+           { title: 'الوحدة 7: الأمثال الشعبية', status: 'locked' },
+           { title: 'الوحدة 8: الثقافة والإعلام', status: 'locked' },
+        ]
+      },
     ],
   };
 
@@ -74,7 +82,7 @@ export default function LearningPathPage() {
                     className={`flex items-center justify-between p-4 rounded-lg transition-all duration-300 ${
                       module.status === 'locked'
                         ? 'bg-nile/50 cursor-not-allowed opacity-60'
-                        : 'bg-nile hover:bg-nile/80 cursor-pointer'
+                        : 'bg-nile hover:bg-sand-ochre/20 cursor-pointer'
                     }`}
                   >
                     <div className="flex items-center gap-4">
