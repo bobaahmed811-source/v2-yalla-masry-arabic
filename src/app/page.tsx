@@ -71,6 +71,7 @@ export default function RoyalDashboard() {
           dialogue_challenge_button: "تحدي الحوار",
           placement_test_button: "ابدأ تحديد المستوى",
           booking_button: "حجز الدروس الملكية",
+          quran_button: "واحة القرآن والسنة",
           logout_button: "تسجيل الخروج",
           login_button: "تسجيل الدخول"
       },
@@ -92,6 +93,7 @@ export default function RoyalDashboard() {
           dialogue_challenge_button: "Dialogue Challenge",
           placement_test_button: "Start Placement Test",
           booking_button: "Royal Lesson Booking",
+          quran_button: "Quran & Sunnah Oasis",
           logout_button: "Log Out",
           login_button: "Log In",
       },
@@ -126,6 +128,7 @@ export default function RoyalDashboard() {
         if(querySelector('#word-scramble-button-text')) querySelector('#word-scramble-button-text').textContent = texts.word_scramble_button;
         if(querySelector('#dialogue-challenge-button-text')) querySelector('#dialogue-challenge-button-text').textContent = texts.dialogue_challenge_button;
         if(querySelector('#booking-button-text')) querySelector('#booking-button-text').textContent = texts.booking_button;
+        if(querySelector('#quran-button-text')) querySelector('#quran-button-text').textContent = texts.quran_button;
 
         if (user) {
           if (querySelector('#auth-link-text')) querySelector('#auth-link-text').textContent = texts.logout_button;
@@ -229,7 +232,11 @@ export default function RoyalDashboard() {
             </div>
             
              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-                <Link href="/placement-test" id="placement-test-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-green-400 text-green-400">
+                <Link href="/quran" id="quran-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-green-400 text-green-400">
+                    <i className="fas fa-quran text-xl ml-3"></i>
+                    <span id="quran-button-text">واحة القرآن والسنة</span>
+                </Link>
+                <Link href="/placement-test" id="placement-test-button" className="utility-button px-6 py-3 text-lg font-bold rounded-full flex items-center justify-center border-blue-400 text-blue-400">
                     <i className="fas fa-tasks text-xl ml-3"></i>
                     <span id="placement-test-button-text">ابدأ تحديد المستوى</span>
                 </Link>
