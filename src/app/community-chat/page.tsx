@@ -30,11 +30,11 @@ const CommunityChatPage = () => {
 
   const messagesCollection = useMemoFirebase(() => {
     if (!firestore) return null;
-    // Querying the new collection, ordered by timestamp
+    // Querying the correct public collection, ordered by timestamp
     return query(collection(firestore, 'community_messages'), orderBy('timestamp', 'asc'));
   }, [firestore]);
 
-  const { data: messages, isLoading: isLoadingMessages } = useCollection<CommunityMessage>(messagesCollection);
+  const { data: messages, isLoading: isLoadingMessages, error } = useCollection<CommunityMessage>(messagesCollection);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -52,6 +52,7 @@ const CommunityChatPage = () => {
     const userAlias = user.displayName || 'مستخدم مجهول';
 
     try {
+      // Ensure we are adding the document to the correct collection
       await addDoc(collection(firestore, 'community_messages'), {
         text: newMessage,
         senderId: user.uid,
@@ -98,6 +99,7 @@ const CommunityChatPage = () => {
       <Card className="flex-grow flex flex-col dashboard-card overflow-hidden">
         <CardContent className="flex-grow p-4 overflow-y-auto space-y-4">
            {isLoadingMessages && <div className="text-center text-sand-ochre">جاري تحميل الرسائل...</div>}
+           {error && <div className="text-center text-red-500">حدث خطأ أثناء تحميل الرسائل. قد تكون هناك مشكلة في الصلاحيات.</div>}
            {messages && messages.map(msg => (
              <div key={msg.id} className={`flex items-end gap-2 ${msg.senderId === user.uid ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-md p-3 rounded-lg ${msg.senderId === user.uid ? 'bg-gold-accent text-nile-dark rounded-br-none' : 'bg-nile rounded-bl-none'}`}>
