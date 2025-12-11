@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,8 +12,8 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useUser, useAuth, useDoc, useCollection, useMemoFirebase } from '@/firebase';
-import { doc, collection, query, where, getDocs } from 'firebase/firestore';
+import { useUser, useAuth, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, getDocs } from 'firebase/firestore';
 import { updateProfileNonBlocking } from '@/firebase/non-blocking-login';
 import {
   ArrowRight,
@@ -44,21 +44,10 @@ import {
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
 
-interface UserProfile {
-    id: string;
-    name: string;
-    email: string;
-    nilePoints?: number;
-}
-
 interface Progress {
     id: string;
     courseId: string;
     completedLessons: string[];
-}
-
-interface Lesson {
-    id: string;
 }
 
 const StatCard = ({
@@ -173,6 +162,7 @@ export default function HomePage() {
 
   const [lessonsCompleted, setLessonsCompleted] = useState(0);
   const [totalLessons, setTotalLessons] = useState(0);
+  const [isStatsLoading, setIsStatsLoading] = useState(true);
 
   const progressCollectionRef = useMemoFirebase(() => {
     if (!user || !firestore) return null;
@@ -186,39 +176,44 @@ export default function HomePage() {
   
   useEffect(() => {
     const fetchCourseData = async () => {
-        if (progresses && firestore) {
+        if (!firestore) return;
+        setIsStatsLoading(true);
+
+        try {
             let completedCount = 0;
             let totalCount = 0;
 
-            // Create a single query for all courses to get total lesson counts efficiently
             const coursesQuery = query(collection(firestore, 'courses'));
             const coursesSnapshot = await getDocs(coursesQuery);
-            const courseLessonCounts = new Map<string, number>();
-
-            // Asynchronously fetch lesson counts for all courses
+            
             const lessonCountPromises = coursesSnapshot.docs.map(async (courseDoc) => {
                 const lessonsQuery = query(collection(firestore, `courses/${courseDoc.id}/lessons`));
                 const lessonsSnapshot = await getDocs(lessonsQuery);
-                courseLessonCounts.set(courseDoc.id, lessonsSnapshot.size);
+                return lessonsSnapshot.size;
             });
             
-            await Promise.all(lessonCountPromises);
+            const lessonCounts = await Promise.all(lessonCountPromises);
+            totalCount = lessonCounts.reduce((sum, count) => sum + count, 0);
 
-            for (const progress of progresses) {
-                completedCount += progress.completedLessons.length;
-                totalCount += courseLessonCounts.get(progress.courseId) || 0;
+            if (progresses) {
+                completedCount = progresses.reduce((sum, progress) => sum + progress.completedLessons.length, 0);
             }
             
             setLessonsCompleted(completedCount);
             setTotalLessons(totalCount);
-        } else if (!isProgressLoading) {
-            // If no progress docs, reset stats
-            setLessonsCompleted(0);
-            setTotalLessons(0);
+        } catch (error) {
+            console.error("Error fetching course stats:", error);
+            toast({ variant: "destructive", title: "خطأ", description: "فشل تحميل إحصائيات الدورات." });
+        } finally {
+            setIsStatsLoading(false);
         }
     };
-    fetchCourseData();
-  }, [progresses, firestore, isProgressLoading]);
+
+    if (!isProgressLoading) {
+        fetchCourseData();
+    }
+  }, [progresses, firestore, isProgressLoading, toast]);
+
 
   const progressPercentage = totalLessons > 0 ? (lessonsCompleted / totalLessons) * 100 : 0;
 
@@ -240,7 +235,7 @@ export default function HomePage() {
       style={{ direction: 'rtl' }}
     >
       <div className="max-w-7xl mx-auto">
-        {isUserLoading || isProgressLoading ? (
+        {isUserLoading ? (
           <div className="text-center p-10 flex justify-center items-center h-[80vh]">
             <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
             <p className="text-xl text-sand-ochre mr-4">
@@ -289,7 +284,7 @@ export default function HomePage() {
                   />
                   <StatCard
                     icon={<BookOpen className="h-6 w-6 text-sand-ochre" />}
-                    value={isProgressLoading ? '...' : `${lessonsCompleted} من ${totalLessons}`}
+                    value={isStatsLoading ? '...' : `${lessonsCompleted} من ${totalLessons}`}
                     label="الدروس المكتملة"
                   />
               </div>

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/firebase';
+import { useUser, useAuth } from '@/firebase';
 import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -55,20 +55,21 @@ export default function LoginPage() {
   
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!auth) {
+        toast({ variant: "destructive", title: "خطأ", description: "خدمة المصادقة غير متاحة."});
+        return;
+    }
     setIsSubmitting(true);
     initiateEmailSignIn(auth, email, password, (result) => {
         if(result.success && result.user) {
             toast({
-                title: `مرحباً بعودتك يا ${result.user.displayName || 'فرعون'}!`,
+                title: `مرحباً بعودتك!`,
                 description: "تم تسجيل دخولك بنجاح."
             });
-            // This logic is now handled by the useUser hook redirecting logic.
-            // But we can keep a fallback for safety.
-            if(!result.user.displayName) {
-                router.push('/goals');
-            } else {
-                router.push('/');
-            }
+            // The useUser hook's onAuthStateChanged listener in the provider
+            // will handle fetching the full user profile and redirecting.
+            // We just push to the root page.
+            router.push('/');
         } else if (result.error) {
             let description = "البريد الإلكتروني أو كلمة السر غير صحيحة. يرجى المحاولة مرة أخرى.";
             switch(result.error.code) {

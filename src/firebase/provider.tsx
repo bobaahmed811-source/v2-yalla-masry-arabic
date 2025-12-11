@@ -3,9 +3,11 @@
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
-import { Firestore, doc, getDoc } from 'firebase/firestore';
+import { Firestore, doc, getDoc, DocumentData } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener'
+import { useRouter } from 'next/navigation';
+
 
 interface FullUser extends User {
     nilePoints?: number;
@@ -66,6 +68,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   firestore,
   auth,
 }) => {
+  const router = useRouter();
   const [userAuthState, setUserAuthState] = useState<UserAuthState>({
     user: null,
     isUserLoading: true, // Start loading until first auth event
@@ -73,8 +76,8 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   });
 
   useEffect(() => {
-    if (!auth) {
-      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth service not provided.") });
+    if (!auth || !firestore) {
+      setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth or Firestore service not provided.") });
       return;
     }
 
@@ -82,14 +85,39 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       auth,
       async (firebaseUser) => {
         if (firebaseUser) {
-          // User is signed in, fetch profile to get nilePoints
+          // User is signed in, fetch profile to get nilePoints and check for displayName
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
           const userDoc = await getDoc(userDocRef);
+          
+          let userData: DocumentData | undefined;
+          if (userDoc.exists()) {
+             userData = userDoc.data();
+          } else {
+             // If user doc doesn't exist, create it. This is crucial for new sign-ups.
+             const newUserDoc = {
+                id: firebaseUser.uid,
+                email: firebaseUser.email,
+                name: firebaseUser.displayName || 'New User',
+                alias: firebaseUser.displayName || `فرعون ${firebaseUser.uid.substring(0,5)}`,
+                registrationDate: new Date().toISOString(),
+                nilePoints: 0,
+             };
+             await setDoc(userDocRef, newUserDoc);
+             userData = newUserDoc;
+          }
+
           const fullUser: FullUser = {
             ...firebaseUser,
-            nilePoints: userDoc.exists() ? userDoc.data().nilePoints || 0 : 0,
+            nilePoints: userData?.nilePoints || 0,
+            displayName: firebaseUser.displayName || userData?.alias,
           };
           setUserAuthState({ user: fullUser, isUserLoading: false, userError: null });
+
+          // Redirect new users to the goals page
+          if (!firebaseUser.displayName) {
+             router.push('/goals');
+          }
+
         } else {
           // User is signed out
           setUserAuthState({ user: null, isUserLoading: false, userError: null });
@@ -101,7 +129,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       }
     );
     return () => unsubscribe();
-  }, [auth, firestore]);
+  }, [auth, firestore, router]);
 
   const contextValue = useMemo((): FirebaseContextState => {
     const servicesAvailable = !!(firebaseApp && firestore && auth);
@@ -145,19 +173,28 @@ export const useFirebase = (): FirebaseServicesAndUser => {
   };
 };
 
-export const useAuth = (): Auth => {
-  const { auth } = useFirebase();
-  return auth;
+export const useAuth = (): Auth | null => {
+  const context = useContext(FirebaseContext);
+   if (context === undefined) {
+    throw new Error('useAuth must be used within a FirebaseProvider.');
+  }
+  return context.auth;
 };
 
-export const useFirestore = (): Firestore => {
-  const { firestore } = useFirebase();
-  return firestore;
+export const useFirestore = (): Firestore | null => {
+  const context = useContext(FirebaseContext);
+   if (context === undefined) {
+    throw new Error('useFirestore must be used within a FirebaseProvider.');
+  }
+  return context.firestore;
 };
 
-export const useFirebaseApp = (): FirebaseApp => {
-  const { firebaseApp } = useFirebase();
-  return firebaseApp;
+export const useFirebaseApp = (): FirebaseApp | null => {
+  const context = useContext(FirebaseContext);
+   if (context === undefined) {
+    throw new Error('useFirebaseApp must be used within a FirebaseProvider.');
+  }
+  return context.firebaseApp;
 };
 
 type MemoFirebase <T> = T & {__memo?: boolean};
@@ -166,7 +203,9 @@ export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | 
   const memoized = useMemo(factory, deps);
   
   if(typeof memoized !== 'object' || memoized === null) return memoized;
-  (memoized as MemoFirebase<T>).__memo = true;
+  if(!('__memo' in memoized)) {
+     (memoized as MemoFirebase<T>).__memo = true;
+  }
   
   return memoized;
 }
@@ -182,7 +221,7 @@ export const useUser = (includeFirestore = false): UserHookResult => {
   const { user, isUserLoading, userError, firestore } = context;
   
   if (includeFirestore) {
-    return { user, isUserLoading, userError, firestore: firestore! };
+    return { user, isUserLoading, userError, firestore: firestore ?? undefined };
   }
   
   return { user, isUserLoading, userError };

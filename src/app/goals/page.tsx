@@ -7,8 +7,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Users, LineChart, Map, Ankh, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { useUser } from '@/firebase';
 import { createInitialProgress } from '@/lib/course-utils';
 
 export default function GoalsPage() {
@@ -16,8 +15,7 @@ export default function GoalsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { user } = useUser();
-  const firestore = useFirestore();
+  const { user, firestore } = useUser(true);
 
   const handleSelectGoal = (goal: string) => {
     setSelectedGoal(goal);
