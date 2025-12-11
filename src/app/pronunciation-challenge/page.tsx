@@ -148,7 +148,7 @@ const lang: Record<string, Record<string, string>> = {
 };
 
 export default function PronunciationChallengePage() {
-  const [currentLang, setCurrentLang] = useState('en');
+  const [currentLang, setCurrentLang] = useState('ar');
   const [isRecording, setIsRecording] = useState(false);
   const [userAudioUrl, setUserAudioUrl] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -356,3 +356,5 @@ export default function PronunciationChallengePage() {
     </div>
   );
 }
+
+    
