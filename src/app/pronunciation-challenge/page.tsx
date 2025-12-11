@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -23,6 +22,17 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { getSpeechAudio } from '../ai-actions';
 import { cn } from '@/lib/utils';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+
+// Define the type for a phrase from Firestore
+interface Phrase {
+  id: string;
+  category: string;
+  text: string;
+  translation: string;
+}
+
 
 // Dictionary for all UI texts, now including Spanish and French
 const lang: Record<string, Record<string, string>> = {
@@ -143,26 +153,28 @@ export default function PronunciationChallengePage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [isMentorAudioLoading, setIsMentorAudioLoading] = useState(false);
   const mentorAudioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const firestore = useFirestore();
+  const phrasesCollection = useMemoFirebase(() => firestore ? collection(firestore, 'phrases') : null, [firestore]);
+  const { data: phrases, isLoading: isLoadingPhrases } = useCollection<Phrase>(phrasesCollection);
+
+  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 
   const { toast } = useToast();
-  const challengePhrase = 'صباح الخير، أنا كويس، متشكر.';
+  
+  const challengePhrase = phrases ? phrases[currentPhraseIndex]?.text : '...';
   const texts = lang[currentLang] || lang.en;
   const isRtl = currentLang === 'ar';
   
   useEffect(() => {
-    // Cleanup user audio URL on unmount
     return () => {
-      if (userAudioUrl) {
-        URL.revokeObjectURL(userAudioUrl);
-      }
-      if (mentorAudioRef.current) {
-        mentorAudioRef.current.pause();
-        mentorAudioRef.current = null;
-      }
+      if (userAudioUrl) URL.revokeObjectURL(userAudioUrl);
+      if (mentorAudioRef.current) mentorAudioRef.current.pause();
     };
   }, [userAudioUrl]);
 
   const handlePlayMentorAudio = async () => {
+    if (!challengePhrase || challengePhrase === '...') return;
     setIsMentorAudioLoading(true);
     toast({ title: texts.loading });
     try {
@@ -226,13 +238,21 @@ export default function PronunciationChallengePage() {
     }
   };
 
+  const handleNextChallenge = () => {
+    if (phrases) {
+        setCurrentPhraseIndex(prev => (prev + 1) % phrases.length);
+        if (userAudioUrl) URL.revokeObjectURL(userAudioUrl);
+        setUserAudioUrl(null);
+        toast({ title: texts.next_prompt });
+    }
+  };
+
+
    useEffect(() => {
-    // Set initial direction based on default language
     handleLanguageChange(currentLang);
-    // Cleanup on unmount
     return () => {
         if(document.documentElement) {
-            document.documentElement.dir = 'ltr'; // Or your app's ultimate default
+            document.documentElement.dir = 'ltr';
             document.documentElement.lang = 'en';
         }
     }
@@ -273,10 +293,14 @@ export default function PronunciationChallengePage() {
         </div>
 
         <div className="bg-nile p-8 md:p-12 rounded-xl shadow-inner border-2 border-sand-ochre/20 text-center">
-          <div className="mb-8 p-4 bg-nile-dark rounded-lg border-2 border-dashed border-sand-ochre">
-            <p className="text-4xl font-extrabold text-white" style={{fontFamily: "'El Messiri', sans-serif"}}>
-              {challengePhrase}
-            </p>
+          <div className="mb-8 p-4 bg-nile-dark rounded-lg border-2 border-dashed border-sand-ochre min-h-[96px] flex items-center justify-center">
+            {isLoadingPhrases ? (
+                <Loader2 className="w-8 h-8 animate-spin text-sand-ochre" />
+            ) : (
+                <p className="text-4xl font-extrabold text-white" style={{fontFamily: "'El Messiri', sans-serif"}}>
+                {challengePhrase}
+                </p>
+            )}
           </div>
 
           <p className="text-xl mb-8 text-sand-ochre font-bold">
@@ -284,24 +308,22 @@ export default function PronunciationChallengePage() {
           </p>
 
           <div className="flex justify-center items-center gap-6 mb-8">
-            {/* Mentor Audio Button */}
             <div className="flex flex-col items-center gap-2">
                 <Button
                     id="play-button"
                     onClick={handlePlayMentorAudio}
-                    disabled={isMentorAudioLoading}
+                    disabled={isMentorAudioLoading || isLoadingPhrases}
                     className="shadow-lg w-24 h-24 rounded-full bg-gold-accent text-nile-dark text-3xl mx-auto flex items-center justify-center hover:bg-yellow-300 transition-all duration-300 disabled:bg-gray-500 disabled:opacity-50"
                 >
                     {isMentorAudioLoading ? <Loader2 className="animate-spin" /> : <Play />}
                 </Button>
                 <span className="text-sm font-bold text-sand-ochre">{texts.play_audio}</span>
             </div>
-
-            {/* User Record Button */}
             <div className="flex flex-col items-center gap-2">
                 <Button
                     id="record-button"
                     onClick={isRecording ? stopRecording : startRecording}
+                    disabled={isLoadingPhrases}
                     className={cn("shadow-lg w-24 h-24 rounded-full text-white text-3xl mx-auto flex items-center justify-center transition-all duration-300 transform hover:scale-110", isRecording ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-blue-600 hover:bg-blue-700')}
                 >
                     {isRecording ? <StopCircle /> : <Mic />}
@@ -319,11 +341,9 @@ export default function PronunciationChallengePage() {
 
           <div className={cn("mt-10 flex", isRtl ? "justify-start" : "justify-end")}>
             <Button
-              disabled={!userAudioUrl}
+              disabled={!userAudioUrl || !phrases}
               className="cta-button px-6 py-3 text-lg rounded-full flex items-center"
-              onClick={() => {
-                toast({ title: 'Great!', description: texts.next_prompt });
-              }}
+              onClick={handleNextChallenge}
             >
               {!isRtl && <span>{texts.next}</span>}
               {isRtl ? <ChevronLeft className="mr-2" /> : <ChevronRight className="ml-2" />}

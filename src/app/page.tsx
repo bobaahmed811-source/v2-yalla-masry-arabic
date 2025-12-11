@@ -22,7 +22,6 @@ import {
   LogIn,
   UserPlus,
   LogOut,
-  MessageCircleQuestion,
   GraduationCap,
   Mic,
   Smile,
@@ -35,13 +34,12 @@ import {
   Store,
   Landmark,
   BookMarked,
-  ShieldQuestion,
   Edit,
   Save,
   Loader2,
   Baby,
   BarChart3,
-  Target, // Added icon
+  Target,
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';

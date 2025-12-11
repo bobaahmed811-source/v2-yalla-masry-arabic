@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,44 +12,32 @@ import {
 import { Volume2, Handshake, ShoppingBasket, MessagesSquare, ArrowRight, Library, Loader2 } from 'lucide-react';
 import { getSpeechAudio } from '@/app/ai-actions';
 import { useToast } from '@/hooks/use-toast';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
-// Mock Data for the Audio Library
-const audioLibraryData = [
-  {
-    category: 'التحيات والمجاملات',
-    icon: <Handshake className="w-6 h-6 text-gold-accent" />,
-    phrases: [
-      { id: 'g1', text: 'صباح الخير', translation: 'Good morning' },
-      { id: 'g2', text: 'مساء الخير', translation: 'Good evening' },
-      { id: 'g3', text: 'ازيك؟ عامل ايه؟', translation: "How are you? (to a male)" },
-      { id: 'g4', text: 'انا كويس، الحمد لله', translation: "I'm fine, thank God" },
-      { id: 'g5', text: 'من فضلك / لو سمحت', translation: 'Please' },
-    ],
-  },
-  {
-    category: 'في السوق',
-    icon: <ShoppingBasket className="w-6 h-6 text-gold-accent" />,
-    phrases: [
-      { id: 'm1', text: 'بكام ده؟', translation: 'How much is this?' },
-      { id: 'm2', text: 'عايز كيلو طماطم', translation: 'I want a kilo of tomatoes' },
-      { id: 'm3', text: 'ممكن كيس؟', translation: 'Can I have a bag?' },
-      { id: 'm4', text: 'شكراً، الحساب كام؟', translation: 'Thanks, how much is the total?' },
-    ],
-  },
-  {
-    category: 'تعبيرات يومية',
-    icon: <MessagesSquare className="w-6 h-6 text-gold-accent" />,
-    phrases: [
-      { id: 'd1', text: 'يلا بينا', translation: "Let's go" },
-      { id: 'd2', text: 'معلش', translation: "Sorry / It's okay / Never mind" },
-      { id: 'd3', text: 'خلاص، تمام', translation: "Okay, fine" },
-      { id: 'd4', text: 'مش فاهم', translation: "I don't understand" },
-    ],
-  },
-];
+// Define the type for a phrase from Firestore
+interface Phrase {
+  id: string;
+  category: string;
+  text: string;
+  translation: string;
+}
+
+// Group phrases by category
+const groupPhrasesByCategory = (phrases: Phrase[] | null) => {
+    if (!phrases) return {};
+    return phrases.reduce((acc, phrase) => {
+        const category = phrase.category || 'متفرقات';
+        if (!acc[category]) {
+            acc[category] = [];
+        }
+        acc[category].push(phrase);
+        return acc;
+    }, {} as Record<string, Phrase[]>);
+};
 
 // Phrase Row Component
-const PhraseRow = ({ phrase }: { phrase: { id: string, text: string, translation: string }}) => {
+const PhraseRow = ({ phrase }: { phrase: Phrase }) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -105,6 +92,20 @@ const PhraseRow = ({ phrase }: { phrase: { id: string, text: string, translation
 
 
 export default function AudioLibraryPage() {
+  const firestore = useFirestore();
+  const phrasesCollection = useMemoFirebase(() => {
+    return firestore ? collection(firestore, 'phrases') : null;
+  }, [firestore]);
+
+  const { data: phrases, isLoading, error } = useCollection<Phrase>(phrasesCollection);
+
+  const phrasesByCategory = useMemo(() => groupPhrasesByCategory(phrases), [phrases]);
+  const categoryIcons: Record<string, React.ReactNode> = {
+    'التحيات والمجاملات': <Handshake className="w-6 h-6 text-gold-accent" />,
+    'في السوق': <ShoppingBasket className="w-6 h-6 text-gold-accent" />,
+    'تعبيرات يومية': <MessagesSquare className="w-6 h-6 text-gold-accent" />,
+  };
+
   return (
     <div 
       className="min-h-screen p-4 md:p-8 flex flex-col bg-nile-dark"
@@ -123,25 +124,37 @@ export default function AudioLibraryPage() {
       </header>
 
       <main className="w-full max-w-4xl mx-auto flex-grow">
-        <Accordion type="single" collapsible defaultValue="item-0" className="w-full space-y-6">
-          {audioLibraryData.map((category, index) => (
-            <AccordionItem key={category.category} value={`item-${index}`} className="dashboard-card border-gold-accent/50 rounded-xl overflow-hidden">
-              <AccordionTrigger className="p-6 text-xl text-white royal-title hover:no-underline hover:bg-gold-accent/10">
-                <div className="flex items-center gap-4">
-                  {category.icon}
-                  <span>{category.category}</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="bg-nile-dark/30 px-6 pb-6">
-                <div className="space-y-4 pt-4 border-t-2 border-sand-ochre/20">
-                  {category.phrases.map((phrase) => (
-                    <PhraseRow key={phrase.id} phrase={phrase} />
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        {isLoading && (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="w-12 h-12 text-gold-accent animate-spin" />
+                <p className="text-center text-lg text-sand-ochre ml-4">جاري تحميل العبارات من السجلات...</p>
+            </div>
+        )}
+        {error && <p className="text-center text-lg text-red-400">حدث خطأ أثناء تحميل العبارات: {error.message}</p>}
+
+        {!isLoading && Object.keys(phrasesByCategory).length > 0 ? (
+            <Accordion type="single" collapsible defaultValue="item-0" className="w-full space-y-6">
+            {Object.entries(phrasesByCategory).map(([category, phraseList], index) => (
+                <AccordionItem key={category} value={`item-${index}`} className="dashboard-card border-gold-accent/50 rounded-xl overflow-hidden">
+                <AccordionTrigger className="p-6 text-xl text-white royal-title hover:no-underline hover:bg-gold-accent/10">
+                    <div className="flex items-center gap-4">
+                    {categoryIcons[category] || <Volume2 className="w-6 h-6 text-gold-accent" />}
+                    <span>{category}</span>
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent className="bg-nile-dark/30 px-6 pb-6">
+                    <div className="space-y-4 pt-4 border-t-2 border-sand-ochre/20">
+                    {phraseList.map((phrase) => (
+                        <PhraseRow key={phrase.id} phrase={phrase} />
+                    ))}
+                    </div>
+                </AccordionContent>
+                </AccordionItem>
+            ))}
+            </Accordion>
+        ) : !isLoading && (
+             <p className="text-center text-sand-ochre py-10">لا توجد عبارات في المكتبة حالياً. يمكنك إضافتها من ديوان الإدارة الملكية.</p>
+        )}
       </main>
 
       <footer className="mt-auto pt-12 text-center text-gray-400 text-sm">

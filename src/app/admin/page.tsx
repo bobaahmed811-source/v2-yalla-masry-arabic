@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Edit, Trash2, User, Crown, Loader2, BookOpen, Store, BookMarked, Scroll } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Crown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 // --- Type Definitions ---
@@ -63,6 +63,13 @@ interface Hadith {
     source: string;
     topic: string;
 }
+interface Phrase {
+    id: string;
+    category: string;
+    text: string;
+    translation: string;
+}
+
 
 const AdminDashboardPage = () => {
   const { user } = useUser();
@@ -78,6 +85,7 @@ const AdminDashboardPage = () => {
       product: false,
       book: false,
       hadith: false,
+      phrase: false,
   });
   const [currentState, setCurrentState] = useState<any>({});
   const [selectedCourseForLessons, setSelectedCourseForLessons] = useState<Course | null>(null);
@@ -88,6 +96,7 @@ const AdminDashboardPage = () => {
   const productsCollection = useMemoFirebase(() => firestore ? collection(firestore, 'products') : null, [firestore]);
   const booksCollection = useMemoFirebase(() => firestore ? collection(firestore, 'books') : null, [firestore]);
   const hadithsCollection = useMemoFirebase(() => firestore ? collection(firestore, 'hadiths') : null, [firestore]);
+  const phrasesCollection = useMemoFirebase(() => firestore ? collection(firestore, 'phrases') : null, [firestore]);
   const lessonsCollection = useMemoFirebase(() => (firestore && selectedCourseForLessons) ? collection(firestore, `courses/${selectedCourseForLessons.id}/lessons`) : null, [firestore, selectedCourseForLessons]);
 
   // --- Data Hooks ---
@@ -96,6 +105,7 @@ const AdminDashboardPage = () => {
   const { data: products, isLoading: isLoadingProducts } = useCollection<Product>(productsCollection);
   const { data: books, isLoading: isLoadingBooks } = useCollection<Book>(booksCollection);
   const { data: hadiths, isLoading: isLoadingHadiths } = useCollection<Hadith>(hadithsCollection);
+  const { data: phrases, isLoading: isLoadingPhrases } = useCollection<Phrase>(phrasesCollection);
   const { data: lessons, isLoading: isLoadingLessons } = useCollection<Lesson>(lessonsCollection);
 
   // --- Generic Handlers ---
@@ -152,6 +162,7 @@ const AdminDashboardPage = () => {
   const handleSaveProduct = () => handleSave('products', currentState, ['name', 'description', 'price', 'icon'], 'product');
   const handleSaveBook = () => handleSave('books', currentState, ['title', 'author', 'category'], 'book');
   const handleSaveHadith = () => handleSave('hadiths', currentState, ['text', 'source', 'topic'], 'hadith');
+  const handleSavePhrase = () => handleSave('phrases', currentState, ['category', 'text', 'translation'], 'phrase');
   const handleSaveLesson = () => {
       if (!selectedCourseForLessons) return;
       const data = { ...currentState, courseId: selectedCourseForLessons.id };
@@ -249,6 +260,18 @@ const AdminDashboardPage = () => {
             </DialogContent>
         </Dialog>
 
+        <Dialog open={dialogState.phrase} onOpenChange={(isOpen) => !isOpen && closeDialog('phrase')}>
+            <DialogContent className="dashboard-card text-white">
+                <DialogHeader><DialogTitle className="royal-title">{currentState.id ? 'تعديل العبارة' : 'إضافة عبارة جديدة'}</DialogTitle></DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <Input name="category" placeholder="الفئة (مثل: التحيات)" value={currentState.category || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
+                    <Input name="text" placeholder="النص بالعامية المصرية" value={currentState.text || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
+                    <Input name="translation" placeholder="الترجمة بالإنجليزية" value={currentState.translation || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
+                </div>
+                <DialogFooter><DialogClose asChild><Button variant="outline" className="utility-button">إلغاء</Button></DialogClose><Button onClick={handleSavePhrase} disabled={isSubmitting} className="cta-button">{isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'حفظ'}</Button></DialogFooter>
+            </DialogContent>
+        </Dialog>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {/* Instructors Card */}
             <Card className="dashboard-card">
@@ -278,6 +301,12 @@ const AdminDashboardPage = () => {
             <Card className="dashboard-card">
                 <CardHeader className="flex flex-row items-center justify-between"><CardTitle className="royal-title text-2xl">إدارة الأحاديث</CardTitle><Button onClick={() => openDialog('hadith')} className="cta-button"><PlusCircle className="ml-2 h-4 w-4" /> إضافة</Button></CardHeader>
                 <CardContent>{isLoadingHadiths ? <Loader2 className="animate-spin" /> : <div className="space-y-2">{hadiths?.map(item => (<div key={item.id} className="flex items-center justify-between p-2 rounded-lg bg-nile"><div><p className="font-bold truncate max-w-xs">{item.text}</p></div><div className="flex gap-1"><Button variant="ghost" size="icon" onClick={() => openDialog('hadith', item)}><Edit/></Button><AlertDialog><AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-red-500"><Trash2/></Button></AlertDialogTrigger><AlertDialogContent className="dashboard-card text-white"><AlertDialogHeader><AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="utility-button">إلغاء</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete('hadiths', item.id)} className="bg-red-600">حذف</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div></div>))}</div>}</CardContent>
+            </Card>
+            
+            {/* Phrases Card */}
+            <Card className="dashboard-card">
+                <CardHeader className="flex flex-row items-center justify-between"><CardTitle className="royal-title text-2xl">إدارة العبارات (للتحديات)</CardTitle><Button onClick={() => openDialog('phrase')} className="cta-button"><PlusCircle className="ml-2 h-4 w-4" /> إضافة</Button></CardHeader>
+                <CardContent>{isLoadingPhrases ? <Loader2 className="animate-spin" /> : <div className="space-y-2">{phrases?.map(item => (<div key={item.id} className="flex items-center justify-between p-2 rounded-lg bg-nile"><div><p className="font-bold truncate max-w-xs">{item.text}</p></div><div className="flex gap-1"><Button variant="ghost" size="icon" onClick={() => openDialog('phrase', item)}><Edit/></Button><AlertDialog><AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-red-500"><Trash2/></Button></AlertDialogTrigger><AlertDialogContent className="dashboard-card text-white"><AlertDialogHeader><AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="utility-button">إلغاء</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete('phrases', item.id)} className="bg-red-600">حذف</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div></div>))}</div>}</CardContent>
             </Card>
 
             {/* Lessons Card */}
@@ -316,5 +345,3 @@ const AdminDashboardPage = () => {
 };
 
 export default AdminDashboardPage;
-
-    
