@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Edit, Trash2, Crown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -70,6 +71,17 @@ interface Phrase {
     translation: string;
 }
 
+const phraseCategories = [
+    "التحيات والمجاملات",
+    "في السوق",
+    "تعبيرات يومية",
+    "الأعمال",
+    "في المطار",
+    "في الفندق",
+    "أكاديمي",
+    "رسمي",
+];
+
 
 const AdminDashboardPage = () => {
   const { user } = useUser();
@@ -113,6 +125,11 @@ const AdminDashboardPage = () => {
     const { name, value } = e.target;
     setCurrentState((prev: any) => ({ ...prev, [name]: (e.target.type === 'number') ? Number(value) : value }));
   };
+    
+  const handleSelectChange = (name: string, value: string) => {
+    setCurrentState((prev: any) => ({ ...prev, [name]: value }));
+  };
+
 
   const openDialog = (type: keyof typeof dialogState, data = {}) => {
     setCurrentState(data);
@@ -263,8 +280,15 @@ const AdminDashboardPage = () => {
         <Dialog open={dialogState.phrase} onOpenChange={(isOpen) => !isOpen && closeDialog('phrase')}>
             <DialogContent className="dashboard-card text-white">
                 <DialogHeader><DialogTitle className="royal-title">{currentState.id ? 'تعديل العبارة' : 'إضافة عبارة جديدة'}</DialogTitle></DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <Input name="category" placeholder="الفئة (مثل: التحيات)" value={currentState.category || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
+                <div className="grid gap-4 py-4" dir="rtl">
+                     <Select value={currentState.category || ''} onValueChange={(value) => handleSelectChange('category', value)}>
+                        <SelectTrigger className="w-full bg-nile-dark border-sand-ochre text-white">
+                            <SelectValue placeholder="اختر الفئة..." />
+                        </SelectTrigger>
+                        <SelectContent className="dashboard-card text-white">
+                            {phraseCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
                     <Input name="text" placeholder="النص بالعامية المصرية" value={currentState.text || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
                     <Input name="translation" placeholder="الترجمة بالإنجليزية" value={currentState.translation || ''} onChange={handleInputChange} className="bg-nile-dark border-sand-ochre text-white" />
                 </div>
@@ -306,7 +330,7 @@ const AdminDashboardPage = () => {
             {/* Phrases Card */}
             <Card className="dashboard-card">
                 <CardHeader className="flex flex-row items-center justify-between"><CardTitle className="royal-title text-2xl">إدارة العبارات (للتحديات)</CardTitle><Button onClick={() => openDialog('phrase')} className="cta-button"><PlusCircle className="ml-2 h-4 w-4" /> إضافة</Button></CardHeader>
-                <CardContent>{isLoadingPhrases ? <Loader2 className="animate-spin" /> : <div className="space-y-2">{phrases?.map(item => (<div key={item.id} className="flex items-center justify-between p-2 rounded-lg bg-nile"><div><p className="font-bold truncate max-w-xs">{item.text}</p></div><div className="flex gap-1"><Button variant="ghost" size="icon" onClick={() => openDialog('phrase', item)}><Edit/></Button><AlertDialog><AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-red-500"><Trash2/></Button></AlertDialogTrigger><AlertDialogContent className="dashboard-card text-white"><AlertDialogHeader><AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="utility-button">إلغاء</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete('phrases', item.id)} className="bg-red-600">حذف</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div></div>))}</div>}</CardContent>
+                <CardContent>{isLoadingPhrases ? <Loader2 className="animate-spin" /> : <div className="space-y-2">{phrases?.map(item => (<div key={item.id} className="flex items-center justify-between p-2 rounded-lg bg-nile"><div><p className="font-bold truncate max-w-xs">{item.text}</p><p className="text-xs text-sand-ochre">{item.category}</p></div><div className="flex gap-1"><Button variant="ghost" size="icon" onClick={() => openDialog('phrase', item)}><Edit/></Button><AlertDialog><AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-red-500"><Trash2/></Button></AlertDialogTrigger><AlertDialogContent className="dashboard-card text-white"><AlertDialogHeader><AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel className="utility-button">إلغاء</AlertDialogCancel><AlertDialogAction onClick={() => handleDelete('phrases', item.id)} className="bg-red-600">حذف</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog></div></div>))}</div>}</CardContent>
             </Card>
 
             {/* Lessons Card */}
