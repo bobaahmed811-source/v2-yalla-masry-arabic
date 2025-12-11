@@ -9,44 +9,33 @@ import { Users, LineChart, Map, Ankh, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase';
 import { createInitialProgress } from '@/lib/course-utils';
+import Link from 'next/link';
 
 export default function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { user, firestore } = useUser(true);
+  const { user, firestore, isUserLoading } = useUser(true);
 
   const handleSelectGoal = (goal: string) => {
     setSelectedGoal(goal);
   };
 
   const handleNextStep = async () => {
-    if (selectedGoal && user && firestore) {
-      setIsSubmitting(true);
-      toast({
-        title: 'جاري تسجيل هدفك الملكي...',
-        description: 'لحظات ونبدأ رحلتك في المملكة.',
-      });
-
-      try {
-        // This is where we create the user's progress document in Firestore.
-        await createInitialProgress(firestore, user.uid);
-        
+    // We don't strictly need to create progress here anymore since the provider does it,
+    // but this can serve as a confirmation/update step if needed.
+    // For now, we'll just show a toast and redirect.
+    if (selectedGoal && user) {
+        setIsSubmitting(true);
         toast({
-          title: 'تم تحديد الهدف وبدء الرحلة!',
-          description: `هدف رحلتك هو: ${selectedGoal}. مرحباً بك في المملكة!`,
+            title: 'هدف نبيل!',
+            description: `تم تسجيل هدفك: ${selectedGoal}. مرحباً بك في رحلتك الملكية!`,
         });
+        // The user's progress was already created upon sign-up.
+        // We just redirect them to the main dashboard.
         router.push('/');
-      } catch (error) {
-        console.error("Error creating initial progress:", error);
-        toast({
-          variant: 'destructive',
-          title: 'حدث خطأ ملكي',
-          description: 'لم نتمكن من تسجيل بداية رحلتك. يرجى المحاولة مرة أخرى.',
-        });
-        setIsSubmitting(false);
-      }
+
     } else if (!selectedGoal) {
         toast({
             variant: 'destructive',
@@ -55,6 +44,27 @@ export default function GoalsPage() {
         });
     }
   };
+
+  if (isUserLoading) {
+    return (
+       <div className="antialiased flex items-center justify-center min-h-screen bg-nile-dark p-4">
+         <Loader2 className="h-12 w-12 text-gold-accent animate-spin" />
+       </div>
+    )
+  }
+
+  if (!user) {
+    return (
+       <div className="antialiased flex flex-col items-center justify-center min-h-screen bg-nile-dark p-4 text-center">
+            <h1 className="text-3xl royal-title text-red-400 mb-4">الدخول محظور</h1>
+            <p className="text-sand-ochre mb-6">يجب تسجيل الدخول للوصول إلى هذه القاعة.</p>
+            <Link href="/login">
+                <Button className="cta-button">العودة إلى بوابة الدخول</Button>
+            </Link>
+       </div>
+    )
+  }
+
 
   return (
     <div className="antialiased flex items-center justify-center min-h-screen bg-nile-dark p-4">
@@ -211,5 +221,4 @@ const GoalCard = ({
     </div>
   );
 };
-
     

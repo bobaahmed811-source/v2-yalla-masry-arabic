@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -63,26 +64,31 @@ export default function SignupPage() {
     }
     setIsSubmitting(true);
 
+    // The name is passed to the Firebase Auth `displayName` field here.
+    // The provider will then read this and use it to create the Firestore document.
     initiateEmailSignUp(auth, email, password, (result) => {
         if (result.success && result.user) {
             const user = result.user;
-            // This is the crucial step: update the profile *after* user creation.
+            // This is a crucial step: we update the Firebase Auth user profile
+            // with the name from the form. This name will be read by the onAuthStateChanged
+            // listener in FirebaseProvider to create the Firestore user document correctly.
             updateProfileNonBlocking(user, { displayName: name }, (profileResult) => {
-                setIsSubmitting(false); // Stop loading indicator regardless of profile update result
+                setIsSubmitting(false);
                 if(profileResult.success) {
                     toast({
                         title: "تم إنشاء الحساب بنجاح!",
                         description: `مرحباً بكِ يا ${name}! سيتم توجيهك الآن لاختيار هدفك.`
                     });
-                    // Redirect to the onboarding flow
-                    router.push('/goals');
+                    // The onAuthStateChanged listener in FirebaseProvider will now detect
+                    // this new user and automatically redirect them to '/goals'.
+                    // We don't need to manually push the router here.
                 } else {
                      toast({
                         variant: "destructive",
                         title: "نجح إنشاء الحساب، ولكن فشل تحديث الاسم",
                         description: profileResult.error?.message || 'يرجى تحديث اسمك من صفحة الملف الشخصي لاحقًا.'
                     });
-                    router.push('/'); // Redirect even if name update fails
+                    router.push('/'); // Redirect to home as a fallback.
                 }
             });
         } else if (result.error) {
@@ -122,7 +128,7 @@ export default function SignupPage() {
           <form onSubmit={handleSignup}>
             <div className="grid gap-4">
                <div className="grid gap-2">
-                <Label htmlFor="name" className="text-sand-ochre">الاسم الكامل</Label>
+                <Label htmlFor="name" className="text-sand-ochre">اسمك أو لقبك (سيظهر للجميع)</Label>
                 <Input 
                   id="name" 
                   placeholder="مثال: حتشبسوت" 

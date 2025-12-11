@@ -86,7 +86,11 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       auth,
       async (firebaseUser) => {
         if (firebaseUser) {
-          // User is signed in, fetch profile to get nilePoints and check for displayName
+          // --- User Profile Hydration Logic ---
+          // When a user signs in, their `firebaseUser` object might be minimal.
+          // We immediately fetch their corresponding document from the `/users/{userId}` collection in Firestore.
+          // This document contains richer profile information, like their pharaonic `alias` and `nilePoints`.
+
           const userDocRef = doc(firestore, 'users', firebaseUser.uid);
           
           try {
@@ -94,48 +98,52 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
             let userData: DocumentData | undefined;
             
             if (userDoc.exists()) {
+              // **Scenario 1: Existing User**
+              // The user's document was found. We extract its data.
               userData = userDoc.data();
             } else {
-              // If user doc doesn't exist, this is a new sign-up. Create the user document.
-              console.log(`User document for ${firebaseUser.uid} not found. Creating...`);
+              // **Scenario 2: New User Sign-Up**
+              // No document exists, so this is their first login. We must create their profile.
+              // This is critical for the app to function, as many parts rely on this profile data.
+              console.log(`User document for ${firebaseUser.uid} not found. Creating a new profile...`);
               const newUserDoc = {
                   id: firebaseUser.uid,
                   email: firebaseUser.email,
-                  name: firebaseUser.displayName || 'New Queen',
-                  alias: firebaseUser.displayName || `ملكة ${firebaseUser.uid.substring(0,5)}`,
+                  name: firebaseUser.displayName || 'New Queen', // Use name from sign-up form, fallback to default.
+                  alias: firebaseUser.displayName || `ملكة ${firebaseUser.uid.substring(0,5)}`, // The 'alias' will be the official displayName.
                   registrationDate: new Date().toISOString(),
                   nilePoints: 0,
               };
               await setDoc(userDocRef, newUserDoc);
               userData = newUserDoc;
               
-              // Also create their initial progress document
+              // For a new user, we also create their initial course progress document.
               await createInitialProgress(firestore, firebaseUser.uid);
-            }
 
+              // Since this is a new user, we redirect them to the 'goals' page for onboarding.
+               router.push('/goals');
+            }
+            
+            // **Hydration Step**
+            // We merge the basic `firebaseUser` with our rich `userData` from Firestore.
+            // The `displayName` is explicitly set from the `alias` field in our database,
+            // ensuring it's the "official" pharaonic name used throughout the app.
             const fullUser: FullUser = {
               ...firebaseUser,
               nilePoints: userData?.nilePoints ?? 0,
-              // Ensure displayName is updated from Firestore if it was null initially
-              displayName: firebaseUser.displayName || userData?.alias,
+              displayName: userData?.alias || firebaseUser.displayName, // Prioritize the database alias.
             };
 
             setUserAuthState({ user: fullUser, isUserLoading: false, userError: null });
 
-            // If the user was newly created (or displayName was just set),
-            // and they don't have a progress document, they likely need to go to /goals.
-            // A simple check is if they don't have a displayName set on the firebaseUser object yet.
-            if (!firebaseUser.displayName) {
-               router.push('/goals');
-            }
-
           } catch (error) {
-             console.error("Error fetching/creating user document:", error);
+             console.error("Error during user profile hydration:", error);
+             // If hydration fails, we still provide the basic user object to avoid a full crash.
              setUserAuthState({ user: firebaseUser as FullUser, isUserLoading: false, userError: error as Error });
           }
 
         } else {
-          // User is signed out
+          // User is signed out, clear all state.
           setUserAuthState({ user: null, isUserLoading: false, userError: null });
         }
       },
@@ -242,5 +250,4 @@ export const useUser = (includeFirestore = false): UserHookResult => {
   
   return { user, isUserLoading, userError };
 };
-
     
