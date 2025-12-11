@@ -24,7 +24,7 @@ import Link from 'next/link';
 import { getSpeechAudio } from '../ai-actions';
 import { cn } from '@/lib/utils';
 
-// Dictionary for all UI texts
+// Dictionary for all UI texts, now including Spanish
 const lang: Record<string, Record<string, string>> = {
   ar: {
     title: "تحديات قوة حتشبسوت الفرعونية",
@@ -79,6 +79,33 @@ const lang: Record<string, Record<string, string>> = {
     mic_error_desc: 'Please ensure you have given permission to use the microphone.',
     mic_unsupported_title: 'Browser Not Supported',
     mic_unsupported_desc: 'Audio recording is not supported in this browser.',
+  },
+  es: {
+    title: "Desafíos de Poder Faraónico de Hatshepsut",
+    mentor: "Escucha el decreto real, luego declara tu lealtad repitiéndolo.",
+    instructions: 'Escucha la frase y repítela claramente para activar tu poder faraónico.',
+    loading: "Preparando la voz del mentor...",
+    error: 'Ocurrió un error: No se puede reproducir el audio.',
+    record: 'Grabar Voz',
+    recording: 'Grabando...',
+    stop_recording: 'Detener Grabación',
+    next: 'Siguiente',
+    go_back: 'Volver al Panel',
+    play_audio: 'Escuchar Decreto',
+    playing_audio: 'Reproduciendo...',
+    your_turn: "¡Es tu turno ahora!",
+    record_prompt: 'Puedes grabar tu voz y compararla.',
+    next_prompt: '¡Genial! Serás llevado al siguiente desafío.',
+    audio_ready: 'Audio Listo',
+    audio_ready_desc: 'Ahora puedes escuchar la frase.',
+    audio_error_title: 'Error de Audio',
+    audio_error_desc: 'No se pudo obtener el clip de audio.',
+    playback_error_title: 'Error de Reproducción',
+    playback_error_desc: 'No pudimos reproducir el archivo de audio.',
+    mic_error_title: 'Error de Micrófono',
+    mic_error_desc: 'Por favor, asegúrate de haber dado permiso para usar el micrófono.',
+    mic_unsupported_title: 'Navegador No Soportado',
+    mic_unsupported_desc: 'La grabación de audio no es compatible con este navegador.',
   },
 };
 
@@ -200,6 +227,7 @@ export default function PronunciationChallengePage() {
           <SelectContent>
             <SelectItem value="en">English (EN)</SelectItem>
             <SelectItem value="ar">العربية (AR)</SelectItem>
+            <SelectItem value="es">Español (ES)</SelectItem>
           </SelectContent>
         </Select>
          <Link href="/" className="utility-button px-4 py-2 text-md font-bold rounded-lg flex items-center justify-center">
@@ -279,3 +307,5 @@ export default function PronunciationChallengePage() {
     </div>
   );
 }
+
+    
