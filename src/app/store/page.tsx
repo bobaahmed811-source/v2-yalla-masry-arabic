@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -205,9 +206,10 @@ export default function StorePage() {
                                 <option value="ankh_audio">مفتاح الحياة الصوتي ($180)</option>
                              </select>
                         </div>
-                        <Button onClick={handleSendGift} disabled={isSubmitting} className="w-full cta-button text-lg">
+                        <Button onClick={handleSendGift} disabled={isSubmitting || !user} className="w-full cta-button text-lg">
                            {isSubmitting ? <Loader2 className="animate-spin"/> : <><Gift className="inline-block ml-2"/> إرسال الهدية</>}
                         </Button>
+                         {!user && <p className="text-red-400 text-center text-sm">يجب تسجيل الدخول لإرسال هدية.</p>}
                     </div>
                 </div>
             </TabsContent>
@@ -273,3 +275,5 @@ style.innerHTML = `
 }
 `;
 document.head.appendChild(style);
+
+    

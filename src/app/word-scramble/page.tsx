@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -118,7 +119,7 @@ const GameContent = () => {
     } else {
       setIsCorrect(false);
       setMessage('حاول مجدداً! ترتيب الكلمات غير صحيح.');
-      // Reset the words for another try
+      // Reset the words for another try after a delay
       setTimeout(() => {
         setShuffledWords(shuffleWords(correctSentence));
         setArrangedWords([]);
@@ -303,3 +304,5 @@ const WordScramblePage = () => {
 };
 
 export default WordScramblePage;
+
+    
