@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -171,7 +170,6 @@ export default function HomePage() {
   const auth = useAuth();
   const { toast } = useToast();
 
-  // State for dynamic dashboard data
   const [lessonsCompleted, setLessonsCompleted] = useState(0);
   const [totalLessons, setTotalLessons] = useState(0);
 
@@ -459,5 +457,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
