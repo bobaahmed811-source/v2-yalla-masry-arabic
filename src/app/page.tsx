@@ -41,6 +41,7 @@ import {
   Loader2,
   Baby,
   BarChart3,
+  Target, // Added icon
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
@@ -403,6 +404,12 @@ export default function HomePage() {
                       title="المعلم الخصوصي الذكي"
                       description="احصلي على إجابات فورية لأسئلتكِ."
                       icon={<GraduationCap />}
+                    />
+                     <ChallengeLink
+                      href="/goals"
+                      title="بوابة تحديد المصير"
+                      description="حددي أهدافكِ التعليمية لتخصيص رحلتك."
+                      icon={<Target />}
                     />
                     <ChallengeLink
                       href="/level-assessment"

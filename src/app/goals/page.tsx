@@ -250,5 +250,3 @@ const GoalCard = ({
     </div>
   );
 };
-
-    
