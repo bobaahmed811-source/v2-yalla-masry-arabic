@@ -16,7 +16,7 @@ interface Instructor {
   email: string;
   shortBio: string;
   lessonPrice: number;
-  photo?: string; // Kept for potential direct URLs
+  photo?: string;
   specialties?: string[];
   averageRating?: number;
   totalReviews?: number;
@@ -29,21 +29,25 @@ const InstructorCard = ({ instructor }: { instructor: Instructor }) => {
 
   return (
       <Card className="dashboard-card text-white overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl flex flex-col">
-        <div className="relative">
-          <Image
-            src={imageUrl}
-            alt={`صورة المعلمة ${instructor.teacherName}`}
-            width={400}
-            height={250}
-            className="w-full h-48 object-cover"
-            data-ai-hint={imageHint}
-          />
-          <div className="absolute top-2 left-2 bg-nile-dark/70 text-gold-accent p-2 rounded-lg font-bold">
-            ${instructor.lessonPrice}/ساعة
-          </div>
-        </div>
+        <Link href={`/instructors/${instructor.id}`} className="block">
+            <div className="relative">
+            <Image
+                src={imageUrl}
+                alt={`صورة المعلمة ${instructor.teacherName}`}
+                width={400}
+                height={250}
+                className="w-full h-48 object-cover"
+                data-ai-hint={imageHint}
+            />
+            <div className="absolute top-2 left-2 bg-nile-dark/70 text-gold-accent p-2 rounded-lg font-bold">
+                ${instructor.lessonPrice}/ساعة
+            </div>
+            </div>
+        </Link>
         <CardHeader className="text-center">
-          <CardTitle className="royal-title text-2xl">{instructor.teacherName}</CardTitle>
+          <CardTitle className="royal-title text-2xl">
+             <Link href={`/instructors/${instructor.id}`} className="hover:text-gold-accent transition-colors">{instructor.teacherName}</Link>
+          </CardTitle>
           {instructor.averageRating && (
             <div className="flex items-center justify-center text-sand-ochre">
                 {[...Array(5)].map((_, i) => (
@@ -63,7 +67,7 @@ const InstructorCard = ({ instructor }: { instructor: Instructor }) => {
               </div>
             )}
           <Button asChild className="w-full cta-button mt-auto">
-            <Link href={`/booking?instructorId=${instructor.id}`}>احجزي الآن</Link>
+            <Link href={`/instructors/${instructor.id}`}>عرض الملف الشخصي والحجز</Link>
           </Button>
         </CardContent>
       </Card>
