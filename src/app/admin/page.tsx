@@ -319,7 +319,7 @@ const AdminDashboardPage = () => {
         
         <Dialog open={dialogState.adventureChallenge} onOpenChange={(isOpen) => !isOpen && closeDialog('adventureChallenge')}>
             <DialogContent className="dashboard-card text-white">
-                <DialogHeader><DialogTitle className="royal-title">{currentState.id ? 'تعديل تحدي مغامرة' : 'إضافة تحدي مغامرة'}</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle className="royal-title">{currentState.id ? 'تعديل تحدي نوف' : 'إضافة تحدي جديد لرحلة نوف'}</DialogTitle></DialogHeader>
                 <div className="grid gap-4 py-4" dir="rtl">
                      <Select value={currentState.category || ''} onValueChange={(value) => handleSelectChange('category', value)}>
                         <SelectTrigger className="w-full bg-nile-dark border-sand-ochre text-white">

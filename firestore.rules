@@ -63,7 +63,7 @@ service cloud.firestore {
     match /books/{bookId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
     match /hadiths/{hadithId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
     match /phrases/{phraseId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
-    match /gulf_phrases/{phraseId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
+    match /adventure_challenges/{challengeId} { allow get, list: if true; allow write: if isSignedIn(); /* DANGER: For prototyping only */ }
     
     // Course content - should require enrollment
     match /courses/{courseId}/{subcollection}/{docId} {
@@ -115,6 +115,3 @@ service cloud.firestore {
     }
   }
 }
-
-
-    

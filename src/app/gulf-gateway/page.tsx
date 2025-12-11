@@ -1,10 +1,11 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
-import { ArrowRight, BookCopy, Car, Loader2, ShoppingBasket, Building2 } from 'lucide-react';
+import { ArrowRight, BookCopy, Car, Loader2, ShoppingBasket, Utensils } from 'lucide-react';
 import Image from 'next/image';
 
 interface AdventureChallenge {
@@ -34,7 +35,7 @@ const STOPS = [
         id: 'restaurant',
         title: 'المحطة الثالثة: طلبات في مطعم كشري',
         description: 'تكتشف نوف طريقة طلب الأطباق المصرية الأصيلة.',
-        icon: Building2,
+        icon: Utensils,
         category: 'الطعام والشراب'
     },
 ];
