@@ -32,6 +32,10 @@
         "nilePoints": {
           "type": "number",
           "description": "Gamification points earned by the user."
+        },
+        "goal": {
+            "type": "string",
+            "description": "The primary learning goal of the user (e.g., 'social', 'business')."
         }
       },
       "required": [

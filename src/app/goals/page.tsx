@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -8,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Users, LineChart, Map, Ankh, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase';
-import { createInitialProgress } from '@/lib/course-utils';
+import { doc, updateDoc } from 'firebase/firestore';
 import Link from 'next/link';
 
 export default function GoalsPage() {
@@ -23,25 +22,47 @@ export default function GoalsPage() {
   };
 
   const handleNextStep = async () => {
-    // We don't strictly need to create progress here anymore since the provider does it,
-    // but this can serve as a confirmation/update step if needed.
-    // For now, we'll just show a toast and redirect.
-    if (selectedGoal && user) {
-        setIsSubmitting(true);
-        toast({
-            title: 'هدف نبيل!',
-            description: `تم تسجيل هدفك: ${selectedGoal}. مرحباً بك في رحلتك الملكية!`,
-        });
-        // The user's progress was already created upon sign-up.
-        // We just redirect them to the main dashboard.
-        router.push('/');
-
-    } else if (!selectedGoal) {
+    if (!selectedGoal) {
         toast({
             variant: 'destructive',
             title: 'لم يتم تحديد الهدف',
             description: 'يرجى اختيار هدف واحد على الأقل للمتابعة.'
         });
+        return;
+    }
+    
+    if (!user || !firestore) {
+         toast({
+            variant: 'destructive',
+            title: 'خطأ',
+            description: 'يجب تسجيل الدخول لحفظ الهدف. جاري إعادة التحميل...'
+        });
+        return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+        const userDocRef = doc(firestore, 'users', user.uid);
+        await updateDoc(userDocRef, {
+            goal: selectedGoal
+        });
+
+        toast({
+            title: 'هدف نبيل!',
+            description: `تم تسجيل هدفك بنجاح. مرحباً بك في رحلتك الملكية!`,
+        });
+        
+        router.push('/');
+
+    } catch (error) {
+        console.error("Error updating goal:", error);
+        toast({
+            variant: 'destructive',
+            title: 'فشل حفظ الهدف',
+            description: 'حدث خطأ أثناء حفظ هدفك. يرجى المحاولة مرة أخرى.'
+        });
+        setIsSubmitting(false);
     }
   };
 
@@ -221,4 +242,3 @@ const GoalCard = ({
     </div>
   );
 };
-    

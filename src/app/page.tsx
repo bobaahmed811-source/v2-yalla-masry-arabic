@@ -40,6 +40,7 @@ import {
   Save,
   Loader2,
   Baby,
+  BarChart3,
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
@@ -404,10 +405,10 @@ export default function HomePage() {
                       icon={<GraduationCap />}
                     />
                     <ChallengeLink
-                      href="/community-chat"
-                      title="ساحة الحوار الكبرى"
-                      description="تواصلي مع بقية الطالبات."
-                      icon={<MessageCircleQuestion />}
+                      href="/level-assessment"
+                      title="اختبار تحديد المستوى"
+                      description="اكتشفي مستواكِ الحالي وابدأي من حيث يجب."
+                      icon={<BarChart3 />}
                     />
                   </CardContent>
                 </Card>
