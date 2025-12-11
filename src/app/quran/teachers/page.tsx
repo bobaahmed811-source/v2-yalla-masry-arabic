@@ -13,7 +13,6 @@ interface Instructor {
   photo?: string;
   status?: 'Active' | 'Inactive';
   lessonPrice?: number;
-  // This field would ideally be used to filter Quran teachers specifically
   specialties?: string[];
 }
 
@@ -43,12 +42,10 @@ const TeacherCard = ({ teacher }: { teacher: Instructor }) => (
 export default function TeachersPage() {
   const firestore = useFirestore();
   
-  // This query fetches all instructors. 
-  // For a real app, you would filter for Quran teachers specifically.
-  // e.g., query(collection(firestore, 'instructors'), where('specialties', 'array-contains', 'Quran'))
+  // This query now filters for instructors who have "Quran" in their specialties array.
   const instructorsCollection = useMemoFirebase(() => {
     if (!firestore) return null;
-    return collection(firestore, 'instructors'); 
+    return query(collection(firestore, 'instructors'), where('specialties', 'array-contains', 'Quran')); 
   }, [firestore]);
 
   const { data: teachers, isLoading, error } = useCollection<Instructor>(instructorsCollection);
@@ -90,7 +87,7 @@ export default function TeachersPage() {
         )}
 
         {!isLoading && teachers?.length === 0 && (
-            <p className="text-center text-sand-ochre py-10">لا يوجد معلمون مسجلون حالياً.</p>
+            <p className="text-center text-sand-ochre py-10">لا يوجد معلمون متخصصون في القرآن مسجلون حالياً.</p>
         )}
       </main>
 

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -40,6 +39,7 @@ import {
   Edit,
   Save,
   Loader2,
+  Baby,
 } from 'lucide-react';
 import { initiateSignOut } from '@/firebase/non-blocking-login';
 import { useToast } from '@/hooks/use-toast';
@@ -453,10 +453,10 @@ export default function HomePage() {
                       icon={<BookMarked />}
                     />
                      <ChallengeLink
-                      href="/landing"
-                      title="عن الأكاديمية"
-                      description="تعرفي على قصتنا ورسالتنا."
-                      icon={<ShieldQuestion />}
+                      href="/kids"
+                      title="ركن الأطفال"
+                      description="تحديات ومواد تعليمية للصغار."
+                      icon={<Baby />}
                     />
                   </CardContent>
                 </Card>
