@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow for generating a short comic dialogue.
@@ -62,10 +63,8 @@ const comicDialogueFlow = ai.defineFlow(
     outputSchema: ComicDialogueOutputSchema,
   },
   async (input) => {
-    // const { output } = await dialoguePrompt(input);
-    // return output!;
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return { dialogue: ['الحوار معطل مؤقتاً', 'سيتم تفعيله قريباً', 'شكراً لتفهمكم'] };
+    const { output } = await dialoguePrompt(input);
+    return output!;
   }
 );
 

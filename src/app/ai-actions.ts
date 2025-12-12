@@ -22,8 +22,6 @@ export async function getSpeechAudio(text: string) {
   try {
     const result = await getSpeechAudioFlow(text);
     return { success: true, media: result.media };
-    // return { error: "ميزة تحويل النص إلى صوت معطلة مؤقتاً." };
-
   } catch (e: any) {
     console.error("Error in getSpeechAudio action:", e);
     return { error: "Failed to get audio from the AI. " + (e.message || "Please try again later.") };
@@ -41,8 +39,6 @@ export async function getComicDialog(values: z.infer<typeof ComicDialogueInputSc
   try {
     const result = await getComicDialogueFlow(values);
     return { success: true, dialogue: result.dialogue };
-    // await new Promise(resolve => setTimeout(resolve, 500));
-    // return { success: true, dialogue: ['الحوار معطل مؤقتاً', 'سيتم تفعيله قريباً', 'شكراً لتفهمكم'] };
   } catch (e: any) {
     console.error("Error in getComicDialog action:", e);
     return { error: "Failed to get dialogue from the AI. " + (e.message || "Please try again later.") };
@@ -59,9 +55,6 @@ export async function getDialogueEvaluation(values: z.infer<typeof DialogueEvalu
   try {
     const result = await getDialogueEvaluationFlow(values);
     return { success: result };
-    // await new Promise(resolve => setTimeout(resolve, 500));
-    //  return { success: { score: 10, feedback: "ميزة التقييم معطلة مؤقتاً، ولكن عمل جيد!", isPositive: true } };
-
   } catch (e: any)
    {
     console.error("Error in getDialogueEvaluation action:", e);
@@ -78,7 +71,6 @@ export async function getStorytellerAudio(values: z.infer<typeof StorytellerInpu
     try {
         const result = await getStorytellerAudioFlow(values);
         return { success: true, media: result.media };
-        // return { error: "ميزة المرشد الصوتي معطلة مؤقتاً." };
     } catch (e: any) {
         console.error("Error in getStorytellerAudio action:", e);
         return { error: "Failed to get story from the AI. " + (e.message || "Please try again later.") };
@@ -94,9 +86,6 @@ export async function getPronunciationAnalysis(values: z.infer<typeof Pronunciat
     try {
         const result = await getPronunciationAnalysisFlow(values);
         return { success: true, analysis: result };
-        // await new Promise(resolve => setTimeout(resolve, 1000));
-        // return { success: true, analysis: { evaluation: 'correct', feedback: 'ميزة تحليل النطق معطلة مؤقتاً، ولكن يبدو جيداً!' } };
-
     } catch (e: any) {
         console.error("Error in getPronunciationAnalysis action:", e);
         return { error: "Failed to get analysis from the AI. " + (e.message || "Please try again later.") };

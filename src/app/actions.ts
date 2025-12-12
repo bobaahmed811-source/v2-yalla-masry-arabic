@@ -2,18 +2,16 @@
 "use server";
 
 import { z } from "zod";
-// import { getTutorResponseFlow, AITutorInputSchema } from "@/ai/flows/tutor-flow";
-// import { getSpeechAudioFlow } from '@/ai/flows/speech-flow';
+import { getTutorResponseFlow, AITutorInputSchema } from "@/ai/flows/tutor-flow";
+import { getSpeechAudioFlow } from '@/ai/flows/speech-flow';
 
 // Re-using the schema from the flow for consistency.
-// const InputSchema = AITutorInputSchema;
+const InputSchema = AITutorInputSchema;
 
-export async function getTutorResponse(values: z.infer<any>) { // z.infer<typeof InputSchema>
+export async function getTutorResponse(values: z.infer<typeof InputSchema>) {
   try {
-    // const result = await getTutorResponseFlow(values);
-    // return { answer: result.answer };
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return { answer: "ميزة المعلم الذكي معطلة مؤقتاً. سيتم تفعيلها قريباً." };
+    const result = await getTutorResponseFlow(values);
+    return { answer: result.answer };
   } catch (e: any) {
     console.error("Error in getTutorResponse action:", e);
     return { error: "Failed to get a response from the AI tutor. " + (e.message || "Please try again later.") };
@@ -28,9 +26,8 @@ export async function getTutorResponse(values: z.infer<any>) { // z.infer<typeof
  */
 export async function getSpeechAudio(text: string) {
   try {
-    // const result = await getSpeechAudioFlow(text);
-    // return { success: true, media: result.media };
-    return { error: "ميزة تحويل النص إلى صوت معطلة مؤقتاً." };
+    const result = await getSpeechAudioFlow(text);
+    return { success: true, media: result.media };
   } catch (e: any) {
     console.error("Error in getSpeechAudio action:", e);
     return { error: "Failed to get audio from the AI. " + (e.message || "Please try again later.") };
