@@ -1,6 +1,5 @@
-
 {
-  "name": "yalla-masry-app",
+  "name": "yalla-masry",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -42,7 +41,7 @@
     "firebase": "^10.12.2",
     "genkit": "1.20.0",
     "lucide-react": "^0.400.0",
-    "next": "14.2.35",
+    "next": "14.2.4",
     "react": "18.3.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
@@ -69,5 +68,3 @@
     "typescript": "^5.4.5"
   }
 }
-
-    
