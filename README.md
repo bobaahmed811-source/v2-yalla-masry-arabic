@@ -1,3 +1,4 @@
+put out Git Hub 
 # Firebase Studio
 
 This is a NextJS starter project in Firebase Studio. 
