@@ -48,3 +48,5 @@ export function initiateSignOut(
   // without waiting for the sign-out to be fully confirmed by the backend.
   callback();
 }
+
+    
