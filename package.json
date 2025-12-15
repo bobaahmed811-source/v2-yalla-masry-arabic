@@ -1,6 +1,6 @@
 {
-  "name": "yalla-masry-academy",
-  "version": "0.1.0",
+    "name": "yalla-masry-academy",
+"version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

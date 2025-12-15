@@ -1,9 +1,7 @@
-
-import { Smile, Mic, Crown, Medal } from 'lucide-react';
-import React from 'react';
+import { Smile, Mic, Crown, Medal, type LucideIcon } from 'lucide-react';
 
 // Enum to define unique badge names
-export const enum Badge {
+export const enum BadgeName {
   FirstLogin = 'first_login',
   MarketDialogue = 'market_dialogue',
   PerfectPronunciation = 'perfect_pronunciation',
@@ -13,25 +11,25 @@ export const enum Badge {
 export interface BadgeInfo {
   name: string;
   description: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   color: string;
 }
 
 // A record mapping badge names to their detailed information
-export const BADGE_DEFINITIONS: Record<Badge, BadgeInfo> = {
-  [Badge.FirstLogin]: {
+export const BADGE_DEFINITIONS: Record<BadgeName, BadgeInfo> = {
+  [BadgeName.FirstLogin]: {
     name: 'تذكرة الدخول الملكية',
     description: 'مُنحت عند دخول المملكة لأول مرة. أهلاً بكِ!',
     icon: Crown,
     color: '#FFD700', // Gold
   },
-  [Badge.MarketDialogue]: {
+  [BadgeName.MarketDialogue]: {
     name: 'خبيرة حوارات السوق',
     description: 'مُنحت لإتقان تحدي الحوار في السوق بنجاح.',
     icon: Smile,
     color: '#34D399', // Emerald
   },
-  [Badge.PerfectPronunciation]: {
+  [BadgeName.PerfectPronunciation]: {
     name: 'صوت حتشبسوت',
     description: 'مُنحت لتحقيق نطق مثالي في تحدي قوة حتشبسوت.',
     icon: Mic,
@@ -45,6 +43,7 @@ export const BADGE_DEFINITIONS: Record<Badge, BadgeInfo> = {
  * @returns The BadgeInfo object or null if not found.
  */
 export function getBadgeByName(name: string): BadgeInfo | null {
-  return BADGE_DEFINITIONS[name as Badge] || null;
+  return BADGE_DEFINITIONS[name as BadgeName] || null;
 }
+
     

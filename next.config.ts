@@ -16,8 +16,6 @@ const nextConfig: NextConfig = {
 
   // Configuration for next/image to allow images from external domains.
   images: {
-    // Unoptimized is only needed for static export. We can remove it, but it's safe to keep.
-    unoptimized: true, 
     remotePatterns: [
       {
         protocol: 'https',
