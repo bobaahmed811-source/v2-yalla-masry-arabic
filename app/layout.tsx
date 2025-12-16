@@ -19,14 +19,6 @@ export const metadata: Metadata = {
     description: 'The fun, safe, and effective way for women and children to master the Egyptian dialect with expert female tutors.',
     type: 'website',
     url: 'https://www.yallamasry.com', // To be replaced with the actual domain
-    images: [
-      {
-        url: '/og-image.png', // To be created. Recommended size: 1200x630
-        width: 1200,
-        height: 630,
-        alt: 'Yalla Masry Academy Royal Banner for Women and Children',
-      },
-    ],
     siteName: 'Yalla Masry Academy',
   },
 
@@ -36,7 +28,6 @@ export const metadata: Metadata = {
     title: 'Yalla Masry Academy: Master the Egyptian Dialect for Women & Children',
     description: 'The fun, gamified platform for women and kids to master Egyptian Colloquial Arabic.',
     // creator: '@YourTwitterHandle', // To be added later
-    images: ['/twitter-image.png'], // To be created. Recommended size: 1200x675
   },
   
   // Other important metadata
