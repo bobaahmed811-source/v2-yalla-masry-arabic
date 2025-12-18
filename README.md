@@ -1,7 +1,5 @@
 # Yalla Masry Academy - Rebuilt
 
-This project has been rebuilt from scratch to ensure stability and a clean foundation for future development.
-
 **THE CHANGES HAVE BEEN APPLIED. YOU CAN NOW RUN THE GIT COMMANDS.**
 
 ## How to Deploy (The ONLY Way)
