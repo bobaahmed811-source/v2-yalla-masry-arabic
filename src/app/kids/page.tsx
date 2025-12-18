@@ -78,7 +78,7 @@ export default function KidsCornerPage() {
                     title="قصص الأنبياء"
                     description="قصص مصورة ومروية عن الأنبياء بأسلوب شيق."
                     icon={BookHeart}
-                    color="#60A5FA"
+                    color="#F59E0B"
                     href="/kids/prophet-stories"
                 />
                 <ActivityCard
