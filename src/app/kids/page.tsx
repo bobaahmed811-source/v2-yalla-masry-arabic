@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -60,7 +61,7 @@ export default function KidsCornerPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                 <ActivityCard
-                    title="ألوان الفراعنة"
+                    title="التغيير حدث هنا: ارسلي الكود الآن"
                     description="لعبة تلوين ممتعة لشخصيات وآثار من مصر القديمة."
                     icon={Brush}
                     color="#34D399"
