@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -52,7 +51,7 @@ export default function KidsCornerPage() {
                         />
                     )}
                     <div>
-                        <h1 className="text-4xl font-bold text-yellow-400 font-cairo mb-2">هنا تكمن الحقيقة: الملف تغير الآن</h1>
+                        <h1 className="text-4xl font-bold text-yellow-400 font-cairo mb-2">أهلاً بكم في ركن الصغار</h1>
                         <p className="text-lg md:text-xl text-sand-ochre max-w-2xl">
                             أنا بسبس، القط الفرعوني! هنا، التعلم مغامرة ممتعة مليئة بالألعاب والقصص والألوان. هل أنتم مستعدون للانطلاق؟
                         </p>
@@ -61,7 +60,7 @@ export default function KidsCornerPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                 <ActivityCard
-                    title="التغيير حدث هنا: ارسلي الكود الآن"
+                    title="ألوان الفراعنة"
                     description="لعبة تلوين ممتعة لشخصيات وآثار من مصر القديمة."
                     icon={Brush}
                     color="#34D399"

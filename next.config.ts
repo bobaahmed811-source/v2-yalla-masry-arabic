@@ -1,7 +1,7 @@
-
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -13,35 +13,24 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'picsum.photos',
-        port: '',
-        pathname: '/**',
-      },
-       {
-        protocol: 'https'
       },
       {
         protocol: 'https',
         hostname: 'storage.googleapis.com',
-        port: '',
-        pathname: '/**',
       }
     ],
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '2mb', // Default is 1mb, increase for audio uploads
+      bodySizeLimit: '2mb',
     },
   },
 };
