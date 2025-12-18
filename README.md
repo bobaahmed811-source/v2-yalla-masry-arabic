@@ -55,7 +55,9 @@ git push -u origin main
     *   **See this image for the exact location of the field you need to change:**
     *   ![Vercel Project Name Field](https://storage.googleapis.com/stedi-assets/yalla-masry/vercel-project-name-fix.png)
 6.  Click "Deploy". Vercel will now build the project correctly from the blueprint.
-
+git add .
+git commit -m "Fix project structure configuration for Vercel"
+git push
 This process, followed exactly, will solve the `404` error.
 
 ## Deployment Philosophy (For the Developer)
