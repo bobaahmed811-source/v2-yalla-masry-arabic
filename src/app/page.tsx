@@ -1,10 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-// A very simple root page to ensure it loads and redirects.
+// A simple root page that automatically redirects to the /kids section.
 export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to the kids page immediately on component mount.
+    router.push('/kids');
+  }, [router]);
+
   return (
     <div className="min-h-screen w-full bg-kids-bg text-white p-8 flex flex-col items-center justify-center text-center">
       <h1 className="text-4xl font-bold text-white font-cairo mb-4">

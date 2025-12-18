@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -88,29 +89,38 @@ export default function ColoringPage() {
         const b = data[pixelPos+2];
         const a = data[pixelPos+3];
 
-        // Do not fill transparent areas
+        // Do not fill transparent areas or black lines
         if (a < 255) return false;
         
-        // Use a tolerance to handle anti-aliasing
-        const tolerance = 16;
+        // Use a tolerance to handle anti-aliasing but avoid coloring the black lines
+        const isBlack = r < 50 && g < 50 && b < 50;
+        if(isBlack) return false;
+
+        const tolerance = 20;
         return Math.abs(r - startR) <= tolerance && Math.abs(g - startG) <= tolerance && Math.abs(b - startB) <= tolerance;
+    }
+
+    // Check if starting pixel is a line, if so, do nothing
+    if (data[startPos] < 50 && data[startPos+1] < 50 && data[startPos+2] < 50 && data[startPos+3] === 255) {
+        return;
     }
 
     while (pixelStack.length > 0) {
       const newPos = pixelStack.pop();
       if (!newPos) continue;
-      const [x, y] = newPos;
+      let [x, y] = newPos;
 
       let pixelPos = (y * width + x) * 4;
-      while (y >= 0 && colorMatch(pixelPos)) {
-          pixelPos -= width * 4;
+      while (y-- >= 0 && colorMatch(pixelPos)) {
+        pixelPos -= width * 4;
       }
       pixelPos += width * 4;
+      y++;
       
       let reachLeft = false;
       let reachRight = false;
 
-      while (y < height && colorMatch(pixelPos)) {
+      while (y++ < height - 1 && colorMatch(pixelPos)) {
         data[pixelPos] = fillR;
         data[pixelPos+1] = fillG;
         data[pixelPos+2] = fillB;
@@ -167,17 +177,23 @@ export default function ColoringPage() {
   return (
     <div dir="rtl" className="min-h-screen w-full bg-kids-bg text-white p-4 sm:p-6 md:p-8 flex flex-col items-center">
       <header className="w-full max-w-7xl flex items-center justify-between mb-6">
-        <Link href="/" passHref>
+        <Link href="/kids" passHref>
           <Button variant="outline" className="utility-button">
             <Home className="w-5 h-5 ml-2" />
-            المملكة
+            ركن الصغار
           </Button>
         </Link>
         <h1 className="text-3xl font-bold text-white font-cairo">لعبة ألوان الفراعنة</h1>
-        <Button onClick={downloadImage} variant="outline" className="utility-button">
-            <Download className="w-5 h-5 ml-2" />
-            حفظ
-        </Button>
+        <div className="flex gap-2">
+            <Button onClick={() => setSelectedColor(EraserColor)} variant="outline" className="utility-button">
+                <Eraser className="w-5 h-5 ml-2" />
+                ممحاة
+            </Button>
+            <Button onClick={downloadImage} variant="outline" className="utility-button">
+                <Download className="w-5 h-5 ml-2" />
+                حفظ
+            </Button>
+        </div>
       </header>
 
       <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl h-[70vh]">
@@ -205,10 +221,6 @@ export default function ColoringPage() {
               />
             ))}
           </div>
-          <Button onClick={() => setSelectedColor(EraserColor)} variant="outline" className="utility-button w-full">
-            <Eraser className="w-5 h-5 ml-2" />
-            ممحاة
-          </Button>
         </div>
       </div>
     </div>

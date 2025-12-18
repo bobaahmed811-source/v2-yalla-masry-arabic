@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -92,3 +93,4 @@ export default function KidsCornerPage() {
         </div>
   );
 }
+
