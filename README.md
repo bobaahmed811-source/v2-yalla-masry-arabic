@@ -13,7 +13,7 @@ Think of Vercel as a "master builder" and GitHub as the "official blueprint". Ve
 ### Step 1: Create a NEW, EMPTY GitHub Repository
 
 1.  Go to [https://github.com/new](https://github.com/new).
-2.  Give your project a name (e.g., `yalla-masry-academy-v2`).
+2.  Give your project a name (e.g., `yalla-masry-kingdom`).
 3.  **CRITICAL:** DO NOT initialize it with a README, .gitignore, or license. It must be **completely empty**.
 4.  Copy the repository URL it gives you (e.g., `https://github.com/YourUsername/your-repository-name.git`).
 
