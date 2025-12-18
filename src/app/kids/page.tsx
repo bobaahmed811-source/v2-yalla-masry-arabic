@@ -52,7 +52,7 @@ export default function KidsCornerPage() {
                         />
                     )}
                     <div>
-                        <h1 className="text-4xl font-bold text-white font-cairo mb-2">أهلاً بكم في مملكة الصغار!</h1>
+                        <h1 className="text-4xl font-bold text-yellow-400 font-cairo mb-2">الآن يجب أن يعمل كل شيء!</h1>
                         <p className="text-lg md:text-xl text-sand-ochre max-w-2xl">
                             أنا بسبس، القط الفرعوني! هنا، التعلم مغامرة ممتعة مليئة بالألعاب والقصص والألوان. هل أنتم مستعدون للانطلاق؟
                         </p>
@@ -93,5 +93,3 @@ export default function KidsCornerPage() {
         </div>
   );
 }
-
-    
