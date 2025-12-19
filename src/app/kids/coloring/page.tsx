@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -32,20 +31,15 @@ export default function ColoringPage() {
 
     const resizeCanvas = () => {
         const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-        const imageAspectRatio = image.width / image.height;
+        // Let's use a fixed aspect ratio for simplicity to ensure it fits well
+        const aspectRatio = 1; 
+        const newSize = Math.min(containerWidth, 600); // Max width of 600px
         
-        let canvasWidth = containerWidth;
-        let canvasHeight = containerWidth / imageAspectRatio;
-
-        if (canvasHeight > containerHeight) {
-            canvasHeight = containerHeight;
-            canvasWidth = containerHeight * imageAspectRatio;
-        }
+        canvas.width = newSize;
+        canvas.height = newSize / aspectRatio;
         
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-        
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     };
 
@@ -209,7 +203,7 @@ export default function ColoringPage() {
           <canvas
             ref={canvasRef}
             onClick={handleCanvasClick}
-            className="cursor-pointer object-contain"
+            className="cursor-pointer"
             data-ai-hint={coloringImage?.imageHint}
           />
         </div>
