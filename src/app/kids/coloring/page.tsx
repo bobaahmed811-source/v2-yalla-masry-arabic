@@ -31,12 +31,18 @@ export default function ColoringPage() {
 
     const resizeCanvas = () => {
         const containerWidth = container.clientWidth;
-        // Let's use a fixed aspect ratio for simplicity to ensure it fits well
-        const aspectRatio = 1; 
-        const newSize = Math.min(containerWidth, 600); // Max width of 600px
+        const imageAspectRatio = image.width / image.height;
         
-        canvas.width = newSize;
-        canvas.height = newSize / aspectRatio;
+        let newWidth = containerWidth;
+        let newHeight = containerWidth / imageAspectRatio;
+
+        if (newHeight > container.clientHeight && container.clientHeight > 0) {
+            newHeight = container.clientHeight;
+            newWidth = newHeight * imageAspectRatio;
+        }
+        
+        canvas.width = newWidth;
+        canvas.height = newHeight;
         
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -203,7 +209,7 @@ export default function ColoringPage() {
           <canvas
             ref={canvasRef}
             onClick={handleCanvasClick}
-            className="cursor-pointer"
+            className="cursor-pointer max-w-full max-h-full"
             data-ai-hint={coloringImage?.imageHint}
           />
         </div>
