@@ -83,6 +83,7 @@ export default function KidsCornerPage() {
                     icon={BookHeart}
                     color="#F59E0B"
                     href="/kids/prophet-stories"
+_                    
                 />
                 <ActivityCard
                     title="اكتشف الأثر"
