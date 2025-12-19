@@ -126,5 +126,3 @@ export const ARTIFACT_DATA: Artifacts = {
         isExplored: false
     }
 };
-
-    
