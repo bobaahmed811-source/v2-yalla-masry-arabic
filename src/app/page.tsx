@@ -2,31 +2,97 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { Card, CardContent } from '@/components/ui/card';
+import { BookHeart, Brush, Rabbit, Search } from 'lucide-react';
+import placeholderData from '@/lib/placeholder-images.json';
+
+const ActivityCard = ({
+  title,
+  description,
+  icon: Icon,
+  color,
+  href,
+}: {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
+  href: string;
+}) => (
+  <Link href={href} passHref>
+    <Card className="kids-card flex flex-col items-center justify-center p-6 text-center h-full">
+      <CardContent className="p-0 flex flex-col items-center">
+        <div className="w-20 h-20 mb-4 rounded-full flex items-center justify-center bg-white/10" style={{border: `3px solid ${color}`}}>
+            <Icon style={{ color }} className="w-10 h-10" />
+        </div>
+        <h3 className="text-xl font-bold text-white font-cairo">{title}</h3>
+        <p className="text-sand-ochre/80 text-sm">{description}</p>
+      </CardContent>
+    </Card>
+  </Link>
+);
 
 /**
- * A simple, robust root page that provides a clear entry point to the application.
- * This avoids any complex logic or redirects that might confuse the Vercel build process.
+ * The main entry point of the application, now serving the Kids Corner directly.
+ * This simplification ensures a clean and reliable build for Vercel.
  */
-export default function HomePage() {
-  return (
-    <div className="min-h-screen w-full bg-kids-bg text-white p-8 flex flex-col items-center justify-center text-center">
-      <div className="max-w-xl">
-        <h1 className="text-4xl sm:text-5xl font-bold text-yellow-400 font-cairo mb-4">
-          مملكة يلا مصري
-        </h1>
-        <p className="text-lg text-sand-ochre mb-8">
-          بوابة العبور إلى عالم من المغامرات لتعلم اللهجة المصرية. هيا بنا ننطلق إلى ركن الصغار!
-        </p>
-        <Link href="/kids" passHref>
-          <Button 
-            className="cta-button rounded-lg px-8 py-3 text-lg font-bold animate-pulse h-auto"
-            aria-label="الانتقال إلى ركن الصغار"
-          >
-              اضغط هنا للبدء
-          </Button>
-        </Link>
-      </div>
-    </div>
+export default function KidsCornerPage() {
+    const guide = placeholderData.placeholderImages.find(p => p.id === 'cat-guide');
+  
+    return (
+        <div className="min-h-screen w-full bg-kids-bg text-white p-4 sm:p-6 md:p-8">
+            <div className="max-w-7xl mx-auto">
+                <header className="flex flex-col md:flex-row items-center justify-center text-center gap-6 mb-12 bg-nile-dark/30 p-8 rounded-2xl border-2 border-gold-accent/20">
+                    {guide && (
+                         <Image
+                            src={guide.imageUrl}
+                            alt={guide.description}
+                            width={150}
+                            height={150}
+                            data-ai-hint={guide.imageHint}
+                            className="rounded-full border-4 border-sand-ochre"
+                        />
+                    )}
+                    <div>
+                        <h1 className="text-4xl font-bold text-yellow-400 font-cairo mb-2">أهلاً بكم في ركن الصغار</h1>
+                        <p className="text-lg md:text-xl text-sand-ochre max-w-2xl">
+                            أنا بسبس، القط الفرعوني! هنا، التعلم مغامرة ممتعة مليئة بالألعاب والقصص والألوان. هل أنتم مستعدون للانطلاق؟
+                        </p>
+                    </div>
+                </header>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                <ActivityCard
+                    title="ألوان الفراعنة"
+                    description="لعبة تلوين ممتعة لشخصيات وآثار من مصر القديمة."
+                    icon={Brush}
+                    color="#34D399"
+                    href="/kids/coloring"
+                />
+                <ActivityCard
+                    title="أصوات الحيوانات"
+                    description="استمعوا لأصوات الحيوانات وتعلموا أسمائها بالمصري."
+                    icon={Rabbit}
+                    color="#F472B6"
+                    href="/kids/animal-sounds"
+                />
+                <ActivityCard
+                    title="قصص الأنبياء"
+                    description="قصص مصورة ومروية عن الأنبياء بأسلوب شيق."
+                    icon={BookHeart}
+                    color="#F59E0B"
+                    href="/kids/prophet-stories"
+                />
+                <ActivityCard
+                    title="اكتشف الأثر"
+                    description="لعبة ذاكرة ممتعة مع كنوز الملك توت عنخ آمون."
+                    icon={Search}
+                    color="#FBBF24"
+                    href="/kids/artifact-match"
+                />
+                </div>
+            </div>
+        </div>
   );
 }
