@@ -8,9 +8,9 @@ export default function Home() {
   return (
     <main
       dir="rtl"
-      className="flex min-h-screen flex-col items-center justify-center p-24 bg-nile-dark text-white"
+      className="flex min-h-screen flex-col items-center justify-center p-24"
     >
-      <h1 className="text-4xl font-bold text-gold-accent">بناء الهيكل الأساسي</h1>
+      <h1 className="text-4xl font-bold">بناء الهيكل الأساسي</h1>
       <p className="mt-4 text-lg">
         إذا رأيت هذه الصفحة، فهذا يعني أن عملية النشر الأساسية قد نجحت.
       </p>
