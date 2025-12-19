@@ -141,4 +141,3 @@ export class FirestorePermissionError extends Error {
     this.request = requestObject;
   }
 }
-    

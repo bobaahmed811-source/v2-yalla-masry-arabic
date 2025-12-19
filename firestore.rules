@@ -1,5 +1,4 @@
 
-
 /**
  * This ruleset enforces a strict, user-centric security model for an EdTech platform,
  * designed for rapid prototyping with a focus on authorization over data validation.
@@ -115,5 +114,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
