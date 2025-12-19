@@ -16,40 +16,48 @@ const EraserColor = '#FFFFFF';
 
 export default function ColoringPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const coloringImage = placeholderData.placeholderImages.find(p => p.id === 'coloring-tut');
   
   useEffect(() => {
     const canvas = canvasRef.current;
+    const container = canvasContainerRef.current;
     const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx || !coloringImage) return;
+    if (!canvas || !ctx || !coloringImage || !container) return;
 
     const image = new Image();
     image.crossOrigin = 'anonymous';
     image.src = coloringImage.imageUrl;
 
-    image.onload = () => {
-      const parent = canvas.parentElement;
-      if (parent) {
-          // Fit canvas to parent while maintaining aspect ratio
-          const parentWidth = parent.clientWidth;
-          const parentHeight = parent.clientHeight;
-          const imageAspectRatio = image.width / image.height;
-          
-          let canvasWidth = parentWidth;
-          let canvasHeight = parentWidth / imageAspectRatio;
+    const resizeCanvas = () => {
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        const imageAspectRatio = image.width / image.height;
+        
+        let canvasWidth = containerWidth;
+        let canvasHeight = containerWidth / imageAspectRatio;
 
-          if (canvasHeight > parentHeight) {
-              canvasHeight = parentHeight;
-              canvasWidth = parentHeight * imageAspectRatio;
-          }
-          
-          canvas.width = canvasWidth;
-          canvas.height = canvasHeight;
-          
-          ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-      }
+        if (canvasHeight > containerHeight) {
+            canvasHeight = containerHeight;
+            canvasWidth = containerHeight * imageAspectRatio;
+        }
+        
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     };
+
+    image.onload = () => {
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+    };
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+    };
+
   }, [coloringImage]);
 
   const getCoordinates = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -89,10 +97,8 @@ export default function ColoringPage() {
         const b = data[pixelPos+2];
         const a = data[pixelPos+3];
 
-        // Do not fill transparent areas or black lines
         if (a < 255) return false;
         
-        // Use a tolerance to handle anti-aliasing but avoid coloring the black lines
         const isBlack = r < 50 && g < 50 && b < 50;
         if(isBlack) return false;
 
@@ -100,7 +106,6 @@ export default function ColoringPage() {
         return Math.abs(r - startR) <= tolerance && Math.abs(g - startG) <= tolerance && Math.abs(b - startB) <= tolerance;
     }
 
-    // Check if starting pixel is a line, if so, do nothing
     if (data[startPos] < 50 && data[startPos+1] < 50 && data[startPos+2] < 50 && data[startPos+3] === 255) {
         return;
     }
@@ -196,8 +201,11 @@ export default function ColoringPage() {
         </div>
       </header>
 
-      <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl h-[70vh]">
-        <div className="flex-grow flex items-center justify-center bg-white rounded-lg overflow-hidden border-4 border-sand-ochre p-2">
+      <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl flex-grow">
+        <div 
+            ref={canvasContainerRef}
+            className="flex-grow flex items-center justify-center bg-white rounded-lg overflow-hidden border-4 border-sand-ochre p-2"
+        >
           <canvas
             ref={canvasRef}
             onClick={handleCanvasClick}
@@ -226,5 +234,3 @@ export default function ColoringPage() {
     </div>
   );
 }
-
-    
