@@ -1,6 +1,6 @@
 'use client';
 
-import React, 'useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { getAnimalSoundFlow } from '@/ai/flows/animal-sound-flow';
