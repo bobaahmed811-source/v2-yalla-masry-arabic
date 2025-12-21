@@ -45,8 +45,8 @@ export default function OnboardingPage() {
     if (level) {
       // Here you would typically save the user's preferences
       console.log('Goal:', goal, 'Level:', level);
-      // For now, just redirect to the home page (which will be the dashboard later)
-      router.push('/kids-corner'); // Let's go to kids corner for now
+      // Redirect to the kids corner page after onboarding is complete
+      router.push('/kids-corner');
     }
   };
 

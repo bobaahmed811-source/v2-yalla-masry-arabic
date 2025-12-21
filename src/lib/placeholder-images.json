@@ -7,60 +7,6 @@
       "imageHint": "pyramids sunset"
     },
     {
-      "id": "instructor-1",
-      "description": "Portrait of a friendly female instructor, smiling, wearing a hijab",
-      "imageUrl": "https://images.unsplash.com/photo-1592621385612-4d7129426394?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NTQzNjIwMHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
-    },
-    {
-      "id": "instructor-2",
-      "description": "Portrait of another female instructor, professional look",
-      "imageUrl": "https://images.unsplash.com/photo-1690444963408-9573a17a8058?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzbWlsaW5nJTIwd29tYW58ZW58MHx8fHwxNzY1NDg0MjAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "smiling woman"
-    },
-    {
-      "id": "instructor-3",
-      "description": "Portrait of a professional female instructor with glasses, warm smile",
-      "imageUrl": "https://images.unsplash.com/photo-1573496358961-3c82861ab8f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9mZXNzaW9uYWwlMjB3b21hbnxlbnwwfHx8fDE3NjU1MjM2ODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "professional woman"
-    },
-    {
-      "id": "book-cl1",
-      "description": "Cover of an old Islamic book with intricate patterns",
-      "imageUrl": "https://images.unsplash.com/photo-1564316915543-b36a51db1a04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxpc2xhbWljJTIwYm9va3xlbnwwfHx8fDE3NjU1NDgwODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "islamic book"
-    },
-    {
-      "id": "book-cl2",
-      "description": "Cover of a Tafsir book, classic design",
-      "imageUrl": "https://images.unsplash.com/photo-1590720478291-aaabf8d53c49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxxdXJhbiUyMGJvb2t8ZW58MHx8fHwxNzY1NTQ4MDg5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "quran book"
-    },
-    {
-      "id": "book-cl3",
-      "description": "Cover of a Hadith collection, simple and elegant",
-      "imageUrl": "https://images.unsplash.com/photo-1761475048666-ec46f9a5fd55?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxpc2xhbWljJTIwc2NyaXB0dXJlfGVufDB8fHx8MTc2NTU0ODA4OXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "islamic scripture"
-    },
-    {
-      "id": "user-avatar-1",
-      "description": "Default user avatar, a pharaoh icon",
-      "imageUrl": "https://images.unsplash.com/photo-1636377985931-898218afd306?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjU0ODExODV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man portrait"
-    },
-    {
-      "id": "cat-guide",
-      "description": "Cartoon pharaoh cat character",
-      "imageUrl": "https://images.unsplash.com/photo-1739513261094-ba34a1c9e307?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjYXJ0b29uJTIwY2F0fGVufDB8fHx8MTc2NTY5ODM0MXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "cartoon cat"
-    },
-    {
-      "id": "coloring-tut",
-      "description": "A coloring book style outline of Tutankhamun's mask.",
-      "imageUrl": "https://storage.googleapis.com/stedi-assets/yalla-masry/coloring-tut-outline.png",
-      "imageHint": "tutankhamun coloring"
-    },
-    {
       "id": "animal-cat",
       "description": "A cute cat",
       "imageUrl": "https://images.unsplash.com/photo-1615497001839-b0a0eac3274c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjdXRlJTIwY2F0fGVufDB8fHx8MTc2NTg0MzY3NHww&ixlib=rb-4.1.0&q=80&w=1080",
