@@ -24,6 +24,11 @@
           "type": "string",
           "description": "The user's Pharaonic alias."
         },
+        "role": {
+          "type": "string",
+          "enum": ["student", "teacher", "parent"],
+          "description": "The role of the user within the platform."
+        },
         "registrationDate": {
           "type": "string",
           "description": "Date and time the user registered.",
@@ -53,7 +58,8 @@
         "id",
         "email",
         "alias",
-        "name"
+        "name",
+        "role"
       ]
     },
     "Course": {

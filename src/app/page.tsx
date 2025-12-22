@@ -32,11 +32,18 @@ export default function LandingPage() {
           <p className="text-lg md:text-2xl text-sand-ochre mb-8 animate-fade-in-up">
             بوابتك لتعلم اللهجة المصرية الأصيلة واستكشاف كنوز الثقافة الفرعونية.
           </p>
-          <Link href="/onboarding">
-            <Button size="lg" className="bg-gold-accent text-nile-dark font-bold text-lg hover:bg-sand-ochre transition-transform duration-300 hover:scale-105 animate-pulse">
-              ابدأ رحلتك الآن
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/signup">
+              <Button size="lg" className="bg-gold-accent text-nile-dark font-bold text-lg hover:bg-sand-ochre transition-transform duration-300 hover:scale-105 animate-pulse">
+                ابدأ رحلتك (حساب جديد)
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button size="lg" variant="outline" className="text-sand-ochre border-sand-ochre font-bold text-lg hover:bg-sand-ochre hover:text-nile-dark transition-transform duration-300 hover:scale-105">
+                تسجيل الدخول
+              </Button>
+            </Link>
+          </div>
         </div>
         <Link href="/admin" className="absolute top-4 right-4">
              <Button variant="outline" className="bg-sand-ochre text-nile-dark hover:bg-gold-accent">
