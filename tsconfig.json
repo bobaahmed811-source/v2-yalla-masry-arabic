@@ -20,13 +20,13 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "ai/*": ["./ai/*"],
-      "app/*": ["./app/*"],
-      "components/*": ["./components/*"],
-      "docs/*": ["./docs/*"],
-      "firebase/*": ["./firebase/*"],
-      "hooks/*": ["./hooks/*"],
-      "lib/*": ["./lib/*"]
+      "ai/*": ["ai/*"],
+      "app/*": ["app/*"],
+      "components/*": ["components/*"],
+      "docs/*": ["docs/*"],
+      "firebase/*": ["firebase/*"],
+      "hooks/*": ["hooks/*"],
+      "lib/*": ["lib/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
