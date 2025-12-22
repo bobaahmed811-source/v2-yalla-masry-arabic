@@ -9,9 +9,9 @@ import {
   DocumentData,
   FirestoreError,
 } from 'firebase/firestore';
-import { useFirestore } from '@/firebase/hooks';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { useFirestore } from 'firebase/hooks';
+import { errorEmitter } from 'firebase/error-emitter';
+import { FirestorePermissionError } from 'firebase/errors';
 
 /** Utility type to add an 'id' field to a given type T. */
 export type WithId<T> = T & { id: string };

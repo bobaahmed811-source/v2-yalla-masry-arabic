@@ -8,10 +8,10 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from '@/components/ui/table';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+} from 'components/ui/table';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from 'components/ui/card';
 import { BookMarked, ArrowLeft } from 'lucide-react';
-import quranData from '@/lib/quran-data.json';
+import quranData from 'lib/quran-data.json';
 
 export default function QuranIndexPage() {
   return (

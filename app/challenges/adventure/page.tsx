@@ -3,11 +3,11 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from 'components/ui/card';
+import { Button } from 'components/ui/button';
 import { Lightbulb, BookOpen } from 'lucide-react';
-import challenges from '@/lib/adventure-challenges.json';
-import placeholderImages from '@/lib/placeholder-images.json';
+import challenges from 'lib/adventure-challenges.json';
+import placeholderImages from 'lib/placeholder-images.json';
 
 // Find the character image for Nouf
 const noufImage = placeholderImages.placeholderImages.find(p => p.id === 'nouf-character');

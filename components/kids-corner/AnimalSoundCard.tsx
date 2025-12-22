@@ -2,8 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
-import { getAnimalSoundFlow } from '@/ai/flows/animal-sound-flow';
+import { Card, CardContent } from 'components/ui/card';
+import { getAnimalSoundFlow } from 'ai/flows/animal-sound-flow';
 import { Loader, Volume2 } from 'lucide-react';
 
 interface AnimalSoundCardProps {

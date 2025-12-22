@@ -2,11 +2,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from 'components/ui/card';
+import { Button } from 'components/ui/button';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
-import { getDialogueEvaluationFlow, DialogueEvaluationInput, DialogueEvaluationOutput } from '@/ai/flows/dialogue-evaluation-flow';
-import { useToast } from '@/hooks/use-toast';
+import { getDialogueEvaluationFlow, DialogueEvaluationInput, DialogueEvaluationOutput } from 'ai/flows/dialogue-evaluation-flow';
+import { useToast } from 'hooks/use-toast';
 
 // Define the structure for a dialogue choice
 type DialogueChoice = {

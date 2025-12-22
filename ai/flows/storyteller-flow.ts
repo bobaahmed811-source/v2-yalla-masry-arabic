@@ -12,7 +12,7 @@
  * - getStorytellerAudioFlow: The main server action that invokes the Genkit flow.
  */
 
-import { ai } from '@/ai/index';
+import { ai } from 'ai/index';
 import { z } from 'zod';
 import { googleAI } from '@genkit-ai/google-genai';
 import wav from 'wav';

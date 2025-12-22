@@ -3,9 +3,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button } from 'components/ui/button';
 import Image from 'next/image';
-import placeholderImages from '@/lib/placeholder-images.json';
+import placeholderImages from 'lib/placeholder-images.json';
 
 export default function LandingPage() {
   const heroImage = placeholderImages.placeholderImages.find(p => p.id === 'pyramids-hero');

@@ -11,7 +11,7 @@
  * - getDialogueEvaluationFlow: The main server action that invokes the Genkit flow.
  */
 
-import { ai } from '@/ai/index';
+import { ai } from 'ai/index';
 import { z } from 'zod';
 
 // Define the input schema for the dialogue evaluation flow.

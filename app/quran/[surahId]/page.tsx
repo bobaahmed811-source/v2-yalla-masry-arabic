@@ -1,10 +1,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from 'components/ui/card';
+import { Button } from 'components/ui/button';
 import { BookMarked, ChevronRight } from 'lucide-react';
-import quranData from '@/lib/quran-data.json';
+import quranData from 'lib/quran-data.json';
 
 // Helper function to find Surah data by ID
 function getSurahById(id: number) {

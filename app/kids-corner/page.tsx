@@ -1,7 +1,7 @@
 
 import React from 'react';
-import AnimalSoundCard from '@/components/kids-corner/AnimalSoundCard';
-import placeholderImages from '@/lib/placeholder-images.json';
+import AnimalSoundCard from 'components/kids-corner/AnimalSoundCard';
+import placeholderImages from 'lib/placeholder-images.json';
 import { PawPrint } from 'lucide-react';
 
 export default function KidsCornerPage() {

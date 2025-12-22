@@ -1,8 +1,8 @@
 
 import type { Metadata } from 'next';
 import './globals.css';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
-import { Toaster } from '@/components/ui/toaster';
+import { FirebaseClientProvider } from 'firebase/client-provider';
+import { Toaster } from 'components/ui/toaster';
 
 export const metadata: Metadata = {
   title: 'Yalla Masry Academy - A New Beginning',

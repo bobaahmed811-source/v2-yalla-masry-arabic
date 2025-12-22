@@ -7,8 +7,8 @@ import {
   TableRow,
   TableHead,
   TableCell,
-} from '@/components/ui/table';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+} from 'components/ui/table';
+import { Card, CardHeader, CardTitle, CardContent } from 'components/ui/card';
 import { Shield } from 'lucide-react';
 
 export default function AdminPage() {

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError } from 'firebase/errors';
 
 // Define the structure of events and their payloads.
 type Events = {
