@@ -45,8 +45,8 @@ export default function OnboardingPage() {
     if (level) {
       // Here you would typically save the user's preferences
       console.log('Goal:', goal, 'Level:', level);
-      // Redirect to the kids corner page after onboarding is complete
-      router.push('/kids-corner');
+      // Redirect to the challenges page after onboarding is complete
+      router.push('/challenges/dialogue');
     }
   };
 
@@ -112,7 +112,7 @@ export default function OnboardingPage() {
               </Button>
             ) : (
               <Button onClick={handleFinish} disabled={!level} className="bg-gold-accent text-nile-dark hover:bg-sand-ochre disabled:opacity-50">
-                إنهاء وبدء التعلم
+                بدء التحديات
               </Button>
             )}
           </div>
