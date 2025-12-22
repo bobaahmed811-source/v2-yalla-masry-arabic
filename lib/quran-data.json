@@ -54,7 +54,7 @@
     { "id": 51, "name": "الذاريات", "englishName": "Adh-Dhariyat", "revelationType": "Meccan", "numberOfAyahs": 60 },
     { "id": 52, "name": "الطور", "englishName": "At-Tur", "revelationType": "Meccan", "numberOfAyahs": 49 },
     { "id": 53, "name": "النجم", "englishName": "An-Najm", "revelationType": "Meccan", "numberOfAyahs": 62 },
-    { "id": 54, name: "القمر", "englishName": "Al-Qamar", "revelationType": "Meccan", "numberOfAyahs": 55 },
+    { "id": 54, "name": "القمر", "englishName": "Al-Qamar", "revelationType": "Meccan", "numberOfAyahs": 55 },
     { "id": 55, "name": "الرحمن", "englishName": "Ar-Rahman", "revelationType": "Medinan", "numberOfAyahs": 78 },
     { "id": 56, "name": "الواقعة", "englishName": "Al-Waqi'a", "revelationType": "Meccan", "numberOfAyahs": 96 },
     { "id": 57, "name": "الحديد", "englishName": "Al-Hadid", "revelationType": "Medinan", "numberOfAyahs": 29 },
