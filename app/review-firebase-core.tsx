@@ -3,7 +3,7 @@
 
 /**
  * =================================================================================================
- * FILE: src/firebase/hooks.tsx
+ * FILE: firebase/hooks.tsx
  * PURPOSE: Custom hooks to access Firebase services and the authenticated user.
  * =================================================================================================
  */
@@ -88,7 +88,7 @@ export function useUser() {
 
 /**
  * =================================================================================================
- * FILE: src/firebase/errors.ts
+ * FILE: firebase/errors.ts
  * PURPOSE: Custom error classes for handling Firestore permission issues.
  * =================================================================================================
  */
@@ -182,7 +182,7 @@ export class FirestorePermissionError extends Error {
 
 /**
  * =================================================================================================
- * FILE: src/firebase/error-emitter.ts
+ * FILE: firebase/error-emitter.ts
  * PURPOSE: A simple event emitter for global error handling.
  * =================================================================================================
  */
@@ -215,7 +215,7 @@ export const errorEmitter = new TypedEventEmitter();
 
 /**
  * =================================================================================================
- * FILE: src/components/FirebaseErrorListener.tsx
+ * FILE: components/FirebaseErrorListener.tsx
  * PURPOSE: An invisible component that listens for and throws permission errors.
  * =================================================================================================
  */
@@ -242,7 +242,7 @@ export function FirebaseErrorListener() {
 
 /**
  * =================================================================================================
- * FILE: src/firebase/firestore/use-document.tsx
+ * FILE: firebase/firestore/use-document.tsx
  * PURPOSE: A hook to subscribe to a single Firestore document.
  * =================================================================================================
  */
@@ -305,7 +305,7 @@ export function useDocument<T = any>(
 
 /**
  * =================================================================================================
- * FILE: src/firebase/firestore/use-collection.tsx
+ * FILE: firebase/firestore/use-collection.tsx
  * PURPOSE: A hook to subscribe to a Firestore collection or query.
  * =================================================================================================
  */
