@@ -86,6 +86,30 @@
       "metadata": {
         "name": "فرخة"
       }
+    },
+    {
+      "id": "nouf-character",
+      "description": "A stylized, friendly illustration of a Gulf woman.",
+      "imageUrl": "https://images.unsplash.com/photo-1751713971874-6c384101a5ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxndWxmJTIwd29tYW4lMjBpbGx1c3RyYXRpb258ZW58MHx8fHwxNzY2NDA5NDc0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gulf woman illustration"
+    },
+    {
+      "id": "adventure-airport",
+      "description": "A bustling modern airport terminal.",
+      "imageUrl": "https://images.unsplash.com/photo-1553619948-505cc1cdc320?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhaXJwb3J0JTIwdGVybWluYWx8ZW58MHx8fHwxNzY2Mzg0NjI0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "airport terminal"
+    },
+    {
+      "id": "adventure-market",
+      "description": "A vibrant, traditional Egyptian market (souq).",
+      "imageUrl": "https://images.unsplash.com/photo-1746274394128-fb4a9dc4af36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxlZ3lwdGlhbiUyMG1hcmtldHxlbnwwfHx8fDE3NjY0MDk0NzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "egyptian market"
+    },
+    {
+      "id": "adventure-restaurant",
+      "description": "A cozy Egyptian restaurant with traditional decor.",
+      "imageUrl": "https://images.unsplash.com/photo-1545659531-9a66f06e260a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxlZ3lwdGlhbiUyMHJlc3RhdXJhbnR8ZW58MHx8fHwxNzY2NDA5NDc0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "egyptian restaurant"
     }
   ]
 }
