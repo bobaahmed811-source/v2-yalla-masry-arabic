@@ -16,10 +16,4 @@ export const ai = genkit({
       apiVersion: 'v1beta',
     }),
   ],
-  // Log metadata and streaming events for debugging purposes in a development environment.
-  logSinks: [],
-  // Enable tracing to monitor and debug flows.
-  traceStore: 'local',
-  // Allow running flows in a development environment without explicit environment checks.
-  flowStateStore: 'local',
 });
