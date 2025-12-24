@@ -4,25 +4,33 @@
 
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 210 40% 98%;
+    --background: 220 40% 10%; /* Nile Dark Blue */
+    --foreground: 45 30% 90%; /* Light Sand */
+
+    --card: 215 80% 25%; /* Nile Blue */
+    --card-foreground: 45 30% 90%;
+
+    --popover: 220 40% 10%;
+    --popover-foreground: 45 30% 90%;
+
+    --primary: 45 40% 85%; /* Sand Ochre */
+    --primary-foreground: 220 40% 10%;
+
+    --secondary: 217 33% 18%;
+    --secondary-foreground: 45 30% 90%;
+
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 51 100% 50%; /* Gold Accent */
+    --accent-foreground: 220 40% 10%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 45 30% 90%;
+
+    --border: 45 40% 65%; /* Sand Ochre as border */
+    --input: 217 33% 18%;
+    --ring: 51 100% 50%; /* Gold Accent for focus rings */
     --radius: 0.5rem;
   }
 }
@@ -33,29 +41,31 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'El Messiri', sans-serif;
   }
 }
 
-/* Yalla Masry Academy Base Styles */
-body { 
-  font-family: 'El Messiri', sans-serif; 
-  background-color: #0d284e; 
-}
-
+/* Custom CSS Variables for easier access in code if needed */
 :root {
-    --nile-blue: #0b4e8d;
-    --gold-accent: #FFD700;
-    --sand-ochre: #d6b876;
-    --dark-granite: #2a2a2a;
-    --nile-dark: #0d284e;
+    --nile-dark: hsl(220 40% 10%);
+    --nile-blue: hsl(215 80% 25%);
+    --sand-ochre: hsl(45 40% 65%);
+    --gold-accent: hsl(51 100% 50%);
+    --dark-granite: #2a2a2a; /* Kept for compatibility if used somewhere */
 }
 
-.royal-title { 
-  font-family: 'Cairo', sans-serif; 
-  font-weight: 900; 
-  color: var(--gold-accent); 
-}
+/* Specific theme classes */
+.bg-nile-dark { background-color: hsl(var(--background)); }
+.bg-nile-blue { background-color: hsl(var(--card)); }
+.text-sand-ochre { color: var(--sand-ochre); }
+.text-gold-accent { color: var(--gold-accent); }
+.border-sand-ochre { border-color: var(--sand-ochre); }
+.border-gold-accent { border-color: var(--gold-accent); }
 
-.bg-nile-dark { 
-  background-color: #0d284e; 
+
+/* Royal Title Style */
+.royal-title {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 900;
+  color: var(--gold-accent);
 }

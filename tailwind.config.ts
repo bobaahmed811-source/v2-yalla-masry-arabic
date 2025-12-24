@@ -24,6 +24,7 @@ const config: Config = {
       fontFamily: {
         'cairo': ['Cairo', 'sans-serif'],
         'el-messiri': ['"El Messiri"', 'sans-serif'],
+        'amiri-quran': ['"Amiri Quran"', 'serif'],
       },
       colors: {
         'nile-blue': '#0b4e8d',
